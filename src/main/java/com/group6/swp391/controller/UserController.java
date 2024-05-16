@@ -36,8 +36,8 @@ public class UserController {
         String randomString = UUID.randomUUID().toString();
         boolean check = true;
 
-        User user = new User(userRegister.getUserID(), userRegister.getFirstName(), userRegister.getLastName(), userRegister.getEmail(), userRegister.getPassword(), userRegister.getPhone(), userRegister.getAddress(), userRegister.getAvata(), randomString, false, true, roles);
-        if(userRegister==null || userService.getUserByEmail(userRegister.getEmail()) != null || userService.getUserByEmail(userRegister.getUserID()) != null ) {
+        User user = new User(userRegister.getFirstName(), userRegister.getLastName(), userRegister.getEmail(), userRegister.getPassword(), userRegister.getPhone(), userRegister.getAddress(), userRegister.getAvata(), randomString, false, true, roles);
+        if(userRegister==null || userService.getUserByEmail(userRegister.getEmail()) != null) {
             check = false;
         }
         if(check) {
