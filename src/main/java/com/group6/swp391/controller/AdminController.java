@@ -92,6 +92,6 @@ public class AdminController {
     public ResponseEntity<ObjectResponse> verifyAccount(@Param("code") String code, Model model) {
         boolean check = userService.verifyAccount(code);
         return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Verify account successfully", null))
-                :ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new ObjectResponse("Failed", "Verify this account failed", null));
+                :ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new ObjectResponse("Failed", "Verify account failed", null));
     }
 }
