@@ -23,7 +23,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/admin")
+@RequestMapping("/swp391/api/admin")
 public class AdminController {
 
     @Autowired private UserService userService;
