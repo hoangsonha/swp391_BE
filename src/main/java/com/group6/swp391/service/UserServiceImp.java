@@ -26,18 +26,19 @@ public class UserServiceImp implements UserService {
     public List<User> findAll(String role) {
         List<User> lists = userRepository.findAll();
         if(role.equals("admin")) {
-
-        } else {
-            if(role.equals("manager")) {
-                lists.forEach(rol -> {
-                    Role ro1 = roleService.getRoleByRoleName(EnumRoleName.ROLE_ADMIN);
-                    Role ro2 = roleService.getRoleByRoleName(EnumRoleName.ROLE_MANAGER);
-
-
-
-                });
-            }
+            return lists;
         }
+//        } else {
+//            if(role.equals("manager")) {
+//                lists.forEach(rol -> {
+//                    Role ro1 = roleService.getRoleByRoleName(EnumRoleName.ROLE_ADMIN);
+//                    Role ro2 = roleService.getRoleByRoleName(EnumRoleName.ROLE_MANAGER);
+//
+//
+//
+//                });
+//            }
+//        }
         return lists;
     }
 
