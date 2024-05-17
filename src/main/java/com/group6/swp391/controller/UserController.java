@@ -1,10 +1,14 @@
 package com.group6.swp391.controller;
 
+import com.group6.swp391.jwt.JWTToken;
 import com.group6.swp391.model.EnumRoleName;
 import com.group6.swp391.model.Role;
 import com.group6.swp391.model.User;
+import com.group6.swp391.request.UserLogin;
 import com.group6.swp391.request.UserRegister;
 import com.group6.swp391.response.ObjectResponse;
+import com.group6.swp391.response.TokenResponse;
+import com.group6.swp391.security.CustomUserDetail;
 import com.group6.swp391.service.RoleService;
 import com.group6.swp391.service.UserService;
 import jakarta.mail.MessagingException;
@@ -13,6 +17,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,11 +30,13 @@ import java.util.Set;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/swp391/api/user")
 public class UserController {
 
     @Autowired private UserService userService;
     @Autowired private RoleService roleService;
+    @Autowired private AuthenticationManager authenticationManager;
+    @Autowired private JWTToken jwtToken;
 
     @PostMapping("/register")
     public ResponseEntity<ObjectResponse> userRegister(@RequestBody UserRegister userRegister, HttpServletRequest request) throws MessagingException, UnsupportedEncodingException {
@@ -36,8 +46,8 @@ public class UserController {
         String randomString = UUID.randomUUID().toString();
         boolean check = true;
 
-        User user = new User(userRegister.getFirstName(), userRegister.getLastName(), userRegister.getEmail(), userRegister.getPassword(), userRegister.getPhone(), userRegister.getAddress(), userRegister.getAvata(), randomString, false, true, roles);
-        if(userRegister==null || userService.getUserByEmail(userRegister.getEmail()) != null) {
+        User user = new User(null, null, userRegister.getEmail(), userRegister.getPassword(), null, null, null, randomString, false, true, roles);
+        if(userRegister == null || userService.getUserByEmail(userRegister.getEmail()) != null) {
             check = false;
         }
         if(check) {
@@ -56,5 +66,21 @@ public class UserController {
                 :ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new ObjectResponse("Failed", "Verify account failed", null));
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<TokenResponse> loginPage(@RequestBody UserLogin userLogin) {
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+                new UsernamePasswordAuthenticationToken(userLogin.getEmail(), userLogin.getPassword());
 
+        Authentication authentication = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
+
+        CustomUserDetail userDetails = (CustomUserDetail) authentication.getPrincipal();
+        if(userDetails == null) {
+            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new TokenResponse("Failed", "Login failed", null));
+        }
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String s = jwtToken.generatedToken(userDetails);
+        boolean check = jwtToken.validate(s);
+
+        return ResponseEntity.status(HttpStatus.OK).body(new TokenResponse("Success", "Login successfully", s));
+    }
 }

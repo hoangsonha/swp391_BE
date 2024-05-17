@@ -7,11 +7,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserRegister {
-    private String firstName;
-    private String lastName;
     private String email;
     private String password;
-    private String phone;
-    private String address;
-    private String avata;
 }

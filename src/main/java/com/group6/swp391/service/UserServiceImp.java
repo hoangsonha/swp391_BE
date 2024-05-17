@@ -25,20 +25,38 @@ public class UserServiceImp implements UserService {
     @Override
     public List<User> findAll(String role) {
         List<User> lists = userRepository.findAll();
+        List<User> listsByRole = new ArrayList<>();
+        Role role_admin = roleService.getRoleByRoleName(EnumRoleName.ROLE_ADMIN);
+        Role role_manager = roleService.getRoleByRoleName(EnumRoleName.ROLE_MANAGER);
         if(role.equals("admin")) {
             return lists;
-        }
-//        } else {
-//            if(role.equals("manager")) {
-//                lists.forEach(rol -> {
-//                    Role ro1 = roleService.getRoleByRoleName(EnumRoleName.ROLE_ADMIN);
-//                    Role ro2 = roleService.getRoleByRoleName(EnumRoleName.ROLE_MANAGER);
-//
-//
-//
-//                });
-//            }
-//        }
+        } else if(role.equals("manager")) {
+                for(User user : lists) {
+                    List<Role> list_role = user.getRoles().stream().toList();
+                    if(list_role != null) {
+                        if(list_role.size() > 0) {
+                            for(Role ro : list_role) {
+                                if(ro.equals(role_admin)) {
+                                    lists.remove(user);
+                                }
+                            }
+                        }
+                    }
+                }
+            } else if(role.equals("staff")) {
+                for(User user : lists) {
+                    List<Role> list_role = user.getRoles().stream().toList();
+                    if(list_role != null) {
+                        if(list_role.size() > 0) {
+                            for(Role ro : list_role) {
+                                if(ro.equals(role_admin) || ro.equals(role_manager)) {
+                                    lists.remove(user);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         return lists;
     }
 

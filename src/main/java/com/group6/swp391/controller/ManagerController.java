@@ -4,6 +4,7 @@ import com.group6.swp391.model.EnumRoleName;
 import com.group6.swp391.model.Role;
 import com.group6.swp391.model.User;
 import com.group6.swp391.request.AdminRegister;
+import com.group6.swp391.request.ManagerRegister;
 import com.group6.swp391.response.ObjectResponse;
 import com.group6.swp391.service.RoleService;
 import com.group6.swp391.service.UserService;
@@ -23,14 +24,14 @@ import java.util.Set;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/manager")
+@RequestMapping("swp391/api/manager")
 public class ManagerController {
     @Autowired private UserService userService;
     @Autowired private RoleService roleService;
 
     @GetMapping("/all_users")
     public ResponseEntity<ObjectResponse> getAllUser() {
-        List<User> lists = userService.findAll("");
+        List<User> lists = userService.findAll("manager");
         boolean check = false;
         if(lists !=null) {
             if(lists.size() > 0) {
@@ -42,10 +43,10 @@ public class ManagerController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<ObjectResponse> adminRegister(@RequestBody AdminRegister adminRegister, HttpServletRequest request) throws MessagingException, UnsupportedEncodingException {
+    public ResponseEntity<ObjectResponse> adminRegister(@RequestBody ManagerRegister managerRegister, HttpServletRequest request) throws MessagingException, UnsupportedEncodingException {
         String randomString = UUID.randomUUID().toString();
         Set<Role> roles = new HashSet<>();
-        Set<String> roles_register = adminRegister.getRoles();
+        Set<String> roles_register = managerRegister.getRoles();
         if(roles_register == null) {
             Role role = roleService.getRoleByRoleName(EnumRoleName.ROLE_USER);
             roles.add(role);
@@ -65,8 +66,8 @@ public class ManagerController {
         boolean check = true;
         boolean active = false;
 
-        User user = new User(adminRegister.getFirstName(), adminRegister.getLastName(), adminRegister.getEmail(), adminRegister.getPassword(), adminRegister.getPhone(), adminRegister.getAddress(), adminRegister.getAvata(), randomString, active, true, roles);
-        if(userService.getUserByEmail(adminRegister.getEmail()) != null || adminRegister==null ||  userService.getUserByEmail(adminRegister.getUserID()) != null ) {
+        User user = new User(managerRegister.getFirstName(), managerRegister.getLastName(), managerRegister.getEmail(), managerRegister.getPassword(), managerRegister.getPhone(), managerRegister.getAddress(), managerRegister.getAvata(), randomString, active, true, roles);
+        if(userService.getUserByEmail(managerRegister.getEmail()) != null || managerRegister == null ) {
             check = false;
         }
 
