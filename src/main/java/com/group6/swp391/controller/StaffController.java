@@ -25,6 +25,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/swp391/api/staff")
+@CrossOrigin(origins = "*")
 public class StaffController {
     @Autowired private UserService userService;
     @Autowired private RoleService roleService;

@@ -31,7 +31,7 @@ public class AdminController {
     @Autowired private RoleService roleService;
 
     @GetMapping("/all_users")
-    public List<User> getAllUser() {
+    public ResponseEntity<ObjectResponse> getAllUser() {
         List<User> lists = userService.findAll("admin");
         boolean check = false;
         if(lists !=null) {
@@ -39,7 +39,8 @@ public class AdminController {
                 check = true;
             }
         }
-        return lists;
+        return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Get all users successfully", lists))
+                : ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ObjectResponse("Failed", "Get_all users failed", lists));
     }
 
     @PostMapping("/register")

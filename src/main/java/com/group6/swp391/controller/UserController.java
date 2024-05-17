@@ -31,11 +31,12 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/swp391/api/user")
+@CrossOrigin(origins = "*")
 public class UserController {
 
     @Autowired private UserService userService;
     @Autowired private RoleService roleService;
-//    @Autowired private AuthenticationManager authenticationManager;
+    @Autowired private AuthenticationManager authenticationManager;
     @Autowired private JWTToken jwtToken;
 
     @PostMapping("/register")
@@ -66,21 +67,21 @@ public class UserController {
                 :ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new ObjectResponse("Failed", "Verify account failed", null));
     }
 
-//    @PostMapping("/login")
-//    public ResponseEntity<TokenResponse> loginPage(@RequestBody UserLogin userLogin) {
-//        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-//                new UsernamePasswordAuthenticationToken(userLogin.getEmail(), userLogin.getPassword());
-//
-//        Authentication authentication = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
-//
-//        CustomUserDetail userDetails = (CustomUserDetail) authentication.getPrincipal();
-//        if(userDetails == null) {
-//            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new TokenResponse("Failed", "Login failed", null));
-//        }
-//        SecurityContextHolder.getContext().setAuthentication(authentication);
-//        String s = jwtToken.generatedToken(userDetails);
-//        boolean check = jwtToken.validate(s);
-//
-//        return ResponseEntity.status(HttpStatus.OK).body(new TokenResponse("Success", "Login successfully", s));
-//    }
+    @PostMapping("/login")
+    public ResponseEntity<TokenResponse> loginPage(@RequestBody UserLogin userLogin) {
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+                new UsernamePasswordAuthenticationToken(userLogin.getEmail(), userLogin.getPassword());
+
+        Authentication authentication = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
+
+        CustomUserDetail userDetails = (CustomUserDetail) authentication.getPrincipal();
+        if(userDetails == null) {
+            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new TokenResponse("Failed", "Login failed", null));
+        }
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String s = jwtToken.generatedToken(userDetails);
+        boolean check = jwtToken.validate(s);
+
+        return ResponseEntity.status(HttpStatus.OK).body(new TokenResponse("Success", "Login successfully", s));
+    }
 }
