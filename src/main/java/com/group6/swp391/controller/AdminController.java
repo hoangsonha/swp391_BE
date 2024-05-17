@@ -35,6 +35,7 @@ public class AdminController {
         boolean check = false;
         if(lists !=null) {
             if(lists.size() > 0) {
+
                 check = true;
             }
         }
