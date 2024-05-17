@@ -24,6 +24,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/swp391/api/admin")
+@CrossOrigin(origins = "*")
 public class AdminController {
 
     @Autowired private UserService userService;
