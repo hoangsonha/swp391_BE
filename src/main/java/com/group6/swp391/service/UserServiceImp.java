@@ -28,9 +28,7 @@ public class UserServiceImp implements UserService {
         List<User> listsByRole = new ArrayList<>();
         Role role_admin = roleService.getRoleByRoleName(EnumRoleName.ROLE_ADMIN);
         Role role_manager = roleService.getRoleByRoleName(EnumRoleName.ROLE_MANAGER);
-        if(role.equals("admin")) {
-            return lists;
-        } else if(role.equals("manager")) {
+        if(role.equals("manager")) {
                 for(User user : lists) {
                     List<Role> list_role = user.getRoles().stream().toList();
                     if(list_role != null) {
@@ -56,7 +54,9 @@ public class UserServiceImp implements UserService {
                         }
                     }
                 }
-            }
+            } else if(role.equals("admin")) {
+                    return lists;
+                }
         return lists;
     }
 
