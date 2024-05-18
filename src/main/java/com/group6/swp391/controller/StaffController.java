@@ -62,17 +62,12 @@ public class StaffController {
             userService.save(user);
             if(!active) {
                 String siteUrl = request.getRequestURL().toString().replace(request.getServletPath(), "");
-                check = userService.sendVerificationEmail(user, siteUrl, "staff");
+                check = userService.sendVerificationEmail(user, siteUrl);
             }
         }
         return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Create account successfully", user))
                 :ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new ObjectResponse("Failed", "Create account failed", user));
     }
 
-    @GetMapping("/verify")
-    public ResponseEntity<ObjectResponse> verifyAccount(@Param("code") String code, Model model) {
-        boolean check = userService.verifyAccount(code);
-        return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Verify account successfully", null))
-                :ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new ObjectResponse("Failed", "Verify account failed", null));
-    }
+
 }

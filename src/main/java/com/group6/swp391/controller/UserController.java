@@ -54,17 +54,10 @@ public class UserController {
         if(check) {
             userService.save(user);
             String siteUrl = request.getRequestURL().toString().replace(request.getServletPath(), "");
-            check = userService.sendVerificationEmail(user, siteUrl, "user");
+            check = userService.sendVerificationEmail(user, siteUrl);
         }
         return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Create account successfully", user))
                 :ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new ObjectResponse("Failed", "Create account failed", user));
-    }
-
-    @GetMapping("/verify")
-    public ResponseEntity<ObjectResponse> verifyAccount(@Param("code") String code, Model model) {
-        boolean check = userService.verifyAccount(code);
-        return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Verify account successfully", null))
-                :ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new ObjectResponse("Failed", "Verify account failed", null));
     }
 
     @PostMapping("/login")
