@@ -54,9 +54,6 @@ public class AdminController {
         } else {
             roles_register.forEach(role -> {
                 switch (role) {
-                    case "admin":
-                        Role admin_role = roleService.getRoleByRoleName(EnumRoleName.ROLE_ADMIN);
-                        roles.add(admin_role);
                     case "manager":
                         Role manager_role = roleService.getRoleByRoleName(EnumRoleName.ROLE_MANAGER);
                         roles.add(manager_role);
