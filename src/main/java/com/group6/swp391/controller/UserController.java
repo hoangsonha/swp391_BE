@@ -21,6 +21,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,6 +39,7 @@ public class UserController {
     @Autowired private RoleService roleService;
     @Autowired private AuthenticationManager authenticationManager;
     @Autowired private JWTToken jwtToken;
+    @Autowired private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @PostMapping("/register")
     public ResponseEntity<ObjectResponse> userRegister(@RequestBody UserRegister userRegister, HttpServletRequest request) throws MessagingException, UnsupportedEncodingException {
@@ -47,7 +49,7 @@ public class UserController {
         String randomString = UUID.randomUUID().toString();
         boolean check = true;
 
-        User user = new User(null, null, userRegister.getEmail(), userRegister.getPassword(), null, null, null, randomString, false, true, roles);
+        User user = new User(null, null, userRegister.getEmail(), bCryptPasswordEncoder.encode(userRegister.getPassword()), null, null, null, randomString, false, true, roles);
         if(userRegister == null || userService.getUserByEmail(userRegister.getEmail()) != null) {
             check = false;
         }
