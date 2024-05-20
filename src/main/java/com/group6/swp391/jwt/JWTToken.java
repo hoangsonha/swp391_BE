@@ -35,6 +35,7 @@ public class JWTToken {
                 .expiration(exp)
                 .claim("firstName", customUserDetail.getFirstName())
                 .claim("lastName", customUserDetail.getLastName())
+                .claim("role", customUserDetail.getGrantedAuthorities())
                 .signWith(SCRET_KEY)
                 .compact();
     }
