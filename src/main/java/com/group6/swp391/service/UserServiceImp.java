@@ -25,7 +25,7 @@ public class UserServiceImp implements UserService {
     @Override
     public List<User> findAll(String role) {
         List<User> lists = userRepository.findAll();
-        List<User> listsByRole = new ArrayList<>();
+        List<User> listsByRole = userRepository.findAll();
         Role role_admin = roleService.getRoleByRoleName(EnumRoleName.ROLE_ADMIN);
         Role role_manager = roleService.getRoleByRoleName(EnumRoleName.ROLE_MANAGER);
         if(role.equals("manager")) {
@@ -35,7 +35,7 @@ public class UserServiceImp implements UserService {
                         if(list_role.size() > 0) {
                             for(Role ro : list_role) {
                                 if(ro.equals(role_admin)) {
-                                    lists.remove(user);
+                                    listsByRole.remove(user);
                                 }
                             }
                         }
@@ -48,7 +48,7 @@ public class UserServiceImp implements UserService {
                         if(list_role.size() > 0) {
                             for(Role ro : list_role) {
                                 if(ro.equals(role_admin) || ro.equals(role_manager)) {
-                                    lists.remove(user);
+                                    listsByRole.remove(user);
                                 }
                             }
                         }
@@ -57,7 +57,7 @@ public class UserServiceImp implements UserService {
             } else if(role.equals("admin")) {
                     return lists;
                 }
-        return lists;
+        return listsByRole;
     }
 
     @Override
@@ -66,35 +66,16 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public boolean sendVerificationEmail(User user, String siteUrl, String role) throws MessagingException, UnsupportedEncodingException {
+    public boolean sendVerificationEmail(User user, String siteUrl) throws MessagingException, UnsupportedEncodingException {
         if(user.getEmail() == null) {
             return false;
-        }
-        String admin_role = "/api/admin/";
-        String user_role = "/api/user/";
-        String manager_role = "/api/manager/";
-        String staff_role = "/api/staff/";
-
-        String ro = "";
-        if(role.equals("admin")) {
-            ro = admin_role;
-        } else {
-            if(role.equals("manager")) {
-                ro = manager_role;
-            } else {
-                if(role.equals("staff")) {
-                    ro = staff_role;
-                } else {
-                    ro = user_role;
-                }
-            }
         }
 
         String title = "Please verify your registration";
         String senderName = "Group6";
-        String mailContent = "<p>Dear " + user.getLastName() + "<p>";
+        String mailContent = "<p>Dear My Customer<p>";
         mailContent += "<p>Please click the link below to verify your account<p>";
-        String verifyURL = siteUrl + ro + "verify?code=" + user.getCodeVerify();
+        String verifyURL = siteUrl + "/verify?code=" + user.getCodeVerify();
         mailContent += "<h3><a href=\"" + verifyURL + "\">VERIFY<a><h3>";
         mailContent += "<p>Thank you<br>The Group6Team<p>";
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();

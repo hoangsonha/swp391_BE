@@ -24,6 +24,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/swp391/api/admin")
+@CrossOrigin(origins = "*")
 public class AdminController {
 
     @Autowired private UserService userService;
@@ -39,7 +40,7 @@ public class AdminController {
             }
         }
         return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Get all users successfully", lists))
-                : ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ObjectResponse("Failed", "Get all users failed", lists));
+                : ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ObjectResponse("Failed", "Get_all users failed", lists));
     }
 
     @PostMapping("/register")
@@ -53,9 +54,6 @@ public class AdminController {
         } else {
             roles_register.forEach(role -> {
                 switch (role) {
-                    case "admin":
-                        Role admin_role = roleService.getRoleByRoleName(EnumRoleName.ROLE_ADMIN);
-                        roles.add(admin_role);
                     case "manager":
                         Role manager_role = roleService.getRoleByRoleName(EnumRoleName.ROLE_MANAGER);
                         roles.add(manager_role);
@@ -81,17 +79,11 @@ public class AdminController {
             userService.save(user);
             if(!active) {
                 String siteUrl = request.getRequestURL().toString().replace(request.getServletPath(), "");
-                check = userService.sendVerificationEmail(user, siteUrl, "admin");
+                check = userService.sendVerificationEmail(user, siteUrl);
             }
         }
         return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Create account successfully", user))
                 :ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new ObjectResponse("Failed", "Create account failed", user));
     }
 
-    @GetMapping("/verify")
-    public ResponseEntity<ObjectResponse> verifyAccount(@Param("code") String code, Model model) {
-        boolean check = userService.verifyAccount(code);
-        return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Verify account successfully", null))
-                :ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new ObjectResponse("Failed", "Verify account failed", null));
-    }
 }

@@ -34,6 +34,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/swp391/api/manager/**").permitAll()
                         .requestMatchers("/swp391/api/user/**").permitAll()
                         .requestMatchers("/swp391/api/staff/**").permitAll()
+                        .requestMatchers("/*").permitAll()
 //                              .requestMatchers(HttpMethod.POST, "/ues", "/*").permitAll()
                         .anyRequest().authenticated());
 //                .formLogin((login) -> login.loginPage("/login").loginProcessingUrl("/login").usernameParameter("name").passwordParameter("password")

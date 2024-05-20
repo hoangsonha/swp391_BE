@@ -11,7 +11,7 @@ public interface UserService {
 
     public List<User> findAll(String role);
     public void save(User user);
-    public boolean sendVerificationEmail(User user, String siteUrl, String role) throws MessagingException, UnsupportedEncodingException;
+    public boolean sendVerificationEmail(User user, String siteUrl) throws MessagingException, UnsupportedEncodingException;
 
     public boolean verifyAccount(String code);
 

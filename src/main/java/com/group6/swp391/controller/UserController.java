@@ -21,6 +21,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,12 +32,14 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/swp391/api/user")
+@CrossOrigin(origins = "*")
 public class UserController {
 
     @Autowired private UserService userService;
     @Autowired private RoleService roleService;
     @Autowired private AuthenticationManager authenticationManager;
     @Autowired private JWTToken jwtToken;
+    @Autowired private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @PostMapping("/register")
     public ResponseEntity<ObjectResponse> userRegister(@RequestBody UserRegister userRegister, HttpServletRequest request) throws MessagingException, UnsupportedEncodingException {
@@ -46,24 +49,17 @@ public class UserController {
         String randomString = UUID.randomUUID().toString();
         boolean check = true;
 
-        User user = new User(null, null, userRegister.getEmail(), userRegister.getPassword(), null, null, null, randomString, false, true, roles);
+        User user = new User(null, null, userRegister.getEmail(), bCryptPasswordEncoder.encode(userRegister.getPassword()), null, null, null, randomString, false, true, roles);
         if(userRegister == null || userService.getUserByEmail(userRegister.getEmail()) != null) {
             check = false;
         }
         if(check) {
             userService.save(user);
             String siteUrl = request.getRequestURL().toString().replace(request.getServletPath(), "");
-            check = userService.sendVerificationEmail(user, siteUrl, "user");
+            check = userService.sendVerificationEmail(user, siteUrl);
         }
         return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Create account successfully", user))
                 :ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new ObjectResponse("Failed", "Create account failed", user));
-    }
-
-    @GetMapping("/verify")
-    public ResponseEntity<ObjectResponse> verifyAccount(@Param("code") String code, Model model) {
-        boolean check = userService.verifyAccount(code);
-        return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Verify account successfully", null))
-                :ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new ObjectResponse("Failed", "Verify account failed", null));
     }
 
     @PostMapping("/login")
