@@ -1,8 +1,10 @@
 package com.group6.swp391.jwt;
 
+import com.group6.swp391.logout.ListToken;
 import com.group6.swp391.security.CustomUserDetail;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +17,8 @@ import java.util.function.Function;
 
 @Service
 public class JWTToken {
+
+    @Autowired private ListToken listToken;
 
     private SecretKey SCRET_KEY;
     private int JWT_EXPIRATION = 864000000;  // 10 ngay
@@ -50,7 +54,7 @@ public class JWTToken {
                 Jwts.parser().verifyWith(SCRET_KEY).build().parseSignedClaims(token).getPayload());
     }
     public boolean validate(String token) {
-        if(getEmailFromJwt(token) != null && !isExpired(token)) {
+        if(getEmailFromJwt(token) != null && !isExpired(token) && !listToken.isListToken(token)) {
             return true;
         }
         return false;
