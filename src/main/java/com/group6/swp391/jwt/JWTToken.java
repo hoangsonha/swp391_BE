@@ -4,6 +4,7 @@ import com.group6.swp391.security.CustomUserDetail;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -12,7 +13,7 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.function.Function;
 
-@Component
+@Service
 public class JWTToken {
 
     private SecretKey SCRET_KEY;
@@ -40,7 +41,7 @@ public class JWTToken {
                 .compact();
     }
 
-    public String getNameFromJwt(String token) {
+    public String getEmailFromJwt(String token) {
         return getClaims(token, Claims::getSubject);
     }
 
@@ -49,7 +50,7 @@ public class JWTToken {
                 Jwts.parser().verifyWith(SCRET_KEY).build().parseSignedClaims(token).getPayload());
     }
     public boolean validate(String token) {
-        if(getNameFromJwt(token) != null && !isExpired(token)) {
+        if(getEmailFromJwt(token) != null && !isExpired(token)) {
             return true;
         }
         return false;
@@ -58,6 +59,5 @@ public class JWTToken {
     public boolean isExpired(String token) {
         return getClaims(token, Claims::getExpiration).before(new Date(System.currentTimeMillis()));
     }
-
 
 }
