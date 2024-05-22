@@ -70,7 +70,7 @@ public class UserController {
         if(user != null) {
             user.setFirstName(userInformation.getFirstName());
             user.setLastName(userInformation.getLastName());
-            user.setPassword(userInformation.getPassword());
+            user.setPassword(bCryptPasswordEncoder.encode(userInformation.getPassword()));
             user.setAddress(userInformation.getAddress());
             user.setAvata(userInformation.getAvata());
             userService.save(user);
