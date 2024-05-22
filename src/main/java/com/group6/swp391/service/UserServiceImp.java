@@ -161,4 +161,24 @@ public class UserServiceImp implements UserService {
     public User getUserByEmail(String email) {
         return userRepository.getUserByEmail(email);
     }
+
+    @Override
+    public boolean lockedUser(int id) {
+        User user = userRepository.getUserByUserID(id);
+        if(user!=null && user.isLooked()) {
+            userRepository.locked(id);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean deleteUser(int id) {
+        User user = userRepository.getUserByUserID(id);
+        if (user != null) {
+            userRepository.deleteById(id);
+            return true;
+        }
+        return false;
+    }
 }

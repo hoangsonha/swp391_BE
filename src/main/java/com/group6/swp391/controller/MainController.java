@@ -56,7 +56,7 @@ public class MainController {
             boolean check = jwtToken.validate(s);
             return ResponseEntity.status(HttpStatus.OK).body(new TokenResponse("Success", "Login successfully", s));
         } catch(Exception e) {
-            log.error("Cannot login : " + e.toString());
+            log.error("Cannot login : {}", e.toString());
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new TokenResponse("Failed", "Login failed", null));
     }

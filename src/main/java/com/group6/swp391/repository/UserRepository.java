@@ -19,4 +19,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Modifying
     @Query("update user set enabled = true where userID = ?1")
     public void enabled(int userID);
+
+    @Modifying
+    @Query("update user set looked = false where userID = ?1")
+    public void locked(int userID);
 }

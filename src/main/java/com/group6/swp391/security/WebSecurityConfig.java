@@ -59,7 +59,7 @@ public class WebSecurityConfig {
 
 //                .formLogin((login) -> login.loginPage("/login").loginProcessingUrl("/login").usernameParameter("name").passwordParameter("password")
 //                        .defaultSuccessUrl("/admin"))
-//                .logout((logout) -> logout.logoutUrl("/logout").logoutSuccessUrl("/login"));
+
         return httpSecurity.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class).build();
     }
 

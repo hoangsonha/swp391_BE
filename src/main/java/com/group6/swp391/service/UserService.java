@@ -18,4 +18,8 @@ public interface UserService {
     public User getUserByID(int userID);
 
     public User getUserByEmail(String email);
+
+    public boolean lockedUser(int id);
+
+    public boolean deleteUser(int id);
 }
