@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -15,6 +16,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 
@@ -55,6 +57,7 @@ public class WebSecurityConfig {
                         .anyRequest().authenticated())
 
                 .sessionManagement(m -> m.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+//                .oauth2Login(Customizer.withDefaults());
 //                .logout(logout -> logout.logoutUrl("/logout").addLogoutHandler(logoutHandler).logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext()));
 
 //                .formLogin((login) -> login.loginPage("/login").loginProcessingUrl("/login").usernameParameter("name").passwordParameter("password")
@@ -63,7 +66,6 @@ public class WebSecurityConfig {
         return httpSecurity.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class).build();
     }
 
-
     //    @Bean
 //    public AuthenticationProvider authenticationProvider() {
 //        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
@@ -71,4 +73,5 @@ public class WebSecurityConfig {
 //        daoAuthenticationProvider.setPasswordEncoder(bCryptPasswordEncoder());
 //        return daoAuthenticationProvider;
 //    }
+
 }
