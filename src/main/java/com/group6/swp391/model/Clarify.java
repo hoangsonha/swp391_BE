@@ -14,7 +14,7 @@ import lombok.*;
 @Entity
 public class Clarify {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int clarifyID;
     private String clarifyName;
 }
