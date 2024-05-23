@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,6 +31,7 @@ public class AdminController {
     @Autowired private UserService userService;
     @Autowired private RoleService roleService;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/all_users")
     public ResponseEntity<ObjectResponse> getAllUser() {
         List<User> lists = userService.findAll("admin");
@@ -43,6 +45,7 @@ public class AdminController {
                 : ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ObjectResponse("Failed", "Get_all users failed", lists));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/register")
     public ResponseEntity<ObjectResponse> adminRegister(@RequestBody AdminRegister adminRegister, HttpServletRequest request) throws MessagingException, UnsupportedEncodingException {
         String randomString = UUID.randomUUID().toString();
@@ -84,6 +87,22 @@ public class AdminController {
         }
         return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Create account successfully", user))
                 :ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new ObjectResponse("Failed", "Create account failed", user));
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/locked_user/{id}")
+    public ResponseEntity<ObjectResponse> adminLockedAccount(@PathVariable("id") int id) {
+        boolean check = userService.lockedUser(id);
+        return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Lock account successfully", null))
+                :ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new ObjectResponse("Failed", "Lock account failed", null));
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/delete/{id}")
+    public ResponseEntity<ObjectResponse> adminDeleteAccount(@PathVariable("id") int id) {
+        boolean check = userService.deleteUser(id);
+        return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Delete account successfully", null))
+                :ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new ObjectResponse("Failed", "Delete account failed", null));
     }
 
 }

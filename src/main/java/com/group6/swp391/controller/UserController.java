@@ -4,6 +4,7 @@ import com.group6.swp391.jwt.JWTToken;
 import com.group6.swp391.model.EnumRoleName;
 import com.group6.swp391.model.Role;
 import com.group6.swp391.model.User;
+import com.group6.swp391.request.UserInformation;
 import com.group6.swp391.request.UserLogin;
 import com.group6.swp391.request.UserRegister;
 import com.group6.swp391.response.ObjectResponse;
@@ -17,11 +18,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,10 +41,10 @@ public class UserController {
 
     @Autowired private UserService userService;
     @Autowired private RoleService roleService;
-    @Autowired private AuthenticationManager authenticationManager;
-    @Autowired private JWTToken jwtToken;
     @Autowired private BCryptPasswordEncoder bCryptPasswordEncoder;
+    @Autowired private JWTToken jwtToken;
 
+    @PreAuthorize("hasRole('USER')")
     @PostMapping("/register")
     public ResponseEntity<ObjectResponse> userRegister(@RequestBody UserRegister userRegister, HttpServletRequest request) throws MessagingException, UnsupportedEncodingException {
         Set<Role> roles = new HashSet<>();
@@ -62,21 +66,41 @@ public class UserController {
                 :ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new ObjectResponse("Failed", "Create account failed", user));
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<TokenResponse> loginPage(@RequestBody UserLogin userLogin) {
-        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                new UsernamePasswordAuthenticationToken(userLogin.getEmail(), userLogin.getPassword());
-
-        Authentication authentication = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
-
-        CustomUserDetail userDetails = (CustomUserDetail) authentication.getPrincipal();
-        if(userDetails == null) {
-            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new TokenResponse("Failed", "Login failed", null));
+    @PreAuthorize("hasRole('USER')")
+    @PostMapping("/update/{id}")
+    public ResponseEntity<ObjectResponse> userUpdate(@RequestBody UserInformation userInformation, @PathVariable("id") int id) {
+        User user = userService.getUserByID(id);
+        if(user != null) {
+            user.setFirstName(userInformation.getFirstName());
+            user.setLastName(userInformation.getLastName());
+            user.setPassword(bCryptPasswordEncoder.encode(userInformation.getPassword()));
+            user.setAddress(userInformation.getAddress());
+            user.setAvata(userInformation.getAvata());
+            userService.save(user);
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Update account successfully", user));
         }
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String s = jwtToken.generatedToken(userDetails);
-        boolean check = jwtToken.validate(s);
-
-        return ResponseEntity.status(HttpStatus.OK).body(new TokenResponse("Success", "Login successfully", s));
+        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new ObjectResponse("Failed", "Update account failed", null));
     }
+
+    @PreAuthorize("hasRole('USER')")
+    @PostMapping("/login_google")
+    public ResponseEntity<TokenResponse> userLoginWithGoolge(@AuthenticationPrincipal OAuth2User user) {
+        User us = userService.getUserByEmail(user.getAttribute("email"));
+        if(us == null) {
+            String randomString = UUID.randomUUID().toString();
+            Set<Role> roles = new HashSet<>();
+            Role role = roleService.getRoleByRoleName(EnumRoleName.ROLE_USER);
+            roles.add(role);
+            us = new User(user.getAttribute("given_name"), user.getAttribute("family_name"), user.getAttribute("email"), null, null, null, user.getAttribute("picture"), randomString, user.getAttribute("email_verified"), true, roles);
+            userService.save(us);
+            CustomUserDetail customUserDetail = CustomUserDetail.mapUserToUserDetail(us);
+            String s = jwtToken.generatedToken(customUserDetail);
+            return ResponseEntity.status(HttpStatus.OK).body(new TokenResponse("Success", "Login account successfully", s));
+        }
+        CustomUserDetail customUserDetail = CustomUserDetail.mapUserToUserDetail(us);
+        String s = jwtToken.generatedToken(customUserDetail);
+        return ResponseEntity.status(HttpStatus.OK).body(new TokenResponse("Success", "Login account successfully", s));
+    }
+
+
 }

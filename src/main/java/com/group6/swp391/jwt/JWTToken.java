@@ -1,9 +1,12 @@
 package com.group6.swp391.jwt;
 
+import com.group6.swp391.logout.ListToken;
 import com.group6.swp391.security.CustomUserDetail;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -12,8 +15,10 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.function.Function;
 
-@Component
+@Service
 public class JWTToken {
+
+    @Autowired private ListToken listToken;
 
     private SecretKey SCRET_KEY;
     private int JWT_EXPIRATION = 864000000;  // 10 ngay
@@ -35,11 +40,12 @@ public class JWTToken {
                 .expiration(exp)
                 .claim("firstName", customUserDetail.getFirstName())
                 .claim("lastName", customUserDetail.getLastName())
+                .claim("role", customUserDetail.getGrantedAuthorities())
                 .signWith(SCRET_KEY)
                 .compact();
     }
 
-    public String getNameFromJwt(String token) {
+    public String getEmailFromJwt(String token) {
         return getClaims(token, Claims::getSubject);
     }
 
@@ -48,7 +54,7 @@ public class JWTToken {
                 Jwts.parser().verifyWith(SCRET_KEY).build().parseSignedClaims(token).getPayload());
     }
     public boolean validate(String token) {
-        if(getNameFromJwt(token) != null && !isExpired(token)) {
+        if(getEmailFromJwt(token) != null && !isExpired(token) && !listToken.isListToken(token)) {
             return true;
         }
         return false;
@@ -57,6 +63,5 @@ public class JWTToken {
     public boolean isExpired(String token) {
         return getClaims(token, Claims::getExpiration).before(new Date(System.currentTimeMillis()));
     }
-
 
 }

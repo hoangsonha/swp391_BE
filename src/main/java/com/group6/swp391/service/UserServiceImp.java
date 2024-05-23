@@ -71,19 +71,72 @@ public class UserServiceImp implements UserService {
             return false;
         }
 
+        String verifyURL = siteUrl + "/verify?code=" + user.getCodeVerify();
+
+        String mai = "<body \n" +
+                "    style=\"font-family: Arial, sans-serif;\n" +
+                "            background-color: #f4f4f4;\n" +
+                "            margin: 0;\n" +
+                "            padding: 0;\n" +
+                "            -webkit-text-size-adjust: none;\n" +
+                "            -ms-text-size-adjust: none;\">\n" +
+                "    <div class=\"email-container\"\n" +
+                "         style=\"max-width: 600px;\n" +
+                "                margin: auto;\n" +
+                "                background-color: #ffffff;\n" +
+                "                padding: 20px;\n" +
+                "                border-radius: 8px;\n" +
+                "                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);\">\n" +
+                "        <div class=\"header\"\n" +
+                "             style=\"text-align: center;\n" +
+                "                    padding-bottom: 20px;\">\n" +
+                "            <img src=\"https://firebasestorage.googleapis.com/v0/b/diamond-6401b.appspot.com/o/Logo.png?alt=media&token=13f983ed-b3e1-4bbe-83b2-a47edf62c6a6\"\n" +
+                "                alt=\"Logo\" style=\"max-width: 300px;\">\n" +
+                "        </div>\n" +
+                "        <div class=\"content\"\n" +
+                "              style=\"text-align: center;\n" +
+                "                    color: #333333;\">\n" +
+                "            <h1\n" +
+                "            style=\"font-size: 24px;\n" +
+                "                margin: 0;\n" +
+                "                padding: 0;\"\n" +
+                "            >Verify your email address</h1>\n" +
+                "            <p\n" +
+                "            style=\"font-size: 16px;\n" +
+                "                    line-height: 1.5;\">Welcome to Group 6 Diamond.</p>\n" +
+                "            <p\n" +
+                "            style=\"font-size: 16px;\n" +
+                "                line-height: 1.5;\">Please click the button below to confirm your email address and activate your account.</p>\n" +
+                "            <a href=\"" + verifyURL + "\" class=\"btn\"\n" +
+                "               style=\"display: inline-block;\n" +
+                "               margin-top: 20px;\n" +
+                "               padding: 15px 25px;\n" +
+                "               font-size: 16px;\n" +
+                "               color: #ffffff;\n" +
+                "               background-color: #f52d56;\n" +
+                "               border-radius: 5px;\n" +
+                "               text-decoration: none;\">Confirm Email</a>\n" +
+                "            <p>If you received this email in error, simply ignore this email and do not click the button.</p>\n" +
+                "        </div>\n" +
+                "        <div class=\"footer\"\n" +
+                "             style=\"text-align: center;\n" +
+                "             font-size: 14px;\n" +
+                "             color: #777777;\n" +
+                "             margin-top: 20px;\">\n" +
+                "            <p>Copyright &copy; 2019, YOUWORK.TODAY INC</p>\n" +
+                "            <h2>Thank you, have a good day .</h2></br>Group6 Team\n" +
+                "        </div>\n" +
+                "    </div>\n" +
+                "</body>";
+
         String title = "Please verify your registration";
         String senderName = "Group6";
-        String mailContent = "<p>Dear My Customer<p>";
-        mailContent += "<p>Please click the link below to verify your account<p>";
-        String verifyURL = siteUrl + "/verify?code=" + user.getCodeVerify();
-        mailContent += "<h3><a href=\"" + verifyURL + "\">VERIFY<a><h3>";
-        mailContent += "<p>Thank you<br>The Group6Team<p>";
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
         helper.setFrom("hoangsonhadiggory@gmail.com", senderName);
         helper.setTo(user.getEmail());
         helper.setSubject(title);
-        helper.setText(mailContent, true);
+        helper.setText(mai, true);
 
         javaMailSender.send(mimeMessage);
         return true;
@@ -107,5 +160,25 @@ public class UserServiceImp implements UserService {
     @Override
     public User getUserByEmail(String email) {
         return userRepository.getUserByEmail(email);
+    }
+
+    @Override
+    public boolean lockedUser(int id) {
+        User user = userRepository.getUserByUserID(id);
+        if(user!=null && user.isLooked()) {
+            userRepository.locked(id);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean deleteUser(int id) {
+        User user = userRepository.getUserByUserID(id);
+        if (user != null) {
+            userRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
 }
