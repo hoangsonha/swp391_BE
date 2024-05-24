@@ -2,6 +2,7 @@ package com.group6.swp391.security;
 
 import com.group6.swp391.jwt.JWTAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,6 +20,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.web.client.RestTemplate;
 
 @Configuration
 @EnableWebSecurity
@@ -26,6 +28,8 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 public class WebSecurityConfig {
 
     @Autowired private CustomUserDetailService customUserDetailService;
+
+    @Autowired private CustomOAuth2AuthenticationSuccessHandler customOAuth2AuthenticationSuccessHandler;
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
@@ -56,8 +60,8 @@ public class WebSecurityConfig {
 //                              .requestMatchers(HttpMethod.POST, "/ues", "/*").permitAll()
                         .anyRequest().authenticated())
 
-                .sessionManagement(m -> m.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-//                .oauth2Login(Customizer.withDefaults());
+//                .sessionManagement(m -> m.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                  .oauth2Login(oauth2 -> oauth2.successHandler(customOAuth2AuthenticationSuccessHandler));
 //                .logout(logout -> logout.logoutUrl("/logout").addLogoutHandler(logoutHandler).logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext()));
 
 //                .formLogin((login) -> login.loginPage("/login").loginProcessingUrl("/login").usernameParameter("name").passwordParameter("password")
@@ -73,5 +77,10 @@ public class WebSecurityConfig {
 //        daoAuthenticationProvider.setPasswordEncoder(bCryptPasswordEncoder());
 //        return daoAuthenticationProvider;
 //    }
+
+    @Bean
+    public RestTemplate restTemplate(RestTemplateBuilder builder) {
+        return builder.build();
+    }
 
 }

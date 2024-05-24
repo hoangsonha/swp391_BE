@@ -2,6 +2,9 @@ package com.group6.swp391.controller;
 
 import com.group6.swp391.jwt.JWTToken;
 import com.group6.swp391.logout.ListToken;
+import com.group6.swp391.model.EnumRoleName;
+import com.group6.swp391.model.Role;
+import com.group6.swp391.model.User;
 import com.group6.swp391.request.UserLogin;
 import com.group6.swp391.response.ObjectResponse;
 import com.group6.swp391.response.TokenResponse;
@@ -9,6 +12,7 @@ import com.group6.swp391.security.CustomUserDetail;
 import com.group6.swp391.service.RoleService;
 import com.group6.swp391.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
@@ -17,10 +21,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -37,27 +48,33 @@ public class MainController {
     public ResponseEntity<ObjectResponse> verifyAccount(@Param("code") String code, Model model) {
         boolean check = userService.verifyAccount(code);
         return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Verify account successfully", null))
-                :ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new ObjectResponse("Failed", "Verify account failed", null));
+                :ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Verify account failed", null));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<TokenResponse> loginPage(@RequestBody UserLogin userLogin) {
+    public ResponseEntity<TokenResponse> loginPage(@RequestBody UserLogin userLogin, HttpServletRequest request, HttpServletResponse response) {
         try {
-            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                    new UsernamePasswordAuthenticationToken(userLogin.getEmail(), userLogin.getPassword());
+            String gRecaptchaResponse = request.getParameter("g-recaptcha-response");
+            boolean check_captcha = userService.verifyRecaptcha(gRecaptchaResponse);
+            if(check_captcha) {
+                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+                        new UsernamePasswordAuthenticationToken(userLogin.getEmail(), userLogin.getPassword());
 
-            Authentication authentication = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
+                Authentication authentication = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
 
-            CustomUserDetail userDetails = (CustomUserDetail) authentication.getPrincipal();
+                CustomUserDetail userDetails = (CustomUserDetail) authentication.getPrincipal();
 
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            String s = jwtToken.generatedToken(userDetails);
-            boolean check = jwtToken.validate(s);
-            return ResponseEntity.status(HttpStatus.OK).body(new TokenResponse("Success", "Login successfully", s));
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+                String s = jwtToken.generatedToken(userDetails);
+                boolean check = jwtToken.validate(s);
+                return ResponseEntity.status(HttpStatus.OK).body(new TokenResponse("Success", "Login successfully", s));
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new TokenResponse("Failed", "Login failed", null));
+            }
         } catch(Exception e) {
             log.error("Cannot login : {}", e.toString());
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new TokenResponse("Failed", "Login failed", null));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new TokenResponse("Failed", "Login failed", null));
     }
 
     @PostMapping("/logout")
@@ -74,4 +91,31 @@ public class MainController {
         }
         return null;
     }
+
+
+//=-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//    @PostMapping("/login_google")
+//    public ResponseEntity<TokenResponse> userLoginWithGoolge(@AuthenticationPrincipal OAuth2User user, HttpServletResponse response) throws IOException {
+//        User us = userService.getUserByEmail(user.getAttribute("email"));
+//        if(us == null) {
+//            String randomString = UUID.randomUUID().toString();
+//            Set<Role> roles = new HashSet<>();
+//            Role role = roleService.getRoleByRoleName(EnumRoleName.ROLE_USER);
+//            roles.add(role);
+//            us = new User(user.getAttribute("given_name"), user.getAttribute("family_name"), user.getAttribute("email"), null, null, null, user.getAttribute("picture"), randomString, user.getAttribute("email_verified"), true, roles);
+//            userService.save(us);
+//            CustomUserDetail customUserDetail = CustomUserDetail.mapUserToUserDetail(us);
+//            String s = jwtToken.generatedToken(customUserDetail);
+//            return ResponseEntity.status(HttpStatus.OK).body(new TokenResponse("Success", "Login account successfully", s));
+//        }
+//        CustomUserDetail customUserDetail = CustomUserDetail.mapUserToUserDetail(us);
+//        String s = jwtToken.generatedToken(customUserDetail);
+//
+//        response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+//
+//        return ResponseEntity.status(HttpStatus.OK).body(new TokenResponse("Success", "Login account successfully", s));
+//    }
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
 }

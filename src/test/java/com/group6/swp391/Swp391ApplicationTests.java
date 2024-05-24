@@ -12,7 +12,7 @@ class Swp391ApplicationTests {
     @Autowired private BCryptPasswordEncoder bCryptPasswordEncoder;
     @Test
     void contextLoads() {
-        System.out.println(bCryptPasswordEncoder.encode("123"));
+        System.out.println(bCryptPasswordEncoder.encode("1"));
     }
 
 }

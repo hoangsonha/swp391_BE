@@ -4,12 +4,20 @@ import com.group6.swp391.model.EnumRoleName;
 import com.group6.swp391.model.Role;
 import com.group6.swp391.model.User;
 import com.group6.swp391.repository.UserRepository;
+import com.group6.swp391.response.RecaptchaResponse;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -18,9 +26,17 @@ import java.util.List;
 @Service
 public class UserServiceImp implements UserService {
 
+    @Value(value = "${recaptcha.secretKey}")
+    private String recaptchaSecretKey;
+
+
+    @Value(value = "${recaptcha.url}")
+    private String recaptchaUrl;
+
     @Autowired private UserRepository userRepository;
     @Autowired private RoleService roleService;
     @Autowired private JavaMailSender javaMailSender;
+    @Autowired private RestTemplate restTemplate;
 
     @Override
     public List<User> findAll(String role) {
@@ -180,5 +196,21 @@ public class UserServiceImp implements UserService {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public boolean verifyRecaptcha(String gRecaptchaResponse) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+        map.add("secret", recaptchaSecretKey); // Thay chỗ này sẽ ra error
+        map.add("response", gRecaptchaResponse);
+
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
+
+        RecaptchaResponse response = restTemplate.postForObject(recaptchaUrl, request, RecaptchaResponse.class);
+        // gửi object tới url này rồi trả về đối tượng .class
+        return response.isSuccess();
     }
 }
