@@ -73,12 +73,11 @@
             <scope>runtime</scope>
         </dependency>
 
-
-        <!-- doc api -->
+        <!-- https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api (gưi SMS) -->
         <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>2.3.0</version>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.3.1</version>
         </dependency>
 
         <dependency>

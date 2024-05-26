@@ -2,36 +2,37 @@ package com.group6.swp391.controller;
 
 import com.group6.swp391.jwt.JWTToken;
 import com.group6.swp391.logout.ListToken;
-import com.group6.swp391.model.EnumRoleName;
-import com.group6.swp391.model.Role;
-import com.group6.swp391.model.User;
+import com.group6.swp391.request.OTPRequest;
+import com.group6.swp391.request.OTPValidationRequest;
 import com.group6.swp391.request.UserLogin;
 import com.group6.swp391.response.ObjectResponse;
 import com.group6.swp391.response.TokenResponse;
 import com.group6.swp391.security.CustomUserDetail;
 import com.group6.swp391.service.RoleService;
 import com.group6.swp391.service.UserService;
+import com.group6.swp391.sms.SpeedSMSAPI;
+import com.nimbusds.oauth2.sdk.http.HTTPRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.net.http.HttpResponse;
+
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -43,6 +44,8 @@ public class MainController {
     @Autowired private JWTToken jwtToken;
     @Autowired private AuthenticationManager authenticationManager;
     @Autowired private ListToken listToken;
+
+    private static Logger logger = LoggerFactory.getLogger(MainController.class);
 
     @GetMapping("/verify")
     public ResponseEntity<ObjectResponse> verifyAccount(@Param("code") String code, Model model) {
@@ -72,7 +75,7 @@ public class MainController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new TokenResponse("Failed", "Login failed", null));
             }
         } catch(Exception e) {
-            log.error("Cannot login : {}", e.toString());
+            logger.error("Cannot login : {}", e.toString());
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new TokenResponse("Failed", "Login failed", null));
     }
@@ -90,6 +93,20 @@ public class MainController {
             return s.substring(7);
         }
         return null;
+    }
+
+    @PostMapping("/forget_password")
+    public ResponseEntity<ObjectResponse> otpPage(@RequestBody OTPRequest otpRequest) {
+        boolean check = userService.sendSMS(otpRequest);
+        return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Login successfully", null))
+                : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Login failed", null));
+    }
+
+    @PostMapping("/validationOTP")
+    public ResponseEntity<ObjectResponse> otpPage(@RequestBody OTPValidationRequest otpValidationRequest) {
+       boolean check = userService.validateOTP(otpValidationRequest);
+       return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Login successfully", null))
+                    : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Login failed", null));
     }
 
 

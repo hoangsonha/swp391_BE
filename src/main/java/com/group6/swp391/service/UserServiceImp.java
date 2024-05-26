@@ -4,9 +4,13 @@ import com.group6.swp391.model.EnumRoleName;
 import com.group6.swp391.model.Role;
 import com.group6.swp391.model.User;
 import com.group6.swp391.repository.UserRepository;
+import com.group6.swp391.request.OTPRequest;
+import com.group6.swp391.request.OTPValidationRequest;
 import com.group6.swp391.response.RecaptchaResponse;
+import com.group6.swp391.sms.SpeedSMSAPI;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -18,20 +22,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
+@Slf4j
 public class UserServiceImp implements UserService {
 
     @Value(value = "${recaptcha.secretKey}")
     private String recaptchaSecretKey;
 
-
     @Value(value = "${recaptcha.url}")
     private String recaptchaUrl;
+
+    private Map<String, String> otpMap = new HashMap<>();
 
     @Autowired private UserRepository userRepository;
     @Autowired private RoleService roleService;
@@ -212,5 +216,49 @@ public class UserServiceImp implements UserService {
         RecaptchaResponse response = restTemplate.postForObject(recaptchaUrl, request, RecaptchaResponse.class);
         // gửi object tới url này rồi trả về đối tượng .class
         return response.isSuccess();
+    }
+
+    @Override
+    public boolean sendSMS(OTPRequest otpRequest) {
+        try {
+            String phone = otpRequest.getPhone();
+            String sender = "07eda63bd942bf35";
+            int type = 5;
+            SpeedSMSAPI api  = new SpeedSMSAPI("BeAfmVJjdj9CrAhg7oU49zqMpC9pV83r");
+            String otp = generateOTP();
+            String OTPmessage = "Dear Customer, Absolutely do not provide this authentication code to anyone. Enter OTP code: " + otp + " to confirm the password";
+            String result = api.sendSMS(phone, OTPmessage, type, sender);
+//          String userInfo = api.getUserInfo();
+            otpMap.put(otpRequest.getPhone(), otp);
+            return true;
+        } catch(Exception e) {
+            log.error("Error at sendSMS : {}", e.toString());
+            return false;
+        }
+
+    }
+
+    public boolean validateOTP(OTPValidationRequest otpValidationRequest) {
+        Set<String> keys = otpMap.keySet();
+        String phone = null;
+        for(String key : keys) {
+            phone = key;
+        }
+        if(otpValidationRequest.getPhone().equals(phone) && otpMap.get(phone).equals(otpValidationRequest.getOtp())) {
+            otpMap.remove(phone, otpValidationRequest.getOtp());
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private String generateOTP() {
+        Random random = new Random();
+        int otpRD = random.nextInt(999999);
+        String otp = String.valueOf(otpRD);
+        while(otp.length() < 6) {
+            otp = '0' + otp;
+        }
+        return otp;
     }
 }
