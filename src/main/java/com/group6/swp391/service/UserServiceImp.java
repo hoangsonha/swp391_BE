@@ -204,7 +204,7 @@ public class UserServiceImp implements UserService {
             String phone = otpRequest.getPhone();
             int type = 5;
             String otp = generatedNumber();
-            String content = "Dear Customer, Absolutely do not provide this authentication C0de to anyone. Enter OTP code" + otp + " to confirm the password";
+            String content = "Dear Customer, Absolutely do not provide this authentication Code to anyone. Enter OTP code" + otp + " to reset the password";
             String sender = "07eda63bd942bf35";
             SpeedSMSAPI api = new SpeedSMSAPI("BeAfmVJjdj9CrAhg7oU49zqMpC9pV83r");
             String result = api.sendSMS(phone, content, type, sender);

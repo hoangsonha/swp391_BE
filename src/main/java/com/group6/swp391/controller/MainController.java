@@ -63,9 +63,9 @@ public class MainController {
     @PostMapping("/login")
     public ResponseEntity<TokenResponse> loginPage(@RequestBody UserLogin userLogin, HttpServletRequest request, HttpServletResponse response) {
         try {
-//            String gRecaptchaResponse = request.getParameter("g-recaptcha-response");
-//            boolean check_captcha = userService.verifyRecaptcha(gRecaptchaResponse);
-//            if(check_captcha) {
+            String gRecaptchaResponse = request.getParameter("g-recaptcha-response");
+            boolean check_captcha = userService.verifyRecaptcha(gRecaptchaResponse);
+            if(check_captcha) {
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                         new UsernamePasswordAuthenticationToken(userLogin.getEmail(), userLogin.getPassword());
 
@@ -77,9 +77,9 @@ public class MainController {
                 String s = jwtToken.generatedToken(userDetails);
                 boolean check = jwtToken.validate(s);
                 return ResponseEntity.status(HttpStatus.OK).body(new TokenResponse("Success", "Login successfully", s));
-//            } else {
-//                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new TokenResponse("Failed", "Login failed", null));
-//            }
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new TokenResponse("Failed", "Login failed", null));
+            }
         } catch(Exception e) {
             log.error("Cannot login : {}", e.toString());
         }
