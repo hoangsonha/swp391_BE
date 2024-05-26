@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -20,8 +19,8 @@ public class Role {
     private int roleID;
     @Enumerated(EnumType.STRING)
     private EnumRoleName roleName;
-    @ManyToMany(mappedBy = "roles")
-    @JsonBackReference
+
+    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<User> users = new HashSet<>();
     public Role(EnumRoleName roleName, Set<User> users) {
         this.roleName = roleName;
