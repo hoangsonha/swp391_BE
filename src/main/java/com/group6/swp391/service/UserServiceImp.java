@@ -206,7 +206,7 @@ public class UserServiceImp implements UserService {
 //            String otp = generatedNumber();
 //            String content = "Dear Customer, Absolutely do not provide this authentication Code to anyone. Enter OTP code" + otp + " to reset the password";
 //            String sender = "07eda63bd942bf35";
-//            SpeedSMSAPI api = new SpeedSMSAPI("BeAfmVJjdj9CrAhg7oU49zqMpC9pV83r");
+//            SpeedSMSAPI api = new SpeedSMSAPI("BeAfmV");
 //            String result = api.sendSMS(phone, content, type, sender);
 //            otpMap.put(phone, otp);
             //System.out.println(result);
