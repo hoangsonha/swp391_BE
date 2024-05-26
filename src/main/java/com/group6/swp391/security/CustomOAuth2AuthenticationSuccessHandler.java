@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -41,7 +42,9 @@ public class CustomOAuth2AuthenticationSuccessHandler extends SimpleUrlAuthentic
             } else {
                 String randomString = UUID.randomUUID().toString();
                 Role role = roleRepository.getRoleByRoleName(EnumRoleName.ROLE_USER);
-                user = new User(oauth2User.getAttribute("given_name"), oauth2User.getAttribute("family_name"), oauth2User.getAttribute("email"), null, null, null, oauth2User.getAttribute("picture"), randomString, oauth2User.getAttribute("email_verified"), true, role);
+
+                BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+                user = new User(oauth2User.getAttribute("given_name"), oauth2User.getAttribute("family_name"), oauth2User.getAttribute("email"), passwordEncoder.encode(oauth2User.getAttribute("email")), null, null, oauth2User.getAttribute("picture"), randomString, oauth2User.getAttribute("email_verified"), true, role);
                 userRepository.save(user);
                 CustomUserDetail customUserDetail = CustomUserDetail.mapUserToUserDetail(user);
                 String token = jwtToken.generatedToken(customUserDetail);
