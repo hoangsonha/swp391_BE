@@ -32,4 +32,5 @@ public interface UserService {
     public boolean sendSMS(OTPRequest otpRequest);
 
     public boolean validateOTP(OTPValidationRequest otpValidationRequest);
+
 }

@@ -18,5 +18,5 @@ public class AdminRegister {
     private String phone;
     private String address;
     private String avata;
-    private Set<String> roles;
+    private String role;
 }

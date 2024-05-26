@@ -5,6 +5,8 @@ import com.group6.swp391.logout.ListToken;
 import com.group6.swp391.model.EnumRoleName;
 import com.group6.swp391.model.Role;
 import com.group6.swp391.model.User;
+import com.group6.swp391.request.OTPRequest;
+import com.group6.swp391.request.OTPValidationRequest;
 import com.group6.swp391.request.UserLogin;
 import com.group6.swp391.response.ObjectResponse;
 import com.group6.swp391.response.TokenResponse;
@@ -13,6 +15,7 @@ import com.group6.swp391.service.RoleService;
 import com.group6.swp391.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
@@ -30,6 +33,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -44,6 +48,11 @@ public class MainController {
     @Autowired private AuthenticationManager authenticationManager;
     @Autowired private ListToken listToken;
 
+    @GetMapping("/all")
+    public List<User> getAll() {
+        return userService.findAll("admin");
+    }
+
     @GetMapping("/verify")
     public ResponseEntity<ObjectResponse> verifyAccount(@Param("code") String code, Model model) {
         boolean check = userService.verifyAccount(code);
@@ -54,9 +63,9 @@ public class MainController {
     @PostMapping("/login")
     public ResponseEntity<TokenResponse> loginPage(@RequestBody UserLogin userLogin, HttpServletRequest request, HttpServletResponse response) {
         try {
-            String gRecaptchaResponse = request.getParameter("g-recaptcha-response");
-            boolean check_captcha = userService.verifyRecaptcha(gRecaptchaResponse);
-            if(check_captcha) {
+//            String gRecaptchaResponse = request.getParameter("g-recaptcha-response");
+//            boolean check_captcha = userService.verifyRecaptcha(gRecaptchaResponse);
+//            if(check_captcha) {
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                         new UsernamePasswordAuthenticationToken(userLogin.getEmail(), userLogin.getPassword());
 
@@ -68,9 +77,9 @@ public class MainController {
                 String s = jwtToken.generatedToken(userDetails);
                 boolean check = jwtToken.validate(s);
                 return ResponseEntity.status(HttpStatus.OK).body(new TokenResponse("Success", "Login successfully", s));
-            } else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new TokenResponse("Failed", "Login failed", null));
-            }
+//            } else {
+//                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new TokenResponse("Failed", "Login failed", null));
+//            }
         } catch(Exception e) {
             log.error("Cannot login : {}", e.toString());
         }
@@ -92,6 +101,21 @@ public class MainController {
         return null;
     }
 
+    @PostMapping("/forget_password")
+    public ResponseEntity<ObjectResponse> getForgetPassword(@RequestBody OTPRequest otpRequest) {
+        boolean check = userService.sendSMS(otpRequest);
+        return check ?
+                ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Sent otp successfully", null))
+                : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Sent OTP failed", null));
+    }
+
+    @PostMapping("/validationOTP")
+    public ResponseEntity<ObjectResponse> getValidationOTP(@RequestBody OTPValidationRequest otpValidationRequest) {
+        boolean check = userService.validateOTP(otpValidationRequest);
+        return check ?
+                ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Authentication successfully", null))
+                : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Authentication failed", null));
+    }
 
 //=-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //    @PostMapping("/login_google")

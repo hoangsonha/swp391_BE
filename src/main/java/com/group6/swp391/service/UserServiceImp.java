@@ -4,7 +4,10 @@ import com.group6.swp391.model.EnumRoleName;
 import com.group6.swp391.model.Role;
 import com.group6.swp391.model.User;
 import com.group6.swp391.repository.UserRepository;
+import com.group6.swp391.request.OTPRequest;
+import com.group6.swp391.request.OTPValidationRequest;
 import com.group6.swp391.response.RecaptchaResponse;
+import com.group6.swp391.sms.SpeedSMSAPI;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +23,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class UserServiceImp implements UserService {
@@ -29,9 +31,10 @@ public class UserServiceImp implements UserService {
     @Value(value = "${recaptcha.secretKey}")
     private String recaptchaSecretKey;
 
-
     @Value(value = "${recaptcha.url}")
     private String recaptchaUrl;
+
+    private Map<String, String> otpMap = new HashMap<>();
 
     @Autowired private UserRepository userRepository;
     @Autowired private RoleService roleService;
@@ -43,34 +46,15 @@ public class UserServiceImp implements UserService {
         List<User> lists = userRepository.findAll();
         List<User> listsByRole = userRepository.findAll();
         Role role_admin = roleService.getRoleByRoleName(EnumRoleName.ROLE_ADMIN);
-        Role role_manager = roleService.getRoleByRoleName(EnumRoleName.ROLE_MANAGER);
-        if(role.equals("manager")) {
-                for(User user : lists) {
-                    List<Role> list_role = user.getRoles().stream().toList();
-                    if(list_role != null) {
-                        if(list_role.size() > 0) {
-                            for(Role ro : list_role) {
-                                if(ro.equals(role_admin)) {
-                                    listsByRole.remove(user);
-                                }
-                            }
-                        }
-                    }
+        Role role_delivery = roleService.getRoleByRoleName(EnumRoleName.ROLE_DELIVERY);
+
+        if(role.equals("staff")) {
+            for (User user : lists) {
+                if (user.getRole().equals(role_admin) || user.getRole().equals(role_delivery)) {
+                    listsByRole.remove(user);
                 }
-            } else if(role.equals("staff")) {
-                for(User user : lists) {
-                    List<Role> list_role = user.getRoles().stream().toList();
-                    if(list_role != null) {
-                        if(list_role.size() > 0) {
-                            for(Role ro : list_role) {
-                                if(ro.equals(role_admin) || ro.equals(role_manager)) {
-                                    listsByRole.remove(user);
-                                }
-                            }
-                        }
-                    }
-                }
-            } else if(role.equals("admin")) {
+            }
+        } else if(role.equals("admin")) {
                     return lists;
                 }
         return listsByRole;
@@ -87,7 +71,7 @@ public class UserServiceImp implements UserService {
             return false;
         }
 
-        String verifyURL = siteUrl + "/verify?code=" + user.getCodeVerify();
+        String verifyURL = siteUrl + "/public/verify?code=" + user.getCodeVerify();
 
         String mai = "<body \n" +
                 "    style=\"font-family: Arial, sans-serif;\n" +
@@ -212,5 +196,49 @@ public class UserServiceImp implements UserService {
         RecaptchaResponse response = restTemplate.postForObject(recaptchaUrl, request, RecaptchaResponse.class);
         // gửi object tới url này rồi trả về đối tượng .class
         return response.isSuccess();
+    }
+
+    @Override
+    public boolean sendSMS(OTPRequest otpRequest) {
+        try {
+            String phone = otpRequest.getPhone();
+            int type = 5;
+            String otp = generatedNumber();
+            String content = "Dear Customer, Absolutely do not provide this authentication C0de to anyone. Enter OTP code" + otp + " to confirm the password";
+            String sender = "07eda63bd942bf35";
+            SpeedSMSAPI api = new SpeedSMSAPI("BeAfmVJjdj9CrAhg7oU49zqMpC9pV83r");
+            String result = api.sendSMS(phone, content, type, sender);
+            otpMap.put(phone, otp);
+            //System.out.println(result);
+            return true;
+            } catch (Exception e) {
+
+                return false;
+            }
+    }
+
+    public String generatedNumber() {
+        Random random = new Random();
+        int otpRD = random.nextInt(999999);
+        String otp = String.valueOf(otpRD);
+        while(otp.length() < 6) {
+            otp = '0' + otp;
+        }
+        return otp;
+    }
+
+    @Override
+    public boolean validateOTP(OTPValidationRequest otpValidationRequest) {
+        Set<String> set = otpMap.keySet();
+        String phone = null;
+        for(String s : set) {
+            phone = s;
+        }
+        if(otpValidationRequest.getPhone().equals(phone) && otpMap.get(phone).equals(otpValidationRequest.getOtp())) {
+            otpMap.remove(phone);
+            return true;
+        } else {
+            return false;
+        }
     }
 }

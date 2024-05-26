@@ -19,8 +19,8 @@ public class Role {
     private int roleID;
     @Enumerated(EnumType.STRING)
     private EnumRoleName roleName;
-
-    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference
+    @OneToMany(mappedBy = "role")
     private Set<User> users = new HashSet<>();
     public Role(EnumRoleName roleName, Set<User> users) {
         this.roleName = roleName;
