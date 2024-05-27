@@ -12,6 +12,6 @@ public class UserInformation {
     private String firstName;
     private String lastName;
     private String password;
-    private String avatar;
+    private String avata;
     private String address;
 }
