@@ -15,20 +15,20 @@ import java.util.List;
 public class Diamond {
     @Id
     @Column(name = "diamond_id", nullable = false, length = 30)
-    private char diamondID;
+    private int diamondID;
 
     @Column(name = "diamond_name", nullable = false, length = 200)
     private String diamondName;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "warranty_card_id", referencedColumnName = "warranty_card_id")
+    @JoinColumn(name = "warranty_card_id", referencedColumnName = "warranty_card_id", unique = true)
     private WarrantyCard warrantyCard;
 
     @Column(name = "brand")
     private String brand;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "gem_id", referencedColumnName = "gem_id")
+    @JoinColumn(name = "gem_id", referencedColumnName = "gem_id", unique = true)
     private Gem gem;
 
     @Column(name = "image")
@@ -37,7 +37,7 @@ public class Diamond {
     @Column(name = "certificate_number")
     private int certificateNumber;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "flourescence_id", referencedColumnName = "flourescence_id")
     private Flourescence flourescence;
 
@@ -46,6 +46,9 @@ public class Diamond {
 
     @Column(name = "input_date")
     private Date inputDate;
+
+    @Column(name = "status")
+    private boolean status;
 
     public Diamond(String diamondName, WarrantyCard warrantyCard, String brand, Gem gem, String image, int certificateNumber, Flourescence flourescence, List<ChangePrice> priceChanges, Date inputDate) {
         this.diamondName = diamondName;

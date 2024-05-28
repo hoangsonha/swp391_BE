@@ -3,6 +3,8 @@ package com.group6.swp391.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Date;
+
 @Entity
 @Getter
 @Setter
@@ -30,6 +32,9 @@ public class ChangePrice {
 
     @Column(name = "wage", nullable = false)
     private double wage;
+
+    @Column(name = "change_date")
+    private Date changeDate;
 
     public ChangePrice(double originPrice, double changePrice, double ratio, double wage) {
         this.originPrice = originPrice;

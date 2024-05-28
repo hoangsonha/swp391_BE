@@ -50,6 +50,13 @@ public class Product extends BaseEntity {
     @Column(name = "rating")
     private double rating;
 
+    @Column(name = "status")
+    private boolean status;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "warranty_card_id", unique = true)
+    private WarrantyCard warrantyCard;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "product_size", joinColumns = @JoinColumn(name = "product_id"), inverseJoinColumns = @JoinColumn(name = "size_id"))
     private Set<Size> sizes = new HashSet<>();

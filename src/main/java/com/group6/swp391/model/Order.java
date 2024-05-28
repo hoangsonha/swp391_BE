@@ -27,6 +27,9 @@ public class Order {
 
     private int quantity;
 
+    @Column(name = "full_name", nullable = false)
+    private String fullName;
+
     @Column(name = "address_shipping", nullable = false)
     private String addressShipping;
 

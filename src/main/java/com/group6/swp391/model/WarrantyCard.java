@@ -27,9 +27,6 @@ public class WarrantyCard {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne
-    private Product product;
-
     public WarrantyCard(Date purchaseDate, Date expirationDate, User user) {
         this.purchaseDate = purchaseDate;
         this.expirationDate = expirationDate;
