@@ -25,7 +25,7 @@ public class WarrantyCard {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private User user ;
 
     public WarrantyCard(Date purchaseDate, Date expirationDate, User user) {
         this.purchaseDate = purchaseDate;

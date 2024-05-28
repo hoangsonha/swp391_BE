@@ -24,6 +24,7 @@ import java.util.UUID;
 
 @Configuration
 public class CustomOAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
+
     @Autowired private UserRepository userRepository;
     @Autowired private RoleRepository roleRepository;
     @Autowired private JWTToken jwtToken;
