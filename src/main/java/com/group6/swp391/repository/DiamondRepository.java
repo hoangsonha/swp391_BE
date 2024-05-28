@@ -11,6 +11,5 @@ import java.util.List;
 @Repository
 public interface DiamondRepository extends JpaRepository<Diamond, Character> {
 
-    @Query("SELECT d FROM Diamond d WHERE d.diamondName LIKE %:diamondName%")
-    List<Diamond> getDiamondByName(@Param("diamondName") String dimondName);
+    public Diamond getDiamondByDiamondID(String diamondID);
 }

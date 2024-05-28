@@ -15,7 +15,7 @@ import java.util.List;
 public class Diamond {
     @Id
     @Column(name = "diamond_id", nullable = false, length = 30)
-    private int diamondID;
+    private String diamondID;
 
     @Column(name = "diamond_name", nullable = false, length = 200)
     private String diamondName;
@@ -26,6 +26,9 @@ public class Diamond {
 
     @Column(name = "brand")
     private String brand;
+
+    @Column(name = "quantity")
+    private int quantity;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "gem_id", referencedColumnName = "gem_id", unique = true)

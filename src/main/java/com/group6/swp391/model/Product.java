@@ -14,9 +14,8 @@ import java.util.Set;
 @Builder
 public class Product extends BaseEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "product_id")
-    private int  productID;
+    private String productID;
 
     @Column(name = "product_name", nullable = false, length = 200)
     private String productName;
@@ -27,6 +26,9 @@ public class Product extends BaseEntity {
 
     @JoinColumn(name = "price", nullable = false)
     private double price;
+
+    @Column(name = "quantity")
+    private int quantity;
 
     @Column(name = "brand", nullable = false, length = 100)
     private String brand;

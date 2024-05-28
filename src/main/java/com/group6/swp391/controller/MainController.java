@@ -55,7 +55,12 @@ public class MainController {
 
     @GetMapping("/verify")
     public ResponseEntity<ObjectResponse> verifyAccount(@Param("code") String code, Model model) {
-        boolean check = userService.verifyAccount(code);
+        boolean check = false;
+        try {
+            check = userService.verifyAccount(code);
+        } catch(Exception e) {
+            log.error("Can not verify account");
+        }
         return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Verify account successfully", null))
                 :ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Verify account failed", null));
     }

@@ -11,6 +11,8 @@ import java.util.Optional;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Integer> {
-    @Query("SELECT p FROM Product p WHERE p.productName LIKE %:productName%")
-    List<Product> findByName(@Param("productName") String productName);
+
+    public Product getProductsByProductName(String productName);
+
+    public Product getProductsByProductID(String productId);
 }
