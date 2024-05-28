@@ -12,7 +12,7 @@ public class ProductServiceImp implements ProductService {
 
     @Override
     public Product getProductByName(String productName) {
-        Product product = productRepository.getProductByName(productName);
+        Product product = productRepository.getProductByProductName(productName);
         return product;
     }
 }

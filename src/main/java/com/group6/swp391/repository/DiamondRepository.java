@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface DiamondRepository extends JpaRepository<Diamond, Integer> {
-    public Diamond getDiamondByName(String diamondName);
+    public Diamond getDiamondByDiamondName(String diamondName);
 }

@@ -12,7 +12,7 @@ public class DiamondServiceImp implements DiamondService {
 
     @Override
     public Diamond getDiamondByName(String diamondName) {
-        Diamond diamond = diamondRepository.getDiamondByName(diamondName);
+        Diamond diamond = diamondRepository.getDiamondByDiamondName(diamondName);
         return diamond;
     }
 }

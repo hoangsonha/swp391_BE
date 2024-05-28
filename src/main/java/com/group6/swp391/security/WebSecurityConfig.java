@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -52,7 +51,7 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests((auth) ->
                 auth.requestMatchers("/swp391/api/admin/**").permitAll()
-                        .requestMatchers("/swp391/api/manager/**").permitAll()
+                        .requestMatchers("/swp391/api/delivery/**").permitAll()
                         .requestMatchers("/swp391/api/user/**").permitAll()
                         .requestMatchers("/swp391/api/staff/**").permitAll()
                         .requestMatchers("/public/**").permitAll()

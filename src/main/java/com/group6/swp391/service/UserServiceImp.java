@@ -212,7 +212,6 @@ public class UserServiceImp implements UserService {
             //System.out.println(result);
             return true;
             } catch (Exception e) {
-
                 return false;
             }
     }
@@ -241,4 +240,5 @@ public class UserServiceImp implements UserService {
             return false;
         }
     }
+
 }
