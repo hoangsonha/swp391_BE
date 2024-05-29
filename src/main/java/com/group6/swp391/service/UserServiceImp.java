@@ -241,4 +241,14 @@ public class UserServiceImp implements UserService {
         }
     }
 
+    @Override
+    public boolean getUserByPhone(String phone) {
+        User user = userRepository.getUserByPhone(phone);
+        if(user==null || !user.isLooked() || !user.isEnabled()) {
+            return false;
+        }
+        return true;
+    }
+
+
 }

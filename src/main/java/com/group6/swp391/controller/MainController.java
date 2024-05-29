@@ -108,10 +108,14 @@ public class MainController {
 
     @PostMapping("/forget_password")
     public ResponseEntity<ObjectResponse> getForgetPassword(@RequestBody OTPRequest otpRequest) {
-        boolean check = userService.sendSMS(otpRequest);
+        boolean checkExistPhone = userService.getUserByPhone(otpRequest.getPhone());
+        boolean check = false;
+        if(checkExistPhone) {
+            check = userService.sendSMS(otpRequest);
+        }
         return check ?
                 ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Sent otp successfully", null))
-                : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Sent OTP failed", null));
+                : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Sent OTP failed due to the phone hasn't register", null));
     }
 
     @PostMapping("/validationOTP")
@@ -121,6 +125,7 @@ public class MainController {
                 ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Authentication successfully", null))
                 : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Authentication failed", null));
     }
+
 
 //=-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //    @PostMapping("/login_google")

@@ -54,6 +54,7 @@ public class CustomUserDetail implements UserDetails {
                 .grantedAuthorities(roles)
                 .build();
         return customUserDetail;
+
     }
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

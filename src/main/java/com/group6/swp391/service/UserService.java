@@ -33,4 +33,6 @@ public interface UserService {
 
     public boolean validateOTP(OTPValidationRequest otpValidationRequest);
 
+    public boolean getUserByPhone(String phone);
+
 }

@@ -2,6 +2,7 @@ package com.group6.swp391;
 
 import com.group6.swp391.cart.Cart;
 import com.group6.swp391.model.Diamond;
+import com.group6.swp391.model.Product;
 import com.group6.swp391.repository.RoleRepository;
 import lombok.Getter;
 import org.junit.jupiter.api.Test;
@@ -62,7 +63,7 @@ class Swp391ApplicationTests {
         Cart cart = new Cart();
 
 
-//        MultiValueMap<Integer, Object> map = new LinkedMultiValueMap<Integer, Object>();
+
 
         TestDiamond testDiamond1 = new TestDiamond(6, "D6", 60, 1);
         TestDiamond testDiamond2 = new TestDiamond(7, "D7", 70, 1);
@@ -89,6 +90,29 @@ class Swp391ApplicationTests {
 
         System.out.println(cart.getTotalPrice());
 
+
+
+
+        MultiValueMap<Integer, String> map = new LinkedMultiValueMap<Integer, String>();
+
+        map.add(1, "1");
+        map.add(2, "2");
+        map.add(2, "3");
+
+        System.out.println(map);
+
+        for(Integer i : map.keySet()) {
+            System.out.println(map.get(i));
+        }
+
+        for(Integer i : map.keySet()) {
+            Iterator<String> ite = map.get(i).iterator();
+            for (Iterator<String> it = ite; it.hasNext(); ) {
+                String t = it.next();
+
+                System.out.println(t);
+                }
+            }
 
 
     }

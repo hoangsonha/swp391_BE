@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -126,7 +125,6 @@ public class Cart {
         return total;
     }
 
-
     public List<Diamond> getTotalDiamond() {
         List<Diamond> lists = new ArrayList<>();
         for(String i : this.map.keySet()) {
@@ -138,6 +136,24 @@ public class Cart {
                     if(p.getDiamond() != null) {
                         lists.add(p.getDiamond());
                     }
+                } else if(t instanceof Diamond) {
+                    Diamond d = (Diamond)t;
+                    lists.add(d);
+                }
+            }
+        }
+        return lists;
+    }
+
+    public List<Object> getTotalGoodsInCart() {
+        List<Object> lists = new ArrayList<>();
+        for(String i : this.map.keySet()) {
+            Iterator<Object> ite = this.map.get(i).iterator();
+            for (Iterator<Object> it = ite; it.hasNext(); ) {
+                Object t = it.next();
+                if(t instanceof Product) {
+                    Product p = (Product)t;
+                    lists.add(p);
                 } else if(t instanceof Diamond) {
                     Diamond d = (Diamond)t;
                     lists.add(d);
