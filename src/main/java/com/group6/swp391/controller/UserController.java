@@ -80,4 +80,10 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new ObjectResponse("Failed", "Update account failed", null));
     }
 
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/test_user")
+    public String getTestUser() {
+        return "Hello, User Page";
+    }
+
 }

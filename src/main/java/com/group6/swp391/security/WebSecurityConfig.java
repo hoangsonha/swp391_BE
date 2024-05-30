@@ -54,7 +54,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/swp391/api/delivery/**").permitAll()
                         .requestMatchers("/swp391/api/user/**").permitAll()
                         .requestMatchers("/swp391/api/staff/**").permitAll()
-                        .requestMatchers("/swp391/api/categories/**").permitAll()
+                        .requestMatchers("/payment/**").permitAll()
                         .requestMatchers("/public/**").permitAll()
 //                              .requestMatchers(HttpMethod.POST, "/ues", "/*").permitAll()
                         .anyRequest().authenticated())
