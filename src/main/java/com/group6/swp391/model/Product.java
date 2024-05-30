@@ -33,9 +33,6 @@ public class Product extends BaseEntity {
     @Column(name = "brand", nullable = false, columnDefinition = "varchar(100)")
     private String brand;
 
-    @Column(name = "image")
-    private String image;
-
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "diamond_id", referencedColumnName = "diamond_id")
     private Diamond diamond;
@@ -67,12 +64,16 @@ public class Product extends BaseEntity {
     @JoinTable(name = "Collection_product", joinColumns = @JoinColumn(name = "product_id"), inverseJoinColumns = @JoinColumn(name = "collection_id"))
     private Set<Collection> collections = new HashSet<>();
 
-    public Product(String productName, Category category, double price, String brand, String image, Diamond diamond, int quantityStonesOfDiamond, double wage, double totalPrice, double rating, Set<Size> sizes) {
+//    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private Set<ProductImage> productImages;
+
+    public Product(String productName, Category category, double price, String brand, String image,
+                   Diamond diamond, int quantityStonesOfDiamond, double wage, double totalPrice,
+                   double rating, Set<Size> sizes) {
         this.productName = productName;
         this.category = category;
         this.price = price;
         this.brand = brand;
-        this.image = image;
         this.diamond = diamond;
         this.quantityStonesOfDiamond = quantityStonesOfDiamond;
         this.wage = wage;
