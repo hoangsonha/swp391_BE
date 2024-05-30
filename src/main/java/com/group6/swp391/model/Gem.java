@@ -27,6 +27,8 @@ public class Gem {
     @JoinColumn(name = "clarify_id")
     private Clarify clarify;
 
+    private double price;
+
     @ManyToOne
     @JoinColumn(name = "cut_id")
     private Cut cut;
