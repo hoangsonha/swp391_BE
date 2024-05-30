@@ -75,55 +75,55 @@ public class Cart {
         return check;
     }
 
-    public int getTotalQuantity() {
-        int total = 0;
-        try {
-            for(String i : this.map.keySet()) {
-                Iterator<Object> ite = this.map.get(i).iterator();
-                for (Iterator<Object> it = ite; it.hasNext(); ) {
-                    Object t = it.next();
-                    if(t instanceof Product) {
-                        Product p = (Product)t;
-                        if(p.getDiamond() != null) {
-                            total += p.getDiamond().getQuantity();
-                        }
-                        total += p.getQuantity();
-                    } else if(t instanceof Diamond) {
-                        Diamond d = (Diamond)t;
-                        total += d.getQuantity();
-                    }
-                }
-            }
-        } catch (Exception e) {
-            log.error("Can not get total quantity");
-        }
-        return total;
-    }
+//    public int getTotalQuantity() {
+//        int total = 0;
+//        try {
+//            for(String i : this.map.keySet()) {
+//                Iterator<Object> ite = this.map.get(i).iterator();
+//                for (Iterator<Object> it = ite; it.hasNext(); ) {
+//                    Object t = it.next();
+//                    if(t instanceof Product) {
+//                        Product p = (Product)t;
+//                        if(p.getDiamond() != null) {
+//                            total += p.getDiamond().getQuantity();
+//                        }
+//                        total += p.getQuantity();
+//                    } else if(t instanceof Diamond) {
+//                        Diamond d = (Diamond)t;
+//                        total += d.getQuantity();
+//                    }
+//                }
+//            }
+//        } catch (Exception e) {
+//            log.error("Can not get total quantity");
+//        }
+//        return total;
+//    }
 
-    public double getTotalPrice() {
-        double total = 0;
-        try {
-            for(String i : this.map.keySet()) {
-                Iterator<Object> ite = this.map.get(i).iterator();
-                for (Iterator<Object> it = ite; it.hasNext(); ) {
-                    Object t = it.next();
-                    if(t instanceof Product) {
-                        Product p = (Product)t;
-                        if(p.getDiamond() != null) {
-                            total += p.getDiamond().getGem().getPrice();
-                        }
-                        total += p.getPrice();
-                    } else if(t instanceof Diamond) {
-                        Diamond d = (Diamond)t;
-                        total += d.getGem().getPrice();
-                    }
-                }
-            }
-        } catch (Exception e) {
-            log.error("Can not get total price");
-        }
-        return total;
-    }
+//    public double getTotalPrice() {
+//        double total = 0;
+//        try {
+//            for(String i : this.map.keySet()) {
+//                Iterator<Object> ite = this.map.get(i).iterator();
+//                for (Iterator<Object> it = ite; it.hasNext(); ) {
+//                    Object t = it.next();
+//                    if(t instanceof Product) {
+//                        Product p = (Product)t;
+//                        if(p.getDiamond() != null) {
+//                            total += p.getDiamond().getGem().getPrice();
+//                        }
+//                        total += p.getPrice();
+//                    } else if(t instanceof Diamond) {
+//                        Diamond d = (Diamond)t;
+//                        total += d.getGem().getPrice();
+//                    }
+//                }
+//            }
+//        } catch (Exception e) {
+//            log.error("Can not get total price");
+//        }
+//        return total;
+//    }
 
     public List<Diamond> getTotalDiamond() {
         List<Diamond> lists = new ArrayList<>();

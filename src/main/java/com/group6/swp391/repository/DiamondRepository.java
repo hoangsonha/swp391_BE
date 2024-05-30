@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface DiamondRepository extends JpaRepository<Diamond, Character> {
+public interface DiamondRepository extends JpaRepository<Diamond, String> {
 
     public Diamond getDiamondByDiamondID(String diamondID);
 }

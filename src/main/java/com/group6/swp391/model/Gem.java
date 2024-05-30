@@ -15,8 +15,6 @@ public class Gem {
     @Column(name = "gem_id")
     private int gemId;
 
-    private double price;
-
     @ManyToOne
     @JoinColumn(name = "carat_id")
     private Carat carat;

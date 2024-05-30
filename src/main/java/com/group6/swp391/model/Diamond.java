@@ -14,10 +14,10 @@ import java.util.List;
 @Builder
 public class Diamond {
     @Id
-    @Column(name = "diamond_id", nullable = false, length = 30)
+    @Column(name = "diamond_id", nullable = false, columnDefinition = "varchar(255)")
     private String diamondID;
 
-    @Column(name = "diamond_name", nullable = false, length = 200)
+    @Column(name = "diamond_name", nullable = false, columnDefinition = "varchar(255)")
     private String diamondName;
 
     @OneToOne(cascade = CascadeType.ALL)
@@ -27,9 +27,6 @@ public class Diamond {
     @Column(name = "brand")
     private String brand;
 
-    @Column(name = "quantity")
-    private int quantity;
-
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "gem_id", referencedColumnName = "gem_id", unique = true)
     private Gem gem;
@@ -37,8 +34,8 @@ public class Diamond {
     @Column(name = "image")
     private String image;
 
-    @Column(name = "certificate_number")
-    private int certificateNumber;
+    @Column(name = "certificate_number", columnDefinition = "varchar(100)")
+    private String certificateNumber;
 
     @ManyToOne
     @JoinColumn(name = "flourescence_id", referencedColumnName = "flourescence_id")
@@ -53,7 +50,7 @@ public class Diamond {
     @Column(name = "status")
     private boolean status;
 
-    public Diamond(String diamondName, WarrantyCard warrantyCard, String brand, Gem gem, String image, int certificateNumber, Flourescence flourescence, List<ChangePrice> priceChanges, Date inputDate) {
+    public Diamond(String diamondName, WarrantyCard warrantyCard, String brand, Gem gem, String image, String certificateNumber, Flourescence flourescence, List<ChangePrice> priceChanges, Date inputDate) {
         this.diamondName = diamondName;
         this.warrantyCard = warrantyCard;
         this.brand = brand;

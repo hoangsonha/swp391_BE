@@ -17,9 +17,9 @@ public class Carat {
     private int caratId;
 
     @Column(name = "carat_name", nullable = false, length = 150)
-    private String caratName;
+    private float caratName;
 
-    public Carat(String caratName) {
+    public Carat(float caratName) {
         this.caratName = caratName;
     }
 }

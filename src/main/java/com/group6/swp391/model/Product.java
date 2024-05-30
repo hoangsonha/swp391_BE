@@ -17,7 +17,7 @@ public class Product extends BaseEntity {
     @Column(name = "product_id")
     private String productID;
 
-    @Column(name = "product_name", nullable = false, length = 200)
+    @Column(name = "product_name", nullable = false, columnDefinition = "varchar(300)")
     private String productName;
 
     @ManyToOne
@@ -30,7 +30,7 @@ public class Product extends BaseEntity {
     @Column(name = "quantity")
     private int quantity;
 
-    @Column(name = "brand", nullable = false, length = 100)
+    @Column(name = "brand", nullable = false, columnDefinition = "varchar(100)")
     private String brand;
 
     @Column(name = "image")

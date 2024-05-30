@@ -16,9 +16,9 @@ public class Color {
     private int colorID;
 
     @Column(name = "color_name", nullable = false, length = 150)
-    private String colorName;
+    private char colorName;
 
-    public Color(String colorName) {
+    public Color(char colorName) {
         this.colorName = colorName;
     }
 }
