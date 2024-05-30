@@ -3,8 +3,7 @@ package com.group6.swp391.model;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Getter
@@ -17,67 +16,100 @@ public class Product extends BaseEntity {
     @Column(name = "product_id")
     private String productID;
 
-    @Column(name = "product_name", nullable = false, length = 200)
+    @Column(name = "product_name", nullable = false, columnDefinition = "varchar(300)")
     private String productName;
 
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    @JoinColumn(name = "price", nullable = false)
-    private double price;
 
-    @Column(name = "quantity")
-    private int quantity;
-
-    @Column(name = "brand", nullable = false, length = 100)
+    @Column(name = "brand", nullable = false, columnDefinition = "varchar(100)")
     private String brand;
 
     @Column(name = "image")
     private String image;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "diamond_id", referencedColumnName = "diamond_id")
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "diamond_id", unique = true)
     private Diamond diamond;
 
     @Column(name = "quantity_Stones_of_Diamond")
     private int quantityStonesOfDiamond;
 
-    @Column(name = "wage", nullable = false)
-    private double wage;
-
+    @Transient
     @Column(name = "totalPrice", nullable = false)
     private double totalPrice;
 
     @Column(name = "rating")
     private double rating;
 
+    @Column(name = "message", columnDefinition = "nvarchar(300)")
+    private String message;
+
     @Column(name = "status")
     private boolean status;
+
+    @Column(name = "bath_stone", columnDefinition = "varchar(100)")
+    private String bathStone;
+
+    @Column(name = "host_size", nullable = false)
+    private String hostSize;
+
+    @Column(name = "product_type", nullable = false, columnDefinition = "varchar(70)")
+    private String productType;
+
+    @Column(name = "goldType", nullable = false, columnDefinition = "varchar(70)")
+    private String goldType;
+
+    @Column(name = "old_gold", nullable = false)
+    private String oldGold;
+
+    @Column(name = "gold_weight", nullable = false)
+    private float goldWeight;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "warranty_card_id", unique = true)
     private WarrantyCard warrantyCard;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "product_size", joinColumns = @JoinColumn(name = "product_id"), inverseJoinColumns = @JoinColumn(name = "size_id"))
-    private Set<Size> sizes = new HashSet<>();
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ChangePrice> changePrices;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "Collection_product", joinColumns = @JoinColumn(name = "product_id"), inverseJoinColumns = @JoinColumn(name = "collection_id"))
-    private Set<Collection> collections = new HashSet<>();
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProductImage> productImages;
 
-    public Product(String productName, Category category, double price, String brand, String image, Diamond diamond, int quantityStonesOfDiamond, double wage, double totalPrice, double rating, Set<Size> sizes) {
+    @PostLoad
+    @PostPersist
+    @PostUpdate
+    private void calculateTotalPrice() {
+
+        if (changePrices != null && !changePrices.isEmpty()) {
+            ChangePrice latestChangePrice = Collections.max(changePrices, Comparator.comparing(ChangePrice::getTimestamp));
+            totalPrice = latestChangePrice.getTotalPrice();
+        }
+    }
+
+    public Product(String productName, Category category, String brand, String image, Diamond diamond,
+                   int quantityStonesOfDiamond, double totalPrice, double rating, String message,
+                   boolean status, String bathStone, String hostSize, String productType, String goldType, String oldGold,
+                   float goldWeight, WarrantyCard warrantyCard, List<ChangePrice> changePrices) {
         this.productName = productName;
         this.category = category;
-        this.price = price;
         this.brand = brand;
         this.image = image;
         this.diamond = diamond;
         this.quantityStonesOfDiamond = quantityStonesOfDiamond;
-        this.wage = wage;
         this.totalPrice = totalPrice;
         this.rating = rating;
-        this.sizes = sizes;
+        this.message = message;
+        this.status = status;
+        this.bathStone = bathStone;
+        this.hostSize = hostSize;
+        this.productType = productType;
+        this.goldType = goldType;
+        this.oldGold = oldGold;
+        this.goldWeight = goldWeight;
+        this.warrantyCard = warrantyCard;
+        this.changePrices = changePrices;
     }
 }

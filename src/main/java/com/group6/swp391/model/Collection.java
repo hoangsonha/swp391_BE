@@ -16,6 +16,9 @@ public class Collection extends BaseEntity {
     @Column(name = "collection_id")
     private int collecitonId;
 
-    @Column(name = "collection_name", nullable = false, length = 150)
+    @Column(name = "collection_name", nullable = false, columnDefinition = "varchar(300)")
     private String collectionName;
+
+    @Column(name = "description", columnDefinition = "varchar(500)")
+    private String description;
 }

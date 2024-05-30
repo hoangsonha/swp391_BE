@@ -23,6 +23,10 @@ public class OrderDetail {
     @JoinColumn(name = "product_id")
     private Product product;
 
+    @ManyToOne
+    @JoinColumn(name = "diamond_id")
+    private Diamond diamond;
+
     @Column(name = "quantity", nullable = false)
     private int quantity;
 

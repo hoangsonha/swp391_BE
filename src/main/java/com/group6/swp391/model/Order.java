@@ -27,10 +27,10 @@ public class Order {
 
     private int quantity;
 
-    @Column(name = "full_name", nullable = false)
+    @Column(name = "full_name", nullable = false,columnDefinition = "varchar(300)")
     private String fullName;
 
-    @Column(name = "address_shipping", nullable = false)
+    @Column(name = "address_shipping", nullable = false, columnDefinition = "varchar(300)")
     private String addressShipping;
 
     @Column(name = "phone_shipping", nullable = false, length = 12)
