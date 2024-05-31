@@ -28,16 +28,18 @@ import java.util.UUID;
 @RequestMapping("/swp391/api/staff")
 @CrossOrigin(origins = "*")
 public class StaffController {
-    @Autowired private UserService userService;
-    @Autowired private RoleService roleService;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private RoleService roleService;
 
     @GetMapping("/all_users")
     @PreAuthorize("hasRole('STAFF')")
     public ResponseEntity<ObjectResponse> getAllUser() {
         List<User> lists = userService.findAll("staff");
         boolean check = false;
-        if(lists !=null) {
-            if(lists.size() > 0) {
+        if (lists != null) {
+            if (lists.size() > 0) {
                 check = true;
             }
         }
@@ -56,19 +58,19 @@ public class StaffController {
 
         User user = new User(null, null, userRegister.getEmail(), userRegister.getPassword(),
                 null, null, null, randomString, false, true, role);
-        if(userRegister == null || userService.getUserByEmail(userRegister.getEmail()) != null) {
+        if (userRegister == null || userService.getUserByEmail(userRegister.getEmail()) != null) {
             check = false;
         }
 
-        if(check) {
+        if (check) {
             userService.save(user);
-            if(!active) {
+            if (!active) {
                 String siteUrl = request.getRequestURL().toString().replace(request.getServletPath(), "");
                 check = userService.sendVerificationEmail(user, siteUrl);
             }
         }
         return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Create account successfully", user))
-                :ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new ObjectResponse("Failed", "Create account failed", user));
+                : ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new ObjectResponse("Failed", "Create account failed", user));
     }
 
     @PreAuthorize("hasRole('STAFF')")
@@ -76,7 +78,7 @@ public class StaffController {
     public ResponseEntity<ObjectResponse> adminDeleteAccount(@PathVariable("id") int id) {
         boolean check = userService.deleteUser(id);
         return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Delete account successfully", null))
-                :ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new ObjectResponse("Failed", "Delete account failed", null));
+                : ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new ObjectResponse("Failed", "Delete account failed", null));
     }
 
 }

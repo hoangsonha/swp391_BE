@@ -77,19 +77,19 @@ public class CartController {
               : ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Added cart failed");
     }
 
-    @GetMapping("/view_cart")
-    public ResponseEntity<CartResponse> viewCart(HttpSession session) {
-        Cart cart = (Cart) session.getAttribute("CART");
-        List<Diamond> listsDiamond = new ArrayList<>();
-        int totalQuantity = 0;
-        double totalPrice = 0;
-        if(cart != null) {
-            totalQuantity = cart.getTotalQuantity();
-            totalPrice = cart.getTotalPrice();
-            listsDiamond = cart.getTotalDiamond();
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(new CartResponse("Success", "View Cart successfully", cart, listsDiamond, totalQuantity, totalPrice));
-    }
+//    @GetMapping("/view_cart")
+//    public ResponseEntity<CartResponse> viewCart(HttpSession session) {
+//        Cart cart = (Cart) session.getAttribute("CART");
+//        List<Diamond> listsDiamond = new ArrayList<>();
+//        int totalQuantity = 0;
+//        double totalPrice = 0;
+//        if(cart != null) {
+//            totalQuantity = cart.getTotalQuantity();
+//            totalPrice = cart.getTotalPrice();
+//            listsDiamond = cart.getTotalDiamond();
+//        }
+//        return ResponseEntity.status(HttpStatus.OK).body(new CartResponse("Success", "View Cart successfully", cart, listsDiamond, totalQuantity, totalPrice));
+//    }
 
     @GetMapping("/remove_diamond/{id}")
     public ResponseEntity<String> removeGoods(HttpSession session, @PathVariable String id) {

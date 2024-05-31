@@ -86,9 +86,9 @@ class Swp391ApplicationTests {
         cart.add(testDiamond5);
 
 
-        System.out.println(cart.getTotalQuantity());
-
-        System.out.println(cart.getTotalPrice());
+//        System.out.println(cart.getTotalQuantity());
+//
+//        System.out.println(cart.getTotalPrice());
 
 
 

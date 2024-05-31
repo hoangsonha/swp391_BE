@@ -25,30 +25,15 @@ public class ChangePrice {
     @Column(name = "sheath_diamond", nullable = false)
     private double sheathDiamond;
 
-    @Column(name = "priceDiamond")
-    private double priceDiamond;
-
-    @ManyToOne
-    @JoinColumn(name = "ratio_id")
-    private Ratio ratio;
 
     @Column(name = "total_price", nullable = false)
     private double totalPrice;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id")
-    private Product product;
-
-    private LocalDateTime timestamp;
 
 
-    public ChangePrice(double wage, double sheathDiamond, double totalPrice, double priceDiamond, Ratio ratio, Product product, LocalDateTime timestamp) {
+    public ChangePrice(double wage, double sheathDiamond, double totalPrice) {
         this.wage = wage;
         this.sheathDiamond = sheathDiamond;
-        this.totalPrice = (wage + sheathDiamond + priceDiamond) * ratio.getCurrentRatio();
-        this.priceDiamond = priceDiamond;
-        this.ratio = ratio;
-        this.product = product;
-        this.timestamp = timestamp;
+        this.totalPrice = wage + sheathDiamond;
     }
 }

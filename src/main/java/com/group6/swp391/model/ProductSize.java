@@ -4,10 +4,10 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Setter
-@Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Setter
+@Getter
 @Builder
 public class ProductSize {
 
@@ -16,10 +16,10 @@ public class ProductSize {
     private int id;
 
     @ManyToOne
-    @JoinColumn(name = "size_id")
-    private Size size;
+    @JoinColumn(name = "product_id")
+    private Product product;
 
     @ManyToOne
-    @JoinColumn(name = "product_id")
-    protected Product product;
+    @JoinColumn(name = "size_id")
+    private Size size;
 }

@@ -87,8 +87,9 @@ public class MainController {
 //            }
         } catch(Exception e) {
             log.error("Cannot login : {}", e.toString());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new TokenResponse("Failed", "Login failed", null));
         }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new TokenResponse("Failed", "Login failed", null));
+//        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new TokenResponse("Failed", "Login failed", null));
     }
 
     @PostMapping("/logout")
