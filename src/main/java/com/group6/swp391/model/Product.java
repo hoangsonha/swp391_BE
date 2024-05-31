@@ -51,8 +51,8 @@ public class Product extends BaseEntity {
     @Column(name = "quantity")
     private int quantity;
 
-    @Column(name = "image")
-    private String image;
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProductImage> productImages;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "diamond_id", referencedColumnName = "diamond_id")
@@ -76,15 +76,15 @@ public class Product extends BaseEntity {
     @JoinColumn(name = "change_price_id")
     private ChangePrice changePrice;
 
-    @ManyToOne
-    @JoinColumn(name = "ratio_id")
-    private Ratio ratio;
+
+    @Column(name = "ratio")
+    private double ratio;
 
     public Product(String productName, String bath_Stone, String brand, String goleType,
                    float goldWeight, String hostSize, String message, String oldGold,
                    String productType, int quantityStonesOfDiamond, Category category,
-                   double price, int quantity, String image, Diamond diamond, double totalPrice,
-                   double rating, boolean status, WarrantyCard warrantyCard, ChangePrice changePrice, Ratio ratio) {
+                   double price, int quantity, List<ProductImage> productImages, Diamond diamond, double totalPrice,
+                   double rating, boolean status, WarrantyCard warrantyCard, ChangePrice changePrice, double ratio) {
         this.productName = productName;
         this.bath_Stone = bath_Stone;
         this.brand = brand;
@@ -98,9 +98,9 @@ public class Product extends BaseEntity {
         this.category = category;
         this.price = price;
         this.quantity = quantity;
-        this.image = image;
+        this.productImages = productImages;
         this.diamond = diamond;
-        this.totalPrice = (changePrice.getTotalPrice() + diamond.getTotalPrice() * ratio.getRatioCurrent());
+        this.totalPrice = (changePrice.getTotalPrice() + diamond.getTotalPrice() * ratio);
         this.rating = rating;
         this.status = status;
         this.warrantyCard = warrantyCard;

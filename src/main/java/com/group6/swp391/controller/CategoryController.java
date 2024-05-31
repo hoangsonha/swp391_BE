@@ -62,7 +62,7 @@ public class CategoryController {
             if(categoryName == null) {
                 categoryList = categoryService.getAll();
             } else {
-                categoryList = categoryService.getCategoryByNmae(categoryName);
+                categoryList = categoryService.getCategoryByName(categoryName);
                 if(categoryList == null) {}
             }
             return ResponseEntity.ok(categoryList);
@@ -82,8 +82,8 @@ public class CategoryController {
                 findCategory.setCategoryName(category.getCategoryName());
                 findCategory.setUpdateAt(category.getUpdateAt());
             }
-            categoryService.updateCategory(findCategory);
-            return ResponseEntity.ok("Category updated successfully");
+            categoryService.updateCategory(id, findCategory);
+            return ResponseEntity.ok("Category updated successfully with ID: " + id);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }

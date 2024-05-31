@@ -26,7 +26,7 @@ public class CategoryServiceImp implements CategoryService{
     }
 
     @Override
-    public List<Category> getCategoryByNmae(String categoryName) {
+    public List<Category> getCategoryByName(String categoryName) {
         return categoryRepository.findByName(categoryName);
     }
 
@@ -36,17 +36,12 @@ public class CategoryServiceImp implements CategoryService{
     }
 
     @Override
-    public void updateCategory(Category category) {
-        categoryRepository.save(category);
+    public Category updateCategory(int categoryId, Category category) {
+        return categoryRepository.save(category);
     }
 
     @Override
     public void deleteCategory(int id) {
         categoryRepository.deleteById(id);
-    }
-
-    @Override
-    public Category getCategoryByName(String name) {
-        return categoryRepository.findByCategoryName(name);
     }
 }
