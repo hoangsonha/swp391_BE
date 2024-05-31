@@ -6,4 +6,6 @@ public interface OrderService {
 
     public Order getOrderByOrderID(int orderID);
 
+    public void save(Order order);
+
 }

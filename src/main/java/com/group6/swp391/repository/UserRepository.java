@@ -24,5 +24,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query("update user set looked = false where userID = ?1")
     public void locked(int userID);
 
+    
+
     public User getUserByPhone(String phone);
 }
