@@ -11,9 +11,9 @@ public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int userID;
-    @Column(name = "first_name", length = 20)
+    @Column(name = "first_name", columnDefinition = "varchar(300)")
     private String firstName;
-    @Column(name = "last_name", length = 20)
+    @Column(name = "last_name", columnDefinition = "varchar(300)")
     private String lastName;
     @Column(name = "email", nullable = false, length = 200, unique = true)
     private String email;
@@ -21,7 +21,7 @@ public class User extends BaseEntity {
     private String password;
     @Column(name = "phone", length = 20)
     private String phone;
-    @Column(name = "address", length = 200)
+    @Column(name = "address", columnDefinition = "varchar(300)")
     private String address;
     @Column(name = "avata")
     private String avata;
