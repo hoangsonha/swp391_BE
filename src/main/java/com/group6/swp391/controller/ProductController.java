@@ -61,6 +61,13 @@ public class ProductController {
                 product.setTotalPrice(newPrice.getTotalPrice());
                 product.setStatus(true);
                 newProduct = productService.creatPrdoduct(product);
+                List<ProductImage> imagesTosave = new ArrayList<>();
+                for (ProductImage productImage : productImages) {
+                    productImage.setProduct(product);
+                    imagesTosave.add(productImage);
+                }
+                product.setProductImages(imagesTosave);
+                productImageService.createProductImage(imagesTosave);
                 return  ResponseEntity.ok("created product with ID: " + newProduct.getProductID());
             }
         } catch (Exception e) {

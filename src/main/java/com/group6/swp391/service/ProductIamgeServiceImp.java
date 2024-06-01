@@ -16,8 +16,8 @@ public class ProductIamgeServiceImp implements ProductImageService {
 
 
     @Override
-    public ProductImage createProductImage(String productId, ProductImage productImage) {
-        return productImageRepository.save(productImage);
+    public List<ProductImage> createProductImage(List<ProductImage> productImages) {
+        return productImageRepository.saveAll(productImages);
     }
 
     @Override
