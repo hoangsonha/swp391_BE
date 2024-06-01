@@ -6,7 +6,7 @@ import com.group6.swp391.model.ProductImage;
 import java.util.List;
 
 public interface ProductImageService {
-    ProductImage createProductImage(String id, ProductImage productImage);
+    List<ProductImage> createProductImage(List<ProductImage> productImages);
     ProductImage updateProductImage(ProductImage productImage);
     List<ProductImage> getProductImageByProductId(String id);
 }
