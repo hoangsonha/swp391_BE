@@ -19,15 +19,15 @@ public class DiamondController {
     public ResponseEntity<?> createDiamond(@RequestBody Diamond diamond) {
         Diamond newDiamond = null;
         try {
-            if(diamond == null) {
+            if (diamond == null) {
                 throw new Exception("Diamond is null");
             } else {
-                if(diamondService.getDiamondByDiamondID(diamond.getDiamondID()) != null) {
+                if (diamondService.getDiamondByDiamondID(diamond.getDiamondID()) != null) {
                     throw new Exception("Diamond already exist");
                 } else {
 
                     diamond.setStatus(true);
-                    diamond.setTotalPrice(diamond.getOriginPrice()*(1 + diamond.getRatio()));
+                    diamond.setTotalPrice(diamond.getOriginPrice() * (1 + diamond.getRatio()));
                     newDiamond = diamondService.creatDiamond(diamond);
                 }
             }
@@ -42,7 +42,7 @@ public class DiamondController {
         List<Diamond> diamonds;
         try {
             diamonds = diamondService.getAllDiamond();
-            if(diamonds == null) {
+            if (diamonds == null) {
                 throw new RuntimeException("Diamond list is empty!");
             } else {
                 return ResponseEntity.ok(diamonds);
@@ -51,4 +51,37 @@ public class DiamondController {
             return ResponseEntity.badRequest().body("Get all diamonds failed");
         }
     }
+
+    @PutMapping("/update_diamonds/{id}")
+    public ResponseEntity<?> updateDiamond(@RequestBody Diamond diamond, @PathVariable String id) {
+        try {
+            Diamond existingDiamond = diamondService.getDiamondByDiamondID(id);
+            if (existingDiamond == null) {
+                return ResponseEntity.badRequest().body("Diamond not found with ID: " + id);
+            }
+            existingDiamond.setDiamondName(diamond.getDiamondName());
+            existingDiamond.setCarat(diamond.getCarat());
+            existingDiamond.setCertificateNumber(diamond.getCertificateNumber());
+            existingDiamond.setClarify(diamond.getClarify());
+            existingDiamond.setColor(diamond.getColor());
+            existingDiamond.setColorLevel(diamond.getColorLevel());
+            existingDiamond.setCut(diamond.getCut());
+            existingDiamond.setShape(diamond.getShape());
+            existingDiamond.setDimensions(diamond.getDimensions());
+            existingDiamond.setFlourescence(diamond.getFlourescence());
+            existingDiamond.setImage(diamond.getImage());
+            existingDiamond.setInputDate(diamond.getInputDate());
+            existingDiamond.setOriginPrice(diamond.getOriginPrice());
+            existingDiamond.setStatus(diamond.isStatus());
+            existingDiamond.setTotalPrice(diamond.getTotalPrice());
+            existingDiamond.setWarrantyCard(diamond.getWarrantyCard());
+            existingDiamond.setRatio(diamond.getRatio());
+            diamondService.updateDiamond(existingDiamond);
+            return ResponseEntity.ok("Diamond updated successfully with ID: " + existingDiamond.getDiamondID());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Update diamond failed" + e.getMessage());
+        }
+    }
+
+
 }

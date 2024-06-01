@@ -10,7 +10,8 @@ import java.util.List;
 @Service
 public class DiamondServiceImp implements DiamondService {
 
-    @Autowired private DiamondRepository diamondRepository;
+    @Autowired
+    private DiamondRepository diamondRepository;
 
 
     @Override
@@ -26,5 +27,10 @@ public class DiamondServiceImp implements DiamondService {
     @Override
     public List<Diamond> getAllDiamond() {
         return diamondRepository.findAll();
+    }
+
+    @Override
+    public Diamond updateDiamond(Diamond diamond) {
+        return diamondRepository.save(diamond);
     }
 }

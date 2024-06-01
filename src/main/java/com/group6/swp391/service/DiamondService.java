@@ -6,6 +6,10 @@ import java.util.List;
 
 public interface DiamondService {
     Diamond getDiamondByDiamondID(String diamondID);
+
     Diamond creatDiamond(Diamond diamond);
+
     List<Diamond> getAllDiamond();
+
+    Diamond updateDiamond(Diamond diamond);
 }
