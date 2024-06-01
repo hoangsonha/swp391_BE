@@ -83,5 +83,17 @@ public class DiamondController {
         }
     }
 
-
+    @DeleteMapping("/delete_diamonds/{id}")
+    public ResponseEntity<?> deleteDiamond(@PathVariable String id) {
+        try {
+            Diamond existingDiamond = diamondService.getDiamondByDiamondID(id);
+            if (existingDiamond == null) {
+                return ResponseEntity.badRequest().body("Diamond not found with ID: " + id);
+            }
+            diamondService.deleteDiamond(id);
+            return ResponseEntity.ok("Diamond deleted successfully with ID: " + id);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Delete diamond failed: " + e.getMessage());
+        }
+    }
 }

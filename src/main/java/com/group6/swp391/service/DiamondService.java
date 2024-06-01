@@ -12,4 +12,6 @@ public interface DiamondService {
     List<Diamond> getAllDiamond();
 
     Diamond updateDiamond(Diamond diamond);
+
+    void deleteDiamond(String diamondID);
 }

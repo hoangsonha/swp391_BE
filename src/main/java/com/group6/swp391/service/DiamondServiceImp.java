@@ -33,4 +33,9 @@ public class DiamondServiceImp implements DiamondService {
     public Diamond updateDiamond(Diamond diamond) {
         return diamondRepository.save(diamond);
     }
+
+    @Override
+    public void deleteDiamond(String diamondID) {
+        diamondRepository.deleteById(diamondID);
+    }
 }
