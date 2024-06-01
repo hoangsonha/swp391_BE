@@ -38,7 +38,7 @@ public class Order {
     @Column(name = "phone_shipping", nullable = false, length = 12)
     private String phoneShipping;
 
-    @OneToMany(mappedBy = "Order")
+    @OneToMany(mappedBy = "order")
     private List<Payment> payments = new ArrayList<>();
 
     @Column(name = "order_date", nullable = false)

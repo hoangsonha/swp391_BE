@@ -63,13 +63,11 @@ public class Diamond {
     @JoinColumn(name = "warranty_card_id", referencedColumnName = "warranty_card_id", unique = true)
     private WarrantyCard warrantyCard;
 
-    @ManyToOne
-    @JoinColumn(name = "ratio_id")
-    private Ratio ratio;
+
 
     public Diamond(String diamondName, float carat, String certificateNumber, String clarify, String color,
                    char colorLevel, String cut, float dimensions, String flourescence, String image, Date inputDate,
-                   double originPrice, boolean status, double totalPrice, WarrantyCard warrantyCard, Ratio ratio) {
+                   double originPrice, boolean status, double totalPrice, WarrantyCard warrantyCard) {
         this.diamondName = diamondName;
         this.carat = carat;
         this.certificateNumber = certificateNumber;
@@ -85,6 +83,5 @@ public class Diamond {
         this.status = status;
         this.totalPrice = totalPrice;
         this.warrantyCard = warrantyCard;
-        this.ratio = ratio;
     }
 }

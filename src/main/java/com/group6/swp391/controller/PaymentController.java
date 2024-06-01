@@ -34,8 +34,7 @@ public class PaymentController {
     @Autowired private PayPalService payPalService;
     @Autowired private OrderService orderService;
     @Autowired private PaymentService paymentService;
-    @Autowired
-    private TransactionalOperator transactionalOperator;
+
 
     @PostMapping("/checkout")
     public ResponseEntity<PaymentResponse> pay(HttpServletRequest request, @RequestBody OrderRequest orderRequest, HttpSession session) {
