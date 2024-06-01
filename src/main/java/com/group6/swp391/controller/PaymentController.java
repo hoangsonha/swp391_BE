@@ -18,7 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.reactive.TransactionalOperator;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
@@ -86,15 +85,12 @@ public class PaymentController {
         try {
             Payment payment = payPalService.executePayment(paymentID, payerID);
             if(payment.getState().equals("approved")) {
-                payment.getTransactions().forEach(transaction -> {
-                    transaction.getAmount().getTotal();
-                });
-
                 double paymentAmount = Double.parseDouble(payment.getTransactions().get(0).getAmount().getTotal());
                 SimpleDateFormat spm = new SimpleDateFormat("yyyy-MM-dd");
                 Date date = spm.parse(payment.getCreateTime());
                 com.group6.swp391.model.Payment payment1 = new com.group6.swp391.model.Payment(paymentAmount, order, date, (order.getPrice() - paymentAmount) , order.getPrice());
                 paymentService.save(payment1);
+                session.setAttribute("CART", null);
                 return ResponseEntity.status(HttpStatus.OK).body(new PaymentResponse("Success", "Payment successfully", payment, null));
             }
         } catch (Exception e) {

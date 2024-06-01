@@ -2,6 +2,9 @@ package com.group6.swp391.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.util.Date;
 
 @Entity(name = "user")
 @Getter
@@ -28,13 +31,20 @@ public class User extends BaseEntity {
     @Column(name = "code_verify", nullable = false)
     private String codeVerify;
     private boolean enabled;
-    private boolean looked;
+
+    @Column(name = "non_locked")
+    private boolean nonLocked;
+
+    private int quantityLoginFailed;
+
+    @DateTimeFormat(pattern = "YYYY-MM-DD hh:mm:ss")
+    private Date timeLoginFailed;
 
     @ManyToOne
     @JoinColumn(name = "roleID")
     private Role role;
 
-    public User(String firstName, String lastName, String email, String password, String phone, String address, String avata, String codeVerify, boolean enabled, boolean looked, Role role) {
+    public User(String firstName, String lastName, String email, String password, String phone, String address, String avata, String codeVerify, boolean enabled, boolean nonLooked, Role role, int quantityLoginFailed, Date timeLoginFailed) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -44,7 +54,9 @@ public class User extends BaseEntity {
         this.avata = avata;
         this.codeVerify = codeVerify;
         this.enabled = enabled;
-        this.looked = looked;
+        this.nonLocked = nonLooked;
         this.role = role;
+        this.quantityLoginFailed = quantityLoginFailed;
+        this.timeLoginFailed = timeLoginFailed;
     }
 }

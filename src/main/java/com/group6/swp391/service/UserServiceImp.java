@@ -145,7 +145,7 @@ public class UserServiceImp implements UserService {
     @Override
     public boolean verifyAccount(String code) {
         User user = userRepository.getUserByCodeVerify(code);
-        if(user == null || user.isEnabled() || !user.isLooked()) {
+        if(user == null || user.isEnabled() || !user.isNonLocked()) {
             return false;
         }
         userRepository.enabled(user.getUserID());
@@ -165,7 +165,7 @@ public class UserServiceImp implements UserService {
     @Override
     public boolean lockedUser(int id) {
         User user = userRepository.getUserByUserID(id);
-        if(user!=null && user.isLooked()) {
+        if(user!=null && user.isNonLocked()) {
             userRepository.locked(id);
             return true;
         }
@@ -244,10 +244,61 @@ public class UserServiceImp implements UserService {
     @Override
     public boolean getUserByPhone(String phone) {
         User user = userRepository.getUserByPhone(phone);
-        if(user==null || !user.isLooked() || !user.isEnabled()) {
+        if(user==null || !user.isNonLocked() || !user.isEnabled()) {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public void lockedUserByEmail(String email) {
+        User user = userRepository.getUserByEmail(email);
+        if(user!=null && user.isNonLocked()) {
+            userRepository.lockedByEmail(email);
+        }
+    }
+
+    @Override
+    public void setQuantityLoginFailed(int quantity, String email) {
+        userRepository.setQuantityFailedLogin(quantity, email);
+    }
+
+    @Override
+    public void setTimeLoginFailed(Date date, String email) {
+        userRepository.setTimeLoginFailed(new Date(), email);
+    }
+
+    @Override
+    public int getPartDate(Date date, int calendarPart) {
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTime(date);
+        return calendar.get(calendarPart);
+    }
+
+    @Override
+    public int calculateSecondIn5Minute(User user) {
+        int hourInDB = getPartDate(user.getTimeLoginFailed(), Calendar.HOUR);
+        int minuteInDB = getPartDate(user.getTimeLoginFailed(), Calendar.MINUTE);
+        int secondInDB = getPartDate(user.getTimeLoginFailed(), Calendar.SECOND);
+        int hourNow = getPartDate(new Date(), Calendar.HOUR);
+        int minuteNow = getPartDate(new Date(), Calendar.MINUTE);
+        int secondNow = getPartDate(new Date(), Calendar.SECOND);
+
+        int minuteInSecond = (minuteInDB * 60) + secondInDB;
+        int minuteInSecondNow = (minuteNow * 60) + secondNow;
+        int minus = 0;
+        if(hourNow == hourInDB) {
+            minus = minuteInSecondNow - minuteInSecond;
+        } else if(hourNow > hourInDB) {
+            minuteInSecondNow += 3600;
+            minus = minuteInSecondNow - minuteInSecond;
+        } else if(hourNow < hourInDB) {
+            int totalSecond = (12 * 60 * 60);
+            int totalSecondInDB = (hourInDB * 60 + minuteInDB) * 60;
+            int remainSecond = totalSecond - totalSecondInDB;
+            minus = remainSecond + minuteInSecondNow;
+        }
+        return minus;
     }
 
 

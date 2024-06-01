@@ -7,6 +7,7 @@ import com.group6.swp391.request.OTPValidationRequest;
 import jakarta.mail.MessagingException;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Date;
 import java.util.List;
 
 public interface UserService {
@@ -35,5 +36,14 @@ public interface UserService {
 
     public boolean getUserByPhone(String phone);
 
-//    public int getQUantityUserLoginFailed();
+    public void lockedUserByEmail(String email);
+
+    public void setQuantityLoginFailed(int quantity,String email);
+
+    public void setTimeLoginFailed(Date date, String email);
+
+    public int getPartDate(Date date, int calendarPart);
+
+    public int calculateSecondIn5Minute(User user);
+
 }

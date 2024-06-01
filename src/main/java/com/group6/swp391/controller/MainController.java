@@ -32,10 +32,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -73,11 +70,8 @@ public class MainController {
 //            if(check_captcha) {
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                         new UsernamePasswordAuthenticationToken(userLogin.getEmail(), userLogin.getPassword());
-
                 Authentication authentication = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
-
                 CustomUserDetail userDetails = (CustomUserDetail) authentication.getPrincipal();
-
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 String s = jwtToken.generatedToken(userDetails);
                 boolean check = jwtToken.validate(s);
@@ -87,9 +81,30 @@ public class MainController {
 //            }
         } catch(Exception e) {
             log.error("Cannot login : {}", e.toString());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new TokenResponse("Failed", "Login failed", null));
+            User user = userService.getUserByEmail(userLogin.getEmail());
+            if (user != null) {
+                int quantityLoginFailed = user.getQuantityLoginFailed();
+                if(quantityLoginFailed == 0) {
+                    userService.setTimeLoginFailed(new Date(), user.getEmail());
+                } else {
+                    int minus = userService.calculateSecondIn5Minute(user);
+                    if(minus >= 300) {
+                        userService.setQuantityLoginFailed(1, user.getEmail());
+                        quantityLoginFailed = 1;
+                        userService.setTimeLoginFailed(new Date(), user.getEmail());
+                    }
+                }
+                if(quantityLoginFailed == 5) {
+                    userService.lockedUserByEmail(userLogin.getEmail());
+                } else userService.setQuantityLoginFailed((quantityLoginFailed + 1), userLogin.getEmail());
+                int remainingAttempt = (5-quantityLoginFailed);
+                    if(remainingAttempt == 0) {
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new TokenResponse("Failed", "your account is locked. Please contact to our admin to unlock", null));
+                    }
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new TokenResponse("Failed", "You have " + remainingAttempt + " password attempts left before your account is locked", null));
+            } else
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new TokenResponse("Failed", "Your Email isn't exist. Please register it", null));
         }
-//        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new TokenResponse("Failed", "Login failed", null));
     }
 
     @PostMapping("/logout")

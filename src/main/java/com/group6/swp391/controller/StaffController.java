@@ -57,7 +57,7 @@ public class StaffController {
         boolean active = false;
 
         User user = new User(null, null, userRegister.getEmail(), userRegister.getPassword(),
-                null, null, null, randomString, false, true, role);
+                null, null, null, randomString, false, true, role, 0, null);
         if (userRegister == null || userService.getUserByEmail(userRegister.getEmail()) != null) {
             check = false;
         }

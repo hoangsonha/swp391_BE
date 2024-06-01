@@ -72,11 +72,10 @@ public class AdminController {
         boolean active = false;
         User user = new User(adminRegister.getFirstName(), adminRegister.getLastName(), adminRegister.getEmail(),
                 bCryptPasswordEncoder.encode(adminRegister.getPassword()), adminRegister.getPhone(), adminRegister.getAddress(), adminRegister.getAvata(),
-                randomString, active, true, role);
+                randomString, active, true, role, 0, null);
         if(userService.getUserByEmail(adminRegister.getEmail()) != null || adminRegister == null) {
             check = false;
         }
-
         if(check) {
             userService.save(user);
             if(!active) {
@@ -92,6 +91,10 @@ public class AdminController {
     @PostMapping("/locked_user/{id}")
     public ResponseEntity<ObjectResponse> adminLockedAccount(@PathVariable("id") int id) {
         boolean check = userService.lockedUser(id);
+        User user = userService.getUserByID(id);
+        if(user != null) {
+            userService.setQuantityLoginFailed(0, user.getEmail());
+        }
         return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Lock account successfully", null))
                 :ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new ObjectResponse("Failed", "Lock account failed", null));
     }

@@ -49,7 +49,7 @@ public class CustomUserDetail implements UserDetails {
                 .phone(user.getPhone())
                 .address(user.getAddress())
                 .avata(user.getAvata())
-                .looked(user.isLooked())
+                .looked(user.isNonLocked())
                 .enabled(user.isEnabled())
                 .grantedAuthorities(roles)
                 .build();
