@@ -82,7 +82,7 @@ public class PayPalService {
                         Item item = new Item();
                         item.setCurrency("USD");
                         item.setName(product.getProductName());
-                        double priceProduct = priceToUSD(product.getPrice());
+                        double priceProduct = priceToUSD(product.getTotalPrice());
                         item.setPrice((String.format("%.2f", priceProduct)));
                         item.setTax("0.00");
                         item.setQuantity("1");

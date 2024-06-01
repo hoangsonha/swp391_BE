@@ -20,7 +20,7 @@ public class Diamond {
     @Column(name = "diamond_name", nullable = false, columnDefinition = "NVARCHAR(255)")
     private String diamondName;
 
-    @Column(name = "carat")
+    @Column(name = "carat", nullable = false)
     private float carat;
 
     @Column(name = "certificate_number", nullable = false)
@@ -37,6 +37,9 @@ public class Diamond {
 
     @Column(name = "cut", nullable = false, columnDefinition = "NVARCHAR(100)")
     private String cut;
+
+    @Column(name = "shape", nullable = false, columnDefinition = "NVARCHAR(100)")
+    private String shape;
 
     @Column(name = "dimensions")
     private float dimensions;
@@ -63,11 +66,12 @@ public class Diamond {
     @JoinColumn(name = "warranty_card_id", referencedColumnName = "warranty_card_id", unique = true)
     private WarrantyCard warrantyCard;
 
-
+    @Column(name = "ratio")
+    private double ratio;
 
     public Diamond(String diamondName, float carat, String certificateNumber, String clarify, String color,
                    char colorLevel, String cut, float dimensions, String flourescence, String image, Date inputDate,
-                   double originPrice, boolean status, double totalPrice, WarrantyCard warrantyCard) {
+                   double originPrice, boolean status, double totalPrice, WarrantyCard warrantyCard, double ratio) {
         this.diamondName = diamondName;
         this.carat = carat;
         this.certificateNumber = certificateNumber;
@@ -81,7 +85,8 @@ public class Diamond {
         this.inputDate = inputDate;
         this.originPrice = originPrice;
         this.status = status;
-        this.totalPrice = totalPrice;
+        this.totalPrice = originPrice * ratio;
         this.warrantyCard = warrantyCard;
+        this.ratio = ratio;
     }
 }

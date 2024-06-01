@@ -55,19 +55,38 @@ public class CategoryController {
         }
     }
 
-    @GetMapping("/categoryName/{categoryName}")
+    @GetMapping("/categoryAllName/{categoryName}")
     public ResponseEntity<?> getCategoryByName(@PathVariable String categoryName) {
         List<Category> categoryList;
         try {
             if(categoryName == null) {
                 categoryList = categoryService.getAll();
             } else {
-                categoryList = categoryService.getCategoryByName(categoryName);
+                categoryList = categoryService.GetAllWithName(categoryName);
                 if(categoryList == null) {}
             }
             return ResponseEntity.ok(categoryList);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/categoryName/{categoryName}")
+    public ResponseEntity<Category> getByName(@PathVariable String categoryName) {
+        Category existCategory;
+        try {
+            if(categoryName == null) {
+                throw new RuntimeException("Category name not null");
+            } else {
+                existCategory = categoryService.getByName(categoryName);
+                if(existCategory == null) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+                } else {
+                    return ResponseEntity.ok(existCategory);
+                }
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 

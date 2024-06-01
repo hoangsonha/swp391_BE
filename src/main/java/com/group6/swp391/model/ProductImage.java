@@ -19,10 +19,6 @@ public class ProductImage {
     @Column(name = "image_thumbnail")
     private String imageThumbnail;
 
-    public ProductImage(String imageThumbnail) {
-        this.imageThumbnail = imageThumbnail;
-    }
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;

@@ -20,4 +20,9 @@ public class ProductServiceImp implements ProductService {
         return productRepository.getProductsByProductID(productID);
     }
 
+    @Override
+    public Product creatPrdoduct(Product product) {
+        return productRepository.save(product);
+    }
+
 }

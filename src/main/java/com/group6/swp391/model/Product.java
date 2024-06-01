@@ -22,7 +22,7 @@ public class Product extends BaseEntity {
     private String productName;
 
     @Column(name = "bath_stone",nullable = false,columnDefinition = "NVARCHAR(100)")
-    private String bath_Stone;
+    private String bathStone;
 
     @Column(name = "brand", nullable = false, columnDefinition = "NVARCHAR(50)")
     private String brand;
@@ -44,12 +44,6 @@ public class Product extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
-
-    @JoinColumn(name = "price", nullable = false)
-    private double price;
-
-    @Column(name = "quantity")
-    private int quantity;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductImage> productImages;
@@ -76,17 +70,13 @@ public class Product extends BaseEntity {
     @JoinColumn(name = "change_price_id")
     private ChangePrice changePrice;
 
-
-    @Column(name = "ratio")
-    private double ratio;
-
-    public Product(String productName, String bath_Stone, String brand, String goleType,
+    public Product(String productName, String bathStone, String brand, String goleType,
                    float goldWeight, String hostSize, String message, String oldGold,
                    String productType, int quantityStonesOfDiamond, Category category,
-                   double price, int quantity, List<ProductImage> productImages, Diamond diamond, double totalPrice,
+                   List<ProductImage> productImages, Diamond diamond, double totalPrice,
                    double rating, boolean status, WarrantyCard warrantyCard, ChangePrice changePrice, double ratio) {
         this.productName = productName;
-        this.bath_Stone = bath_Stone;
+        this.bathStone = bathStone;
         this.brand = brand;
         this.goleType = goleType;
         this.goldWeight = goldWeight;
@@ -96,8 +86,6 @@ public class Product extends BaseEntity {
         this.productType = productType;
         this.quantityStonesOfDiamond = quantityStonesOfDiamond;
         this.category = category;
-        this.price = price;
-        this.quantity = quantity;
         this.productImages = productImages;
         this.diamond = diamond;
         this.totalPrice = (changePrice.getTotalPrice() + diamond.getTotalPrice() * ratio);

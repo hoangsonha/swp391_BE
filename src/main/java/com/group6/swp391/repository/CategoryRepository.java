@@ -11,7 +11,9 @@ import java.util.List;
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Integer> {
     @Query("SELECT c FROM Category c WHERE c.categoryName LIKE %:categoryName")
-    List<Category> findByName(@Param("categoryName") String categoryName);
+    List<Category> findAllWithName(@Param("categoryName") String categoryName);
 
     Category findByCategoryID(int id);
+    @Query("SELECT c FROM Category c WHERE c.categoryName =:categoryName")
+    Category findByName(@Param("categoryName") String categoryName);
 }

@@ -26,13 +26,18 @@ public class CategoryServiceImp implements CategoryService{
     }
 
     @Override
-    public List<Category> getCategoryByName(String categoryName) {
-        return categoryRepository.findByName(categoryName);
+    public List<Category> GetAllWithName(String categoryName) {
+        return categoryRepository.findAllWithName(categoryName);
     }
 
     @Override
     public List<Category> getAll() {
         return categoryRepository.findAll();
+    }
+
+    @Override
+    public Category getByName(String categoryName) {
+        return categoryRepository.findByName(categoryName);
     }
 
     @Override

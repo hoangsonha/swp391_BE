@@ -29,6 +29,12 @@ public class ChangePrice {
     @Column(name = "total_price", nullable = false)
     private double totalPrice;
 
+    @Column(name = "ratio")
+    private double ratio;
+
+    @Column(name = "price_diamond")
+    private double priceDiamond;
+
 
 
     public ChangePrice(double wage, double sheathDiamond, double totalPrice) {
