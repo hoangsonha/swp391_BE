@@ -140,4 +140,24 @@ public class ProductController {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
     }
+
+//    @DeleteMapping("/delete_product/{id}")
+//    public ResponseEntity<?> deleteProduct(@PathVariable("id") String id) {
+//        try{
+//            productService.deleteProduct(id);
+//            return ResponseEntity.ok("Deleted product with ID: " + id);
+//        } catch (Exception e) {
+//            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+//        }
+//    }
+
+    @DeleteMapping("/delete_product/{id}")
+    public ResponseEntity<?> deleteProduct(@PathVariable("id") String id) {
+        try {
+            productService.markProductAsDeleted(id);
+            return ResponseEntity.ok("Deleted product with ID: " + id);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
 }

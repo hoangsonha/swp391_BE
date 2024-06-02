@@ -14,4 +14,6 @@ public interface DiamondService {
     Diamond updateDiamond(Diamond diamond);
 
     void deleteDiamond(String diamondID);
+
+    void markDiamondAsDeleted(String diamondID);
 }

@@ -83,17 +83,27 @@ public class DiamondController {
         }
     }
 
+//    @DeleteMapping("/delete_diamond/{id}")
+//    public ResponseEntity<?> deleteDiamond(@PathVariable String id) {
+//        try {
+//            Diamond existingDiamond = diamondService.getDiamondByDiamondID(id);
+//            if (existingDiamond == null) {
+//                return ResponseEntity.badRequest().body("Diamond not found with ID: " + id);
+//            }
+//            diamondService.deleteDiamond(id);
+//            return ResponseEntity.ok("Diamond deleted successfully with ID: " + id);
+//        } catch (Exception e) {
+//            return ResponseEntity.badRequest().body("Delete diamond failed: " + e.getMessage());
+//        }
+//    }
+
     @DeleteMapping("/delete_diamond/{id}")
-    public ResponseEntity<?> deleteDiamond(@PathVariable String id) {
+    public ResponseEntity<?> deleteDianmond(@PathVariable("id") String id) {
         try {
-            Diamond existingDiamond = diamondService.getDiamondByDiamondID(id);
-            if (existingDiamond == null) {
-                return ResponseEntity.badRequest().body("Diamond not found with ID: " + id);
-            }
-            diamondService.deleteDiamond(id);
-            return ResponseEntity.ok("Diamond deleted successfully with ID: " + id);
+            diamondService.markDiamondAsDeleted(id);
+            return ResponseEntity.ok("Deleted Diamond with ID: " + id);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Delete diamond failed: " + e.getMessage());
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
     }
 }

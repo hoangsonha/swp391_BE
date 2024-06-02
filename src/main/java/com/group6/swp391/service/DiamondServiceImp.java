@@ -38,4 +38,15 @@ public class DiamondServiceImp implements DiamondService {
     public void deleteDiamond(String diamondID) {
         diamondRepository.deleteById(diamondID);
     }
+
+    @Override
+    public void markDiamondAsDeleted(String diamondID) {
+        Diamond diamond = getDiamondByDiamondID(diamondID);
+        if (diamond != null) {
+            diamond.setStatus(false);
+            diamondRepository.save(diamond);
+        } else {
+            throw new RuntimeException("Diamond not found with id: " + diamondID);
+        }
+    }
 }
