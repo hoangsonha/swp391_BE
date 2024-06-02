@@ -173,6 +173,16 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
+    public boolean unLockedUser(int id) {
+        User user = userRepository.getUserByUserID(id);
+        if(user!=null && !user.isNonLocked()) {
+            userRepository.unLocked(id);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
     public boolean deleteUser(int id) {
         User user = userRepository.getUserByUserID(id);
         if (user != null) {

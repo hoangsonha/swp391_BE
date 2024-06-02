@@ -91,6 +91,14 @@ public class AdminController {
     @PostMapping("/locked_user/{id}")
     public ResponseEntity<ObjectResponse> adminLockedAccount(@PathVariable("id") int id) {
         boolean check = userService.lockedUser(id);
+        return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Lock account successfully", null))
+                :ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new ObjectResponse("Failed", "Lock account failed", null));
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/unlocked_user/{id}")
+    public ResponseEntity<ObjectResponse> adminUnLockedAccount(@PathVariable("id") int id) {
+        boolean check = userService.unLockedUser(id);
         User user = userService.getUserByID(id);
         if(user != null) {
             userService.setQuantityLoginFailed(0, user.getEmail());

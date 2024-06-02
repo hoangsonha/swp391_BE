@@ -26,6 +26,8 @@ public interface UserService {
 
     public boolean lockedUser(int id);
 
+    public boolean unLockedUser(int id);
+
     public boolean deleteUser(int id);
 
     public boolean verifyRecaptcha(String gRecaptchaResponse);

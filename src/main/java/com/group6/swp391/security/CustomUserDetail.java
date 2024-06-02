@@ -26,7 +26,7 @@ public class CustomUserDetail implements UserDetails {
     private String phone;
     private String address;
     private String avata;
-    private boolean looked;
+    private boolean nonLocked;
     private boolean enabled;
     private Collection<GrantedAuthority> grantedAuthorities;
 
@@ -49,7 +49,7 @@ public class CustomUserDetail implements UserDetails {
                 .phone(user.getPhone())
                 .address(user.getAddress())
                 .avata(user.getAvata())
-                .looked(user.isNonLocked())
+                .nonLocked(user.isNonLocked())
                 .enabled(user.isEnabled())
                 .grantedAuthorities(roles)
                 .build();
@@ -78,7 +78,7 @@ public class CustomUserDetail implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return looked;
+        return nonLocked;
     }
 
     @Override

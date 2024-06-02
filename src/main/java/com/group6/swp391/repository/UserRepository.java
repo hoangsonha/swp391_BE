@@ -12,6 +12,7 @@ import java.util.Date;
 @Repository
 @Transactional
 public interface UserRepository extends JpaRepository<User, Integer> {
+
     public User getUserByCodeVerify(String code);
 
     public User getUserByEmail(String email);
@@ -25,6 +26,10 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Modifying
     @Query("update user set nonLocked = false where userID = ?1")
     public void locked(int userID);
+
+    @Modifying
+    @Query("update user set nonLocked = true where userID = ?1")
+    public void unLocked(int userID);
 
     @Modifying
     @Query("update user set quantityLoginFailed = ?1 where email = ?2")
