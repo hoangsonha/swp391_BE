@@ -52,7 +52,7 @@ public class DiamondController {
         }
     }
 
-    @PutMapping("/update_diamonds/{id}")
+    @PutMapping("/update_diamond/{id}")
     public ResponseEntity<?> updateDiamond(@RequestBody Diamond diamond, @PathVariable String id) {
         try {
             Diamond existingDiamond = diamondService.getDiamondByDiamondID(id);
@@ -83,7 +83,7 @@ public class DiamondController {
         }
     }
 
-    @DeleteMapping("/delete_diamonds/{id}")
+    @DeleteMapping("/delete_diamond/{id}")
     public ResponseEntity<?> deleteDiamond(@PathVariable String id) {
         try {
             Diamond existingDiamond = diamondService.getDiamondByDiamondID(id);

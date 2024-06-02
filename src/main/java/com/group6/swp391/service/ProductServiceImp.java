@@ -5,6 +5,8 @@ import com.group6.swp391.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ProductServiceImp implements ProductService {
 
@@ -21,8 +23,17 @@ public class ProductServiceImp implements ProductService {
     }
 
     @Override
-    public Product creatPrdoduct(Product product) {
+    public Product creatProduct(Product product) {
         return productRepository.save(product);
     }
 
+    @Override
+    public List<Product> getAllProduct() {
+        return productRepository.findAll();
+    }
+
+    @Override
+    public Product updateProduct(Product product) {
+        return productRepository.save(product);
+    }
 }
