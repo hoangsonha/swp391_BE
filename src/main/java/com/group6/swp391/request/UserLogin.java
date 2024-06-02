@@ -12,4 +12,5 @@ import lombok.Setter;
 public class UserLogin {
     private String email;
     private String password;
+    private String recaptchaResponse;
 }

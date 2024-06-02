@@ -65,7 +65,7 @@ public class MainController {
     @PostMapping("/login")
     public ResponseEntity<TokenResponse> loginPage(@RequestBody UserLogin userLogin, HttpServletRequest request, HttpServletResponse response) {
         try {
-            String gRecaptchaResponse = request.getParameter("g-recaptcha-response");
+            String gRecaptchaResponse = userLogin.getRecaptchaResponse();
             boolean check_captcha = userService.verifyRecaptcha(gRecaptchaResponse);
             if(check_captcha) {
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
