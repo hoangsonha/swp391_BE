@@ -110,27 +110,29 @@ public class MainController {
             log.error("Cannot login : {}", e.toString());
             User user = userService.getUserByEmail(userLogin.getEmail());
             if (user != null) {
-                if(user.isNonLocked() == true) {
-                    int quantityLoginFailed = user.getQuantityLoginFailed();
-                    if(quantityLoginFailed == 0) {
-                        userService.setTimeLoginFailed(new Date(), user.getEmail());
-                    } else {
-                        int minus = userService.calculateSecondIn5Minute(user);
-                        if(minus >= 300) {
-                            userService.setQuantityLoginFailed(1, user.getEmail());
-                            quantityLoginFailed = 0;
+                if(user.isEnabled()) {
+                    if(user.isNonLocked() == true) {
+                        int quantityLoginFailed = user.getQuantityLoginFailed();
+                        if(quantityLoginFailed == 0) {
                             userService.setTimeLoginFailed(new Date(), user.getEmail());
+                        } else {
+                            int minus = userService.calculateSecondIn5Minute(user);
+                            if(minus >= 300) {
+                                userService.setQuantityLoginFailed(1, user.getEmail());
+                                quantityLoginFailed = 0;
+                                userService.setTimeLoginFailed(new Date(), user.getEmail());
+                            }
                         }
-                    }
-                    if(quantityLoginFailed == 5) {
-                        userService.lockedUserByEmail(userLogin.getEmail());
-                    } else userService.setQuantityLoginFailed((quantityLoginFailed + 1), userLogin.getEmail());
-                    int remainingAttempt = (5-quantityLoginFailed);
-                    if(remainingAttempt == 0) {
-                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new TokenResponse("Failed", "your account is locked. Please contact to our admin to unlock", null));
-                    }
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new TokenResponse("Failed", "You have " + remainingAttempt + " password attempts left before your account is locked", null));
-                } else return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new TokenResponse("Failed", "your account is locked. Please contact to our admin to unlock", null));
+                        if(quantityLoginFailed == 5) {
+                            userService.lockedUserByEmail(userLogin.getEmail());
+                        } else userService.setQuantityLoginFailed((quantityLoginFailed + 1), userLogin.getEmail());
+                        int remainingAttempt = (5-quantityLoginFailed);
+                        if(remainingAttempt == 0) {
+                            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new TokenResponse("Failed", "your account is locked. Please contact to our admin to unlock", null));
+                        }
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new TokenResponse("Failed", "You have " + remainingAttempt + " password attempts left before your account is locked", null));
+                    } else return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new TokenResponse("Failed", "your account is locked. Please contact to our admin to unlock", null));
+                } else return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new TokenResponse("Failed", "your account is not active. Please check your email for verify account", null));
             } else
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new TokenResponse("Failed", "Your Email isn't exist. Please register it", null));
         }
