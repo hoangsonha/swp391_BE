@@ -86,7 +86,7 @@ public class MainController {
         }
 //        return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Verify account successfully", null))
 //                :ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Verify account failed ", null));
-        response.sendRedirect("localhost:5173/");
+        response.sendRedirect("http://localhost:5173/");
     }
 
     @PostMapping("/login")
