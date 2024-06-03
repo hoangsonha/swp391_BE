@@ -46,6 +46,7 @@ public class CustomOAuth2AuthenticationSuccessHandler extends SimpleUrlAuthentic
 
                 BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
                 user = new User(oauth2User.getAttribute("given_name"), oauth2User.getAttribute("family_name"), oauth2User.getAttribute("email"), passwordEncoder.encode(oauth2User.getAttribute("email")), null, null, oauth2User.getAttribute("picture"), randomString, oauth2User.getAttribute("email_verified"), true, role, 0, null);
+                //passwordEncoder.encode(oauth2User.getAttribute("email"))
                 userRepository.save(user);
                 CustomUserDetail customUserDetail = CustomUserDetail.mapUserToUserDetail(user);
                 String token = jwtToken.generatedToken(customUserDetail);
