@@ -8,11 +8,13 @@ import com.group6.swp391.model.User;
 import com.group6.swp391.request.OTPRequest;
 import com.group6.swp391.request.OTPValidationRequest;
 import com.group6.swp391.request.UserLogin;
+import com.group6.swp391.request.UserRegister;
 import com.group6.swp391.response.ObjectResponse;
 import com.group6.swp391.response.TokenResponse;
 import com.group6.swp391.security.CustomUserDetail;
 import com.group6.swp391.service.RoleService;
 import com.group6.swp391.service.UserService;
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
@@ -26,12 +28,14 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 @RestController
@@ -44,10 +48,32 @@ public class MainController {
     @Autowired private JWTToken jwtToken;
     @Autowired private AuthenticationManager authenticationManager;
     @Autowired private ListToken listToken;
+    @Autowired private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @GetMapping("/all_users")
     public List<User> getAll() {
         return userService.findAll("admin");
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<ObjectResponse> userRegister(@RequestBody UserRegister userRegister, HttpServletRequest request) throws MessagingException, UnsupportedEncodingException {
+        Role role = roleService.getRoleByRoleName(EnumRoleName.ROLE_USER);
+
+        String randomString = UUID.randomUUID().toString();
+        boolean check = true;
+
+        User user = new User(null, null, userRegister.getEmail(), bCryptPasswordEncoder.encode(userRegister.getPassword()), null, null, null, randomString, false, true, role, 0, null);
+        if(userRegister == null || userService.getUserByEmail(userRegister.getEmail()) != null) {
+            check = false;
+        }
+        if(check) {
+            userService.save(user);
+            String siteUrl = request.getRequestURL().toString().replace(request.getServletPath(), "");
+            // http://localhost:8080
+            check = userService.sendVerificationEmail(user, siteUrl);
+        }
+        return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Create account successfully", user))
+                :ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new ObjectResponse("Failed", "Create account failed", user));
     }
 
     @GetMapping("/verify")
