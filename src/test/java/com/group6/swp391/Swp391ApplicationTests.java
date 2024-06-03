@@ -1,6 +1,6 @@
 package com.group6.swp391;
 
-import com.group6.swp391.cart.Cart;
+//import com.group6.swp391.cart.Cart;
 import com.group6.swp391.model.Diamond;
 import com.group6.swp391.model.Product;
 import com.group6.swp391.model.User;

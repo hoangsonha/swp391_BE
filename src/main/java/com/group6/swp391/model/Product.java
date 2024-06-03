@@ -3,9 +3,7 @@ package com.group6.swp391.model;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Getter
@@ -24,36 +22,37 @@ public class Product extends BaseEntity {
     @Column(name = "bath_stone",nullable = false,columnDefinition = "NVARCHAR(100)")
     private String bathStone;
 
-    @Column(name = "brand", nullable = false, columnDefinition = "NVARCHAR(50)")
+    @Column(name = "brand",columnDefinition = "NVARCHAR(50)")
     private String brand;
 
+    @Column(name = "gole_type",columnDefinition = "NVARCHAR(50)")
     private String goleType;
 
+    @Column(name = "gold_weight")
     private float goldWeight;
 
-    private String hostSize;
+    @Column(name = "cut_diamond")
+    private String cutDiamond;
 
+    @Column(name = "dimensions_diamond")
+    private float dimensionsDiamond;
+
+    @Column(name = "message",columnDefinition = "NVARCHAR(50)")
     private String message;
 
+    @Column(name = "old_gold",columnDefinition = "NVARCHAR(50)")
     private String oldGold;
 
+    @Column(name = "product_type", columnDefinition = "NVARCHAR(50)")
     private String productType;
 
+    @Column(name = "quantity")
+    private int quantity;
+
+    @Column(name = "quantity_stones_of_diamond")
     private int quantityStonesOfDiamond;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id", nullable = false)
-    private Category category;
-
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ProductImage> productImages;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "diamond_id", referencedColumnName = "diamond_id")
-    private Diamond diamond;
-
-
-    @Column(name = "totalPrice", nullable = false)
+    @Column(name = "total_price")
     private double totalPrice;
 
     @Column(name = "rating")
@@ -62,36 +61,20 @@ public class Product extends BaseEntity {
     @Column(name = "status")
     private boolean status;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "warranty_card_id", unique = true)
-    private WarrantyCard warrantyCard;
+    @Column(name = "original_price")
+    private double originalPrice;
+
+    @Column(name = "ratio")
+    private double ratio;
 
     @ManyToOne
-    @JoinColumn(name = "change_price_id")
-    private ChangePrice changePrice;
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
 
-    public Product(String productName, String bathStone, String brand, String goleType,
-                   float goldWeight, String hostSize, String message, String oldGold,
-                   String productType, int quantityStonesOfDiamond, Category category,
-                   List<ProductImage> productImages, Diamond diamond, double totalPrice,
-                   double rating, boolean status, WarrantyCard warrantyCard, ChangePrice changePrice, double ratio) {
-        this.productName = productName;
-        this.bathStone = bathStone;
-        this.brand = brand;
-        this.goleType = goleType;
-        this.goldWeight = goldWeight;
-        this.hostSize = hostSize;
-        this.message = message;
-        this.oldGold = oldGold;
-        this.productType = productType;
-        this.quantityStonesOfDiamond = quantityStonesOfDiamond;
-        this.category = category;
-        this.productImages = productImages;
-        this.diamond = diamond;
-        this.totalPrice = (changePrice.getTotalPrice() + diamond.getTotalPrice() * ratio);
-        this.rating = rating;
-        this.status = status;
-        this.warrantyCard = warrantyCard;
-        this.changePrice = changePrice;
-    }
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Thumnail> productImages;
+
+    @OneToMany(mappedBy = "product")
+    private List<ProductSize> productSizes;
+
 }

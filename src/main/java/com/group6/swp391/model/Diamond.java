@@ -23,8 +23,8 @@ public class Diamond {
     @Column(name = "carat", nullable = false)
     private float carat;
 
-    @Column(name = "certificate_number", nullable = false)
-    private String certificateNumber;
+    @Column(name = "certificate", nullable = false)
+    private String certificate;
 
     @Column(name = "clarify", nullable = false, columnDefinition = "NVARCHAR(100)")
     private String clarify;
@@ -69,12 +69,12 @@ public class Diamond {
     @Column(name = "ratio")
     private double ratio;
 
-    public Diamond(String diamondName, float carat, String certificateNumber, String clarify, String color,
+    public Diamond(String diamondName, float carat, String certificate, String clarify, String color,
                    char colorLevel, String cut, float dimensions, String flourescence, String image, Date inputDate,
                    double originPrice, boolean status, double totalPrice, WarrantyCard warrantyCard, double ratio) {
         this.diamondName = diamondName;
         this.carat = carat;
-        this.certificateNumber = certificateNumber;
+        this.certificate = certificate;
         this.clarify = clarify;
         this.color = color;
         this.colorLevel = colorLevel;

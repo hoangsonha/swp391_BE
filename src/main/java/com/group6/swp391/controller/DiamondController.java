@@ -42,7 +42,7 @@ public class DiamondController {
         List<Diamond> diamonds;
         try {
             diamonds = diamondService.getAllDiamond();
-            if (diamonds == null) {
+            if (diamonds == null || diamonds.isEmpty()) {
                 throw new RuntimeException("Diamond list is empty!");
             } else {
                 return ResponseEntity.ok(diamonds);
@@ -61,7 +61,7 @@ public class DiamondController {
             }
             existingDiamond.setDiamondName(diamond.getDiamondName());
             existingDiamond.setCarat(diamond.getCarat());
-            existingDiamond.setCertificateNumber(diamond.getCertificateNumber());
+            existingDiamond.setCertificate(diamond.getCertificate());
             existingDiamond.setClarify(diamond.getClarify());
             existingDiamond.setColor(diamond.getColor());
             existingDiamond.setColorLevel(diamond.getColorLevel());

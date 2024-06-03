@@ -20,8 +20,8 @@ public class OrderDetail {
     private Order order;
 
     @ManyToOne
-    @JoinColumn(name = "product_id")
-    private Product product;
+    @JoinColumn(name = "prodcut_custom_id")
+    private ProductCustom productCustom;
 
     @ManyToOne
     @JoinColumn(name = "diamond_id")
@@ -32,11 +32,4 @@ public class OrderDetail {
 
     @Column(name = "price", nullable = false)
     private double price;
-
-    public OrderDetail(Order order, Product product, int quantity, double price) {
-        this.order = order;
-        this.product = product;
-        this.quantity = quantity;
-        this.price = price;
-    }
 }

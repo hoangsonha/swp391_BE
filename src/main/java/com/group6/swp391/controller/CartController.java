@@ -3,17 +3,12 @@ package com.group6.swp391.controller;
 import com.group6.swp391.cart.Cart;
 import com.group6.swp391.model.Diamond;
 import com.group6.swp391.model.Product;
-import com.group6.swp391.response.CartResponse;
 import com.group6.swp391.service.DiamondService;
-import com.group6.swp391.service.ProductService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @RestController
 @RequestMapping("/swp391/api/cart")

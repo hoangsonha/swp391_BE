@@ -22,4 +22,7 @@ public class ProductSize {
     @ManyToOne
     @JoinColumn(name = "size_id")
     private Size size;
+
+    @Column(name = "quantity", nullable = false)
+    private int quantiy;
 }

@@ -3,27 +3,22 @@ package com.group6.swp391.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class Size {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "size_id")
     private int sizeID;
 
-    @Column(name = "size_name", nullable = false, length = 30)
-    private String sizeName;
+    @Column(name = "size_value")
+    private int sizeValue;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private Category category;
+    @OneToMany(mappedBy = "size")
+    private List<ProductSize> productSizes;
 
-    public Size(String sizeName, Category category) {
-        this.sizeName = sizeName;
-        this.category = category;
-    }
 }

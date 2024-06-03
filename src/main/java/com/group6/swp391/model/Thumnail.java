@@ -9,22 +9,17 @@ import lombok.*;
 @NoArgsConstructor
 @Setter
 @Getter
-public class ProductImage {
+public class Thumnail {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "image_id",nullable = false)
     private int imageId;
 
-    @Column(name = "image_thumbnail")
-    private String imageThumbnail;
+    @Column(name = "image_url")
+    private String imageUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
-
-    public ProductImage(String imageThumbnail, Product product) {
-        this.imageThumbnail = imageThumbnail;
-        this.product = product;
-    }
 }
