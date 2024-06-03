@@ -77,15 +77,16 @@ public class MainController {
     }
 
     @GetMapping("/verify")
-    public ResponseEntity<ObjectResponse> verifyAccount(@Param("code") String code, Model model) {
+    public void verifyAccount(@Param("code") String code, Model model, HttpServletResponse response) throws IOException {
         boolean check = false;
         try {
             check = userService.verifyAccount(code);
         } catch(Exception e) {
             log.error("Can not verify account");
         }
-        return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Verify account successfully", null))
-                :ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Verify account failed ", null));
+//        return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Verify account successfully", null))
+//                :ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Verify account failed ", null));
+        response.sendRedirect("localhost:5173/");
     }
 
     @PostMapping("/login")
