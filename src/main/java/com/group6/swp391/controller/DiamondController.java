@@ -10,6 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/swp391/api/diamonds")
+@CrossOrigin(origins = "*")
 public class DiamondController {
 
     @Autowired

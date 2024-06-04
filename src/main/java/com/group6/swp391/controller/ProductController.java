@@ -14,6 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/swp391/api/products")
+@CrossOrigin(origins = "*")
 public class ProductController {
     @Autowired
     ProductServiceImp productServiceImp;
@@ -55,6 +56,8 @@ public class ProductController {
                         for (SizeRespone sizeRespone : sizeRespones) {
                             Size size =sizeServiceImp.getSizeByValue(sizeRespone.getSizeValue());
                             if(size == null) {
+                                size = new Size();
+                                size.setSizeValue(sizeRespone.getSizeValue());
                                 sizeServiceImp.createSize(size);
                             } else {
                                 size.setSizeValue(sizeRespone.getSizeValue());
@@ -82,7 +85,7 @@ public class ProductController {
                 return ResponseEntity.status(HttpStatus.CREATED).body("create product success");
             }
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
