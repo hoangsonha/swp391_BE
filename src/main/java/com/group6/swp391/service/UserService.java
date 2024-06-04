@@ -48,4 +48,8 @@ public interface UserService {
 
     public int calculateSecondIn5Minute(User user);
 
+    public boolean checkEmailOrPhone(String s);
+
+    public boolean setNewPassword(String emailOrPhone, String newPassword);
+
 }

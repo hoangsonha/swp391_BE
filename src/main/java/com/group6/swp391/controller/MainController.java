@@ -5,10 +5,7 @@ import com.group6.swp391.logout.ListToken;
 import com.group6.swp391.model.EnumRoleName;
 import com.group6.swp391.model.Role;
 import com.group6.swp391.model.User;
-import com.group6.swp391.request.OTPRequest;
-import com.group6.swp391.request.OTPValidationRequest;
-import com.group6.swp391.request.UserLogin;
-import com.group6.swp391.request.UserRegister;
+import com.group6.swp391.request.*;
 import com.group6.swp391.response.ObjectResponse;
 import com.group6.swp391.response.TokenResponse;
 import com.group6.swp391.security.CustomUserDetail;
@@ -155,14 +152,14 @@ public class MainController {
 
     @PostMapping("/forget_password")
     public ResponseEntity<ObjectResponse> getForgetPassword(@RequestBody OTPRequest otpRequest) {
-        boolean checkExistPhone = userService.getUserByPhone(otpRequest.getPhone());
+        boolean checkOTPRequest = userService.checkEmailOrPhone(otpRequest.getEmailOrPhone());
         boolean check = false;
-        if(checkExistPhone) {
+        if(checkOTPRequest) {
             check = userService.sendSMS(otpRequest);
         }
         return check ?
                 ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Sent otp successfully", null))
-                : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Sent OTP failed due to the phone hasn't register", null));
+                : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Sent OTP failed due to the phone or email hasn't register", null));
     }
 
     @PostMapping("/validationOTP")
@@ -171,6 +168,14 @@ public class MainController {
         return check ?
                 ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Authentication successfully", null))
                 : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Authentication failed", null));
+    }
+
+    @PostMapping("/set_password")
+    public ResponseEntity<ObjectResponse> SetPassword(@RequestBody ChangePasswordRequest changePasswordRequest) {
+        boolean check = userService.setNewPassword(changePasswordRequest.getPhoneOrEmail(), changePasswordRequest.getNewPassword());
+        return check ?
+                ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Change password successfully", null))
+                : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Change password failed", null));
     }
 
 

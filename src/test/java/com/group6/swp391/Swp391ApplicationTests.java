@@ -27,6 +27,9 @@ class Swp391ApplicationTests {
     @Test
     void contextLoads() {
 
+        boolean check = userService.checkEmailOrPhone("hoangsonhadev@gmail.com0334386995");
+
+        System.out.println(check);
 
 //        class TestDiamond {
 //            @Getter

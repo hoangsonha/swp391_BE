@@ -211,15 +211,14 @@ public class UserServiceImp implements UserService {
     @Override
     public boolean sendSMS(OTPRequest otpRequest) {
         try {
-//            String phone = otpRequest.getPhone();
-//            int type = 5;
-//            String otp = generatedNumber();
-//            String content = "Dear Customer, Absolutely do not provide this authentication Code to anyone. Enter OTP code" + otp + " to reset the password";
-//            String sender = "07eda63bd942bf35";
-//            SpeedSMSAPI api = new SpeedSMSAPI("BeAfmV");
-//            String result = api.sendSMS(phone, content, type, sender);
-//            otpMap.put(phone, otp);
-            //System.out.println(result);
+            String phoneOrEmail = otpRequest.getEmailOrPhone();
+            int type = 5;
+            String otp = generatedNumber();
+            String content = "Dear Customer, Absolutely do not provide this authentication Code to anyone. Enter OTP code" + otp + " to reset the password";
+            String sender = "07eda63bd942bf35";
+            SpeedSMSAPI api = new SpeedSMSAPI("BeAfmV");
+            String result = api.sendSMS(phoneOrEmail, content, type, sender);
+            otpMap.put(phoneOrEmail, otp);
             return true;
             } catch (Exception e) {
                 return false;
@@ -239,12 +238,12 @@ public class UserServiceImp implements UserService {
     @Override
     public boolean validateOTP(OTPValidationRequest otpValidationRequest) {
         Set<String> set = otpMap.keySet();
-        String phone = null;
+        String phoneOrEmail = null;
         for(String s : set) {
-            phone = s;
+            phoneOrEmail = s;
         }
-        if(otpValidationRequest.getPhone().equals(phone) && otpMap.get(phone).equals(otpValidationRequest.getOtp())) {
-            otpMap.remove(phone);
+        if(otpValidationRequest.getPhoneOrEmail().equals(phoneOrEmail) && otpMap.get(phoneOrEmail).equals(otpValidationRequest.getOtp())) {
+            otpMap.remove(phoneOrEmail);
             return true;
         } else {
             return false;
@@ -309,6 +308,32 @@ public class UserServiceImp implements UserService {
             minus = remainSecond + minuteInSecondNow;
         }
         return minus;
+    }
+
+    @Override
+    public boolean checkEmailOrPhone(String s) {
+        User user = null;
+        char c = s.toLowerCase().charAt(0);
+        if(c >= 'a' && c <= 'z') {
+            user = userRepository.getUserByEmail(s);
+        } else if(c >= '0' && c <= '9') {
+            user = userRepository.getUserByPhone(s);
+        }
+        return user != null ? true : false;
+    }
+
+    @Override
+    public boolean setNewPassword(String emailOrPhone, String newPassword) {
+        boolean check = false;
+        char c = emailOrPhone.toLowerCase().charAt(0);
+        if(c >= 'a' && c <= 'z') {
+            userRepository.setPasswordByEmail(newPassword, emailOrPhone);
+            check = true;
+        } else if(c >= '0' && c <= '9') {
+            userRepository.setPasswordByPhone(newPassword, emailOrPhone);
+            check = true;
+        }
+        return check;
     }
 
 

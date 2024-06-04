@@ -36,6 +36,14 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     public void setQuantityFailedLogin(int quantity, String email);
 
     @Modifying
+    @Query("update user set password = ?1 where email = ?2")
+    public void setPasswordByEmail(String password, String email);
+
+    @Modifying
+    @Query("update user set password = ?1 where phone = ?2")
+    public void setPasswordByPhone(String password, String phone);
+
+    @Modifying
     @Query("update user set nonLocked = false where email = ?1")
     public void lockedByEmail(String email);
 

@@ -10,5 +10,5 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OTPRequest {
-    private String phone;
+    private String emailOrPhone;
 }
