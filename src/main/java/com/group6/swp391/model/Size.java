@@ -11,7 +11,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties({"productSizes"})
 public class Size {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,7 +22,6 @@ public class Size {
     private int sizeValue;
 
     @OneToMany(mappedBy = "size")
-    @JsonIgnoreProperties("size")
     private List<ProductSize> productSizes;
 
 }
