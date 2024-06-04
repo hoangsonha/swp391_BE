@@ -1,7 +1,6 @@
 package com.group6.swp391.controller;
 
 import com.group6.swp391.model.*;
-import com.group6.swp391.request.ProductRequest;
 import com.group6.swp391.response.ProductResponse;
 import com.group6.swp391.response.SizeRespone;
 import com.group6.swp391.service.*;
@@ -92,7 +91,7 @@ public class ProductController {
 
     @GetMapping("/all_products")
     public ResponseEntity<?> getAllProducts() {
-        List<ProductRequest> products = productServiceImp.getAllProducts();
+        List<Product> products = productServiceImp.getAllProducts();
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
 }

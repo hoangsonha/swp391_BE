@@ -1,5 +1,7 @@
 package com.group6.swp391.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Product extends BaseEntity {
     @Id
     @Column(name = "product_id", nullable = false, columnDefinition = "NVARCHAR(100)")
@@ -72,9 +75,11 @@ public class Product extends BaseEntity {
     private Category category;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("product")
     private List<Thumnail> productImages;
 
     @OneToMany(mappedBy = "product")
+    @JsonIgnoreProperties("product")
     private List<ProductSize> productSizes;
 
 
