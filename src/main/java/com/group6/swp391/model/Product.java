@@ -77,4 +77,5 @@ public class Product extends BaseEntity {
     @OneToMany(mappedBy = "product")
     private List<ProductSize> productSizes;
 
+
 }
