@@ -10,6 +10,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OTPValidationRequest {
-    private String phone;
+    private String phoneOrEmail;
     private String otp;
 }
