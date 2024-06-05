@@ -26,4 +26,19 @@ public class ProductServiceImp  implements  ProductService{
     public Product getProductById(String productId) {
         return productRepository.findProductId(productId);
     }
+
+    @Override
+    public void deleteProductStatus(String productId) {
+        try {
+            Product product = productRepository.findProductId(productId);
+            if(product == null) {
+                throw new RuntimeException("Product not found");
+            } else {
+                product.setStatus(false);
+                productRepository.save(product);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

@@ -94,6 +94,35 @@ public class ProductController {
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
+    @GetMapping("/product/{product_id}")
+    public ResponseEntity<Product> getProductById(@PathVariable("product_id") String productID) {
+        try {
+            Product product = productServiceImp.getProductById(productID);
+            if (product == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            }
+            return ResponseEntity.ok(product);
+        }catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+
+    @DeleteMapping("/delete/{product_id}")
+    public ResponseEntity<String> deleteProductStatus(@PathVariable("product_id") String productID) {
+        try {
+            Product product = productServiceImp.getProductById(productID);
+            if(product == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            } else {
+                productServiceImp.deleteProductStatus(product.getProductID());
+                return ResponseEntity.ok().body("delete product success with product ID: " + product.getProductID());
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
 //    @GetMapping("/product/{product_id}")
 //    public ResponseEntity<List<Diamond>> getProductById(@PathVariable("product_id") String productId) {
 //        Product product = productServiceImp.getProductById(productId);
