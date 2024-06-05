@@ -13,9 +13,8 @@ import lombok.Setter;
 public class ProductCustom {
     //thang nay sinh ra sau khi nhan addcart
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "prodcut_custom_id")
-    private  int prodcutCustomId;
+    private  String prodcutCustomId;
 
     @ManyToOne
     @JoinColumn(name = "product_id")

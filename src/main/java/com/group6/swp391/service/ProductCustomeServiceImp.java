@@ -14,14 +14,10 @@ public class ProductCustomeServiceImp implements  ProductCustomeService{
         return productCustomeRepository.save(productCustom);
     }
 
-    @Override
-    public ProductCustom getProductCustom(int id) {
-        return productCustomeRepository.findById(id).orElseThrow(() -> new RuntimeException("Product Custom Not Found"));
-    }
 
     @Override
     public ProductCustom updateProductCustom(ProductCustom productCustom) {
-        ProductCustom existingProduct = getProductCustom(productCustom.getProdcutCustomId());
+        ProductCustom existingProduct = getProductCustomById(productCustom.getProdcutCustomId());
         if(existingProduct == null){
             throw new RuntimeException("Product Custom Not Found");
         } else {
@@ -40,5 +36,10 @@ public class ProductCustomeServiceImp implements  ProductCustomeService{
     @Override
     public void deleteProductCustom(int id) {
 
+    }
+
+    @Override
+    public ProductCustom getProductCustomById(String id) {
+        return productCustomeRepository.getProductCustomByProdcutCustomId(id);
     }
 }

@@ -6,5 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ProductCustomeRepository extends JpaRepository<ProductCustom, Integer> {
+public interface ProductCustomeRepository extends JpaRepository<ProductCustom, String> {
+    public ProductCustom getProductCustomByProdcutCustomId(String id);
 }
