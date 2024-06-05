@@ -64,6 +64,9 @@ public class Product extends BaseEntity {
     @Column(name = "status")
     private boolean status;
 
+    @Column(name = "stone_weight")
+    private float stoneWeight;
+
     @Column(name = "original_price")
     private double originalPrice;
 
