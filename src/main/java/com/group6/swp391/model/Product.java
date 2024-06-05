@@ -28,8 +28,8 @@ public class Product extends BaseEntity {
     @Column(name = "brand",columnDefinition = "NVARCHAR(50)")
     private String brand;
 
-    @Column(name = "gole_type",columnDefinition = "NVARCHAR(50)")
-    private String goleType;
+    @Column(name = "gold_type",columnDefinition = "NVARCHAR(50)")
+    private String goldType;
 
     @Column(name = "gold_weight")
     private float goldWeight;
