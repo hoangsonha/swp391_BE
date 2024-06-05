@@ -34,18 +34,15 @@ public class ProductController {
             Product product = productResponse.getProduct();
             List<SizeRespone> sizeRespones = productResponse.getSizes();
             List<Thumnail> thumnails = productResponse.getThumnails();
-            if(productResponse == null) {
-                throw new RuntimeException("Product response is null");
-            } else {
                 if(product == null) {
-                    throw new RuntimeException("Product is null");
+                    return new ResponseEntity<>("Product is null", HttpStatus.BAD_REQUEST);
                 } else {
                     if(productServiceImp.getProductById(product.getProductID()) != null) {
                         return ResponseEntity.status(HttpStatus.CONFLICT).body("Product already exists");
                     } else {
                         Category existingCategory = categoryServiceImp.getByName(product.getCategory().getCategoryName());
                         if(existingCategory == null) {
-                            throw new RuntimeException("Category does not exist");
+                            return ResponseEntity.status(HttpStatus.CONFLICT).body("Category does not exist");
                         } else {
                             product.setCategory(existingCategory);
                         }
@@ -85,7 +82,7 @@ public class ProductController {
                     }
                 }
                 return ResponseEntity.status(HttpStatus.CREATED).body("create product success");
-            }
+
         } catch (Exception e) {
              return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
