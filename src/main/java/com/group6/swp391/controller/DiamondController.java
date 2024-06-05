@@ -42,6 +42,20 @@ public class DiamondController {
         }
     }
 
+    @GetMapping("/diamond_id/{diamond_id}")
+    public ResponseEntity<Diamond> getDiamondByDiamondID(@PathVariable("diamond_id") String diamondID) {
+        try {
+            Diamond existingDiamond = diamondServiceImp.getDiamondByDiamondID(diamondID);
+            if( existingDiamond == null) {
+                return ResponseEntity.notFound().build();
+            } else {
+                return ResponseEntity.ok(existingDiamond);
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
     @GetMapping("/all_diamonds")
     public ResponseEntity<?> getAllDiamonds() {
         List<Diamond> diamonds;
