@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping("/swp391/api/products")
 @CrossOrigin(origins = "*")
 public class ProductController {
@@ -26,6 +25,8 @@ public class ProductController {
     @Autowired
     ThumbnailSericeImp thumbnailSericeImp;
     @Autowired CategoryServiceImp categoryServiceImp;
+
+    @Autowired DiamondServiceImp diamondServiceImp;
 
     @PostMapping("/create_product")
     public ResponseEntity<?> createProduct(@RequestBody ProductResponse productResponse) {
@@ -90,12 +91,17 @@ public class ProductController {
         }
     }
 
-
-
-
     @GetMapping("/all_products")
     public ResponseEntity<?> getAllProducts() {
         List<Product> products = productServiceImp.getAllProducts();
         return new ResponseEntity<>(products, HttpStatus.OK);
+    }
+
+    @GetMapping("/product/{product_id}")
+    public ResponseEntity<List<Diamond>> getProductById(@PathVariable("product_id") String productId) {
+        Product product = productServiceImp.getProductById(productId);
+        List<Diamond> diamonds = diamondServiceImp.getByCondition(product.getShapeDiamond(), product.getDimensionsDiamond());
+        return new ResponseEntity<>(diamonds, HttpStatus.OK);
+
     }
 }

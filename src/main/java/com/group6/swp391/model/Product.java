@@ -34,8 +34,8 @@ public class Product extends BaseEntity {
     @Column(name = "gold_weight")
     private float goldWeight;
 
-    @Column(name = "cut_diamond")
-    private String cutDiamond;
+    @Column(name = "shape_diamond", columnDefinition = "NVARCHAR(255)")
+    private String shapeDiamond;
 
     @Column(name = "dimensions_diamond")
     private float dimensionsDiamond;

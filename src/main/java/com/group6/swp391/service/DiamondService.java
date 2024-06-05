@@ -16,4 +16,6 @@ public interface DiamondService {
     void deleteDiamond(String diamondID);
 
     void markDiamondAsDeleted(String diamondID);
+
+    List<Diamond> getByCondition(String shapeDiamond, float dimensions);
 }

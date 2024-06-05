@@ -49,4 +49,9 @@ public class DiamondServiceImp implements DiamondService {
             throw new RuntimeException("Diamond not found with id: " + diamondID);
         }
     }
+
+    @Override
+    public List<Diamond> getByCondition(String shapeDiamond, float dimensions) {
+        return diamondRepository.findBycondition(shapeDiamond, dimensions);
+    }
 }

@@ -2,10 +2,12 @@ package com.group6.swp391.controller;
 
 import com.group6.swp391.model.Diamond;
 import com.group6.swp391.service.DiamondService;
+import com.group6.swp391.service.DiamondServiceImp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -15,6 +17,8 @@ public class DiamondController {
 
     @Autowired
     DiamondService diamondService;
+    @Autowired
+    private DiamondServiceImp diamondServiceImp;
 
     @PostMapping("/create_diamond")
     public ResponseEntity<?> createDiamond(@RequestBody Diamond diamond) {
@@ -107,4 +111,18 @@ public class DiamondController {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
     }
+
+    @GetMapping("/get_condition")
+    public ResponseEntity<?> getCondition (
+            @RequestParam("shape") String shape,
+            @RequestParam("dimensions") float dimensions) {
+        List<Diamond> list = diamondServiceImp.getByCondition(shape, dimensions);
+
+        if (list == null || list.isEmpty()) {
+            return ResponseEntity.badRequest().body("Diamond list is empty");
+        } else {
+            return ResponseEntity.ok(list);
+        }
+    }
+
 }
