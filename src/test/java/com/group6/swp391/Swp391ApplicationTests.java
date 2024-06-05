@@ -31,7 +31,9 @@ class Swp391ApplicationTests {
         if(check == false) {
             System.out.println("id k ton tai");
         }
-        System.out.println(check);
+
+//        String siteUrl = request.getRequestURL().toString().replace(request.getServletPath(), "");
+//        System.out.println(siteUrl);
 
 //        class TestDiamond {
 //            @Getter

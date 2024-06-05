@@ -143,6 +143,77 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
+    public boolean sendResetPasswordEmail(OTPRequest otpRequest, String siteUrl) throws MessagingException, UnsupportedEncodingException {
+        String phoneOrEmail = otpRequest.getEmailOrPhone();
+        User user = null;
+        boolean check = checkEmailOrPhone(phoneOrEmail);
+        if(check) {
+            user = userRepository.getUserByEmail(phoneOrEmail);
+        } else user = userRepository.getUserByPhone(phoneOrEmail);
+        String otp = generatedNumber();
+        String content = "Dear Customer, Absolutely do not provide this authentication Code to anyone. Enter OTP code " + otp + " to reset the password";
+        otpMap.put(phoneOrEmail, otp);
+        String mai = "<body \n" +
+                "    style=\"font-family: Arial, sans-serif;\n" +
+                "            background-color: #f4f4f4;\n" +
+                "            margin: 0;\n" +
+                "            padding: 0;\n" +
+                "            -webkit-text-size-adjust: none;\n" +
+                "            -ms-text-size-adjust: none;\">\n" +
+                "    <div class=\"email-container\"\n" +
+                "         style=\"max-width: 600px;\n" +
+                "                margin: auto;\n" +
+                "                background-color: #ffffff;\n" +
+                "                padding: 20px;\n" +
+                "                border-radius: 8px;\n" +
+                "                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);\">\n" +
+                "        <div class=\"header\"\n" +
+                "             style=\"text-align: center;\n" +
+                "                    padding-bottom: 20px;\">\n" +
+                "            <img src=\"https://firebasestorage.googleapis.com/v0/b/diamond-6401b.appspot.com/o/Logo.png?alt=media&token=13f983ed-b3e1-4bbe-83b2-a47edf62c6a6\"\n" +
+                "                alt=\"Logo\" style=\"max-width: 300px;\">\n" +
+                "        </div>\n" +
+                "        <div class=\"content\"\n" +
+                "              style=\"text-align: center;\n" +
+                "                    color: #333333;\">\n" +
+                "            <h1\n" +
+                "            style=\"font-size: 24px;\n" +
+                "                margin: 0;\n" +
+                "                padding: 0;\"\n" +
+                "            >Verify your email address</h1>\n" +
+                "            <p\n" +
+                "            style=\"font-size: 16px;\n" +
+                "                    line-height: 1.5;\">Welcome to Group 6 Diamond.</p>\n" +
+                "            <h1\n" +
+                "            style=\"font-size: 20px;\n" +
+                "                line-height: 1.5;\">" + content + "</h1>\n" +
+                "            <p>If you received this email in error, simply ignore this email and do not click the button.</p>\n" +
+                "        </div>\n" +
+                "        <div class=\"footer\"\n" +
+                "             style=\"text-align: center;\n" +
+                "             font-size: 14px;\n" +
+                "             color: #777777;\n" +
+                "             margin-top: 20px;\">\n" +
+                "            <p>Copyright &copy; 2019, YOUWORK.TODAY INC</p>\n" +
+                "            <h2>Thank you, have a good day .</h2></br>Group6 Team\n" +
+                "        </div>\n" +
+                "    </div>\n" +
+                "</body>";
+
+        String title = "Please verify your registration";
+        String senderName = "Group6";
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
+        helper.setFrom("hoangsonhadiggory@gmail.com", senderName);
+        helper.setTo(user.getEmail());
+        helper.setSubject(title);
+        helper.setText(mai, true);
+
+        javaMailSender.send(mimeMessage);
+        return true;
+    }
+
+    @Override
     public boolean verifyAccount(String code) {
         User user = userRepository.getUserByCodeVerify(code);
         if(user == null || user.isEnabled() || !user.isNonLocked()) {
@@ -242,7 +313,7 @@ public class UserServiceImp implements UserService {
         for(String s : set) {
             phoneOrEmail = s;
         }
-        if(otpValidationRequest.getPhoneOrEmail().equals(phoneOrEmail) && otpMap.get(phoneOrEmail).equals(otpValidationRequest.getOtp())) {
+        if(otpValidationRequest.getEmailOrPhone().equals(phoneOrEmail) && otpMap.get(phoneOrEmail).equals(otpValidationRequest.getOtp())) {
             otpMap.remove(phoneOrEmail);
             return true;
         } else {

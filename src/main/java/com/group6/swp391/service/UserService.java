@@ -18,6 +18,8 @@ public interface UserService {
 
     public boolean sendVerificationEmail(User user, String siteUrl) throws MessagingException, UnsupportedEncodingException;
 
+    public boolean sendResetPasswordEmail(OTPRequest otpRequest, String siteUrl) throws MessagingException, UnsupportedEncodingException;
+
     public boolean verifyAccount(String code);
 
     public User getUserByID(int userID);

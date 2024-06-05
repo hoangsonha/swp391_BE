@@ -5,11 +5,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
 @Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class OTPValidationRequest {
-    private String emailOrPhone;
-    private String otp;
+public class SearchAdvanceRequest {
+    private String carat;
+    private String size;
+    private String color;
+    private String clarity;
 }

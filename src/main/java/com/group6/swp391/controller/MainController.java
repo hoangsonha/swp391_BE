@@ -3,6 +3,7 @@ package com.group6.swp391.controller;
 import com.group6.swp391.jwt.JWTToken;
 import com.group6.swp391.logout.ListToken;
 import com.group6.swp391.enums.EnumRoleName;
+import com.group6.swp391.model.Diamond;
 import com.group6.swp391.model.Role;
 import com.group6.swp391.model.User;
 import com.group6.swp391.request.*;
@@ -148,13 +149,12 @@ public class MainController {
     }
 
     @PostMapping("/forget_password")
-    public ResponseEntity<ObjectResponse> getForgetPassword(@RequestBody OTPRequest otpRequest, HttpServletRequest request) throws MessagingException, UnsupportedEncodingException {
+    public ResponseEntity<ObjectResponse> getForgetPassword(@RequestBody OTPRequest otpRequest, HttpServletRequest request, HttpServletResponse response) throws MessagingException, UnsupportedEncodingException {
         boolean checkOTPRequest = userService.checkEmailOrPhone(otpRequest.getEmailOrPhone());
         String siteUrl = request.getRequestURL().toString().replace(request.getServletPath(), "");
         boolean check = false;
         if(checkOTPRequest) {
-            User user = userService.getUserByEmail(otpRequest.getEmailOrPhone());
-            check = userService.sendVerificationEmail(user, siteUrl);
+            check = userService.sendResetPasswordEmail(otpRequest, siteUrl);
         } else {
             check = userService.sendSMS(otpRequest);
         }
@@ -173,10 +173,15 @@ public class MainController {
 
     @PostMapping("/set_password")
     public ResponseEntity<ObjectResponse> SetPassword(@RequestBody ChangePasswordRequest changePasswordRequest) {
-        boolean check = userService.setNewPassword(changePasswordRequest.getPhoneOrEmail(), changePasswordRequest.getNewPassword());
+        boolean check = userService.setNewPassword(changePasswordRequest.getEmailOrPhone(), changePasswordRequest.getNewPassword());
         return check ?
                 ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Change password successfully", null))
                 : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Change password failed", null));
+    }
+
+    @GetMapping("/search_advanced")
+    public ResponseEntity<List<Diamond>> getDiamondBySearchAdvanced(@RequestBody SearchAdvanceRequest searchAdvanceRequest) {
+        return null;
     }
 
 
