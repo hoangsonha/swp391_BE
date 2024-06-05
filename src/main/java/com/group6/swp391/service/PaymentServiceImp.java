@@ -15,4 +15,9 @@ public class PaymentServiceImp implements PaymentService {
     public void save(Payment payment) {
         paymentRepository.save(payment);
     }
+
+    @Override
+    public Payment createPayment(Payment payment) {
+        return paymentRepository.save(payment);
+    }
 }
