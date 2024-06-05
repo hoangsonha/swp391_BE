@@ -41,7 +41,7 @@ public class ProductController {
                     throw new RuntimeException("Product is null");
                 } else {
                     if(productServiceImp.getProductById(product.getProductID()) != null) {
-                        throw new RuntimeException("Product already exists");
+                        return ResponseEntity.status(HttpStatus.CONFLICT).body("Product already exists");
                     } else {
                         Category existingCategory = categoryServiceImp.getByName(product.getCategory().getCategoryName());
                         if(existingCategory == null) {

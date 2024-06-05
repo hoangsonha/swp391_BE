@@ -24,6 +24,6 @@ public class ProductServiceImp  implements  ProductService{
 
     @Override
     public Product getProductById(String productId) {
-        return productRepository.findById(productId).orElseThrow(() -> new RuntimeException("Product not found"));
+        return productRepository.findProductId(productId);
     }
 }
