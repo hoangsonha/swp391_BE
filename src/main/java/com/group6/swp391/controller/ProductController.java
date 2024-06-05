@@ -14,7 +14,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/swp391/api/products")
-@CrossOrigin(origins = "*")
 public class ProductController {
     @Autowired
     ProductServiceImp productServiceImp;
