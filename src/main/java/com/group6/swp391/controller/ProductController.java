@@ -14,6 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/swp391/api/products")
+@CrossOrigin(origins = "*")
 public class ProductController {
     @Autowired
     ProductServiceImp productServiceImp;
@@ -96,11 +97,10 @@ public class ProductController {
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
-    @GetMapping("/product/{product_id}")
-    public ResponseEntity<List<Diamond>> getProductById(@PathVariable("product_id") String productId) {
-        Product product = productServiceImp.getProductById(productId);
-        List<Diamond> diamonds = diamondServiceImp.getByCondition(product.getShapeDiamond(), product.getDimensionsDiamond());
-        return new ResponseEntity<>(diamonds, HttpStatus.OK);
-
-    }
+//    @GetMapping("/product/{product_id}")
+//    public ResponseEntity<List<Diamond>> getProductById(@PathVariable("product_id") String productId) {
+//        Product product = productServiceImp.getProductById(productId);
+//        List<Diamond> diamonds = diamondServiceImp.getByCondition(product.getShapeDiamond(), product.getDimensionsDiamond());
+//        return new ResponseEntity<>(diamonds, HttpStatus.OK);
+//    }
 }
