@@ -1,6 +1,6 @@
 package com.group6.swp391.repository;
 
-import com.group6.swp391.model.EnumRoleName;
+import com.group6.swp391.enums.EnumRoleName;
 import com.group6.swp391.model.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

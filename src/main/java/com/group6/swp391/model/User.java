@@ -14,15 +14,15 @@ public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int userID;
-    @Column(name = "first_name", columnDefinition = "varchar(300)")
+    @Column(name = "first_name", columnDefinition = "nvarchar(20)")
     private String firstName;
-    @Column(name = "last_name", columnDefinition = "varchar(300)")
+    @Column(name = "last_name", columnDefinition = "nvarchar(20)")
     private String lastName;
-    @Column(name = "email", nullable = false, length = 200, unique = true)
+    @Column(name = "email", nullable = false, length = 100, unique = true)
     private String email;
-    @Column(name = "password", length = 200)
+    @Column(name = "password", length = 100)
     private String password;
-    @Column(name = "phone", length = 20)
+    @Column(name = "phone", length = 15)
     private String phone;
     @Column(name = "address", columnDefinition = "varchar(300)")
     private String address;

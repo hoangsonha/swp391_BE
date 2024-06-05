@@ -15,7 +15,7 @@ public class FeedBack extends BaseEntity {
     @Column(name = "feedBack_id")
     private int feedBackID;
 
-    @Column(name = "comment")
+    @Column(name = "comment", length = 1024)
     private String comment;
 
     private double rating;

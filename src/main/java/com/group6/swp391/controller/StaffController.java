@@ -1,9 +1,8 @@
 package com.group6.swp391.controller;
 
-import com.group6.swp391.model.EnumRoleName;
+import com.group6.swp391.enums.EnumRoleName;
 import com.group6.swp391.model.Role;
 import com.group6.swp391.model.User;
-import com.group6.swp391.request.AdminRegister;
 import com.group6.swp391.request.UserRegister;
 import com.group6.swp391.response.ObjectResponse;
 import com.group6.swp391.service.RoleService;
@@ -11,17 +10,13 @@ import com.group6.swp391.service.UserService;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 @RestController

@@ -14,10 +14,10 @@ import java.util.List;
 @Builder
 public class Diamond {
     @Id
-    @Column(name = "diamond_id", nullable = false, columnDefinition = "NVARCHAR(100)")
+    @Column(name = "diamond_id", nullable = false, length = 50)
     private String diamondID;
 
-    @Column(name = "diamond_name", nullable = false, columnDefinition = "NVARCHAR(255)")
+    @Column(name = "diamond_name", nullable = false, columnDefinition = "NVARCHAR(50)")
     private String diamondName;
 
     @Column(name = "carat", nullable = false)
@@ -26,25 +26,25 @@ public class Diamond {
     @Column(name = "certificate", nullable = false)
     private String certificate;
 
-    @Column(name = "clarify", nullable = false, columnDefinition = "NVARCHAR(100)")
+    @Column(name = "clarify", nullable = false, length = 20)
     private String clarify;
 
-    @Column(name = "color", nullable = false, columnDefinition = "NVARCHAR(100)")
+    @Column(name = "color", nullable = false, columnDefinition = "NVARCHAR(50)")
     private String color;
 
-    @Column(name = "color_level", nullable = false)
+    @Column(name = "color_level", nullable = false, length = 5)
     private char colorLevel;
 
-    @Column(name = "cut", nullable = false, columnDefinition = "NVARCHAR(100)")
+    @Column(name = "cut", nullable = false, columnDefinition = "NVARCHAR(50)")
     private String cut;
 
-    @Column(name = "shape", nullable = false, columnDefinition = "NVARCHAR(100)")
+    @Column(name = "shape", nullable = false, columnDefinition = "NVARCHAR(30)")
     private String shape;
 
     @Column(name = "dimensions")
     private float dimensions;
 
-    @Column(name = "flourescence", nullable = false, columnDefinition = "NVARCHAR(60)")
+    @Column(name = "flourescence", nullable = false, columnDefinition = "NVARCHAR(20)")
     private String flourescence;
 
     @Column(name = "image")

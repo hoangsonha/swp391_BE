@@ -1,6 +1,7 @@
 package com.group6.swp391.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.group6.swp391.enums.EnumRoleName;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

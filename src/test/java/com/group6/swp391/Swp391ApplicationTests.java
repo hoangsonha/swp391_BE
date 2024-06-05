@@ -28,7 +28,9 @@ class Swp391ApplicationTests {
     void contextLoads() {
 
         boolean check = userService.checkEmailOrPhone("hoangsonhadev@gmail.com0334386995");
-
+        if(check == false) {
+            System.out.println("id k ton tai");
+        }
         System.out.println(check);
 
 //        class TestDiamond {

@@ -1,37 +1,23 @@
 package com.group6.swp391.controller;
 
-import com.group6.swp391.jwt.JWTToken;
-import com.group6.swp391.model.EnumRoleName;
+import com.group6.swp391.enums.EnumRoleName;
 import com.group6.swp391.model.Role;
 import com.group6.swp391.model.User;
 import com.group6.swp391.request.UserInformation;
-import com.group6.swp391.request.UserLogin;
 import com.group6.swp391.request.UserRegister;
 import com.group6.swp391.response.ObjectResponse;
-import com.group6.swp391.response.TokenResponse;
-import com.group6.swp391.security.CustomUserDetail;
 import com.group6.swp391.service.RoleService;
 import com.group6.swp391.service.UserService;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
 
 @RestController

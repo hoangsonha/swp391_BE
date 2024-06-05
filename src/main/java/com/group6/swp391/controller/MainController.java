@@ -2,7 +2,7 @@ package com.group6.swp391.controller;
 
 import com.group6.swp391.jwt.JWTToken;
 import com.group6.swp391.logout.ListToken;
-import com.group6.swp391.model.EnumRoleName;
+import com.group6.swp391.enums.EnumRoleName;
 import com.group6.swp391.model.Role;
 import com.group6.swp391.model.User;
 import com.group6.swp391.request.*;
@@ -14,7 +14,6 @@ import com.group6.swp391.service.UserService;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
@@ -23,10 +22,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -151,10 +148,14 @@ public class MainController {
     }
 
     @PostMapping("/forget_password")
-    public ResponseEntity<ObjectResponse> getForgetPassword(@RequestBody OTPRequest otpRequest) {
+    public ResponseEntity<ObjectResponse> getForgetPassword(@RequestBody OTPRequest otpRequest, HttpServletRequest request) throws MessagingException, UnsupportedEncodingException {
         boolean checkOTPRequest = userService.checkEmailOrPhone(otpRequest.getEmailOrPhone());
+        String siteUrl = request.getRequestURL().toString().replace(request.getServletPath(), "");
         boolean check = false;
         if(checkOTPRequest) {
+            User user = userService.getUserByEmail(otpRequest.getEmailOrPhone());
+            check = userService.sendVerificationEmail(user, siteUrl);
+        } else {
             check = userService.sendSMS(otpRequest);
         }
         return check ?
@@ -177,6 +178,8 @@ public class MainController {
                 ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Change password successfully", null))
                 : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Change password failed", null));
     }
+
+
 
 
 //=-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

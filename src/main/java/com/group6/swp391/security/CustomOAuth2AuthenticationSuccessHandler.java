@@ -2,7 +2,7 @@ package com.group6.swp391.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.group6.swp391.jwt.JWTToken;
-import com.group6.swp391.model.EnumRoleName;
+import com.group6.swp391.enums.EnumRoleName;
 import com.group6.swp391.model.Role;
 import com.group6.swp391.model.User;
 import com.group6.swp391.repository.RoleRepository;
@@ -18,8 +18,6 @@ import org.springframework.security.oauth2.client.authentication.OAuth2Authentic
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
 
 @Configuration

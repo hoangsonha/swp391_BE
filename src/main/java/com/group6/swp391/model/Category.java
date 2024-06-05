@@ -17,7 +17,7 @@ public class Category extends BaseEntity {
     @Column(name = "category_id")
     private int categoryID;
 
-    @Column(name = "categpry_name", nullable = false, length = 150)
+    @Column(name = "categpry_name", nullable = false, length = 50)
     private String categoryName;
 
     public Category(String categoryName) {

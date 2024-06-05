@@ -16,7 +16,7 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Product extends BaseEntity {
     @Id
-    @Column(name = "product_id", nullable = false, columnDefinition = "NVARCHAR(100)")
+    @Column(name = "product_id", nullable = false, length = 50)
     private String productID;
 
     @Column(name = "product_name", nullable = false, columnDefinition = "NVARCHAR(300)")

@@ -1,6 +1,6 @@
 package com.group6.swp391.service;
 
-import com.group6.swp391.model.EnumRoleName;
+import com.group6.swp391.enums.EnumRoleName;
 import com.group6.swp391.model.Role;
 import com.group6.swp391.model.User;
 import com.group6.swp391.repository.UserRepository;
@@ -216,7 +216,7 @@ public class UserServiceImp implements UserService {
             String otp = generatedNumber();
             String content = "Dear Customer, Absolutely do not provide this authentication Code to anyone. Enter OTP code" + otp + " to reset the password";
             String sender = "07eda63bd942bf35";
-            SpeedSMSAPI api = new SpeedSMSAPI("BeAfmV");
+            SpeedSMSAPI api = new SpeedSMSAPI("BeAfmVJjdj9CrAhg7oU49zqMpC9pV83r");
             String result = api.sendSMS(phoneOrEmail, content, type, sender);
             otpMap.put(phoneOrEmail, otp);
             return true;
@@ -313,13 +313,16 @@ public class UserServiceImp implements UserService {
     @Override
     public boolean checkEmailOrPhone(String s) {
         User user = null;
+        boolean check = false;
         char c = s.toLowerCase().charAt(0);
         if(c >= 'a' && c <= 'z') {
             user = userRepository.getUserByEmail(s);
+            check = true;
         } else if(c >= '0' && c <= '9') {
             user = userRepository.getUserByPhone(s);
+            check = false;
         }
-        return user != null ? true : false;
+        return check;
     }
 
     @Override

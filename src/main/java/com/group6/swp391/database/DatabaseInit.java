@@ -1,15 +1,11 @@
 package com.group6.swp391.database;
 
-import com.group6.swp391.model.EnumRoleName;
-import com.group6.swp391.model.Role;
-import com.group6.swp391.model.User;
 import com.group6.swp391.repository.RoleRepository;
 import com.group6.swp391.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
