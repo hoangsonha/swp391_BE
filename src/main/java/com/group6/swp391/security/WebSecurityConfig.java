@@ -59,6 +59,8 @@ public class WebSecurityConfig {
                         .requestMatchers("/swp391/api/diamonds/**").permitAll()
                         .requestMatchers("/swp391/api/products/**").permitAll()
                         .requestMatchers("/public/**").permitAll()
+                        .requestMatchers("/v3/**").permitAll()
+                        .requestMatchers("/swagger-ui/**").permitAll()
 //                              .requestMatchers(HttpMethod.POST, "/ues", "/*").permitAll()
                         .anyRequest().authenticated())
 
