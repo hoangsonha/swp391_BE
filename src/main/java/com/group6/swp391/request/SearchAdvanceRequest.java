@@ -12,6 +12,9 @@ import lombok.Setter;
 public class SearchAdvanceRequest {
     private String carat;
     private String size;
-    private String color;
-    private String clarity;
+    private char color;
+    private String clarify;
+    private String shape;
+    private String price;
+    private String optionPrice;
 }

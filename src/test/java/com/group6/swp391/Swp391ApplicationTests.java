@@ -4,6 +4,7 @@ package com.group6.swp391;
 import com.group6.swp391.model.Diamond;
 import com.group6.swp391.model.Product;
 import com.group6.swp391.model.User;
+import com.group6.swp391.repository.DiamondRepository;
 import com.group6.swp391.repository.RoleRepository;
 import com.group6.swp391.repository.UserRepository;
 import com.group6.swp391.service.UserService;
@@ -24,13 +25,23 @@ class Swp391ApplicationTests {
     @Autowired private RoleRepository roleRepository;
     @Autowired private UserRepository userRepository;
     @Autowired private UserService userService;
+    @Autowired private DiamondRepository diamondRepository;
     @Test
     void contextLoads() {
+//    select * from railway.diamond where total_price <= 1000000000 and total_price >= 500000000 and carat <= 1.15 and carat >= 0.75
+//    and dimensions <= 6 and dimensions >= 5.8 and color_level = 'E' and clarify = 'VS2' and shape = 'Round';
 
-        boolean check = userService.checkEmailOrPhone("hoangsonhadev@gmail.com0334386995");
-        if(check == false) {
-            System.out.println("id k ton tai");
+        List<Diamond> findDiamonds = diamondRepository.getDiamondBySearchAdvanced(1000000000, 500000000,
+                1.15F, 0.75F, 6F, 5.8F, 'E', "VS2", "Round");
+
+        for(Diamond findDiamond : findDiamonds) {
+            System.out.println(findDiamond.getDiamondID());
         }
+
+//        boolean check = userService.checkEmailOrPhone("hoangsonhadev@gmail.com0334386995");
+//        if(check == false) {
+//            System.out.println("id k ton tai");
+//        }
 
 //        String siteUrl = request.getRequestURL().toString().replace(request.getServletPath(), "");
 //        System.out.println(siteUrl);
