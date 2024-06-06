@@ -1,5 +1,8 @@
 package com.group6.swp391.service;
 
+import com.group6.swp391.enums.EnumClarityName;
+import com.group6.swp391.enums.EnumColorName;
+import com.group6.swp391.enums.EnumShapeName;
 import com.group6.swp391.model.Diamond;
 import com.group6.swp391.repository.DiamondRepository;
 import com.group6.swp391.request.SearchAdvanceRequest;
@@ -56,10 +59,6 @@ public class DiamondServiceImp implements DiamondService {
         }
     }
 
-    @Override
-    public List<Diamond> getByCondition(String shapeDiamond, float dimensions) {
-        return diamondRepository.findBycondition(shapeDiamond, dimensions);
-    }
 
     @Override
     public List<Diamond> searchAdvaned(SearchAdvanceRequest searchAdvanceRequest) {
@@ -75,9 +74,21 @@ public class DiamondServiceImp implements DiamondService {
         float sizeBegin = Float.parseFloat(str_size[0]);
         float sizeEnd = Float.parseFloat(str_size[1]);
 
-        char color = searchAdvanceRequest.getColor();
-        String clarify = searchAdvanceRequest.getClarify();
-        String shape = searchAdvanceRequest.getShape();
+        boolean check_color = EnumColorName.checkExistColor(searchAdvanceRequest.getColor());
+        char color = 0;
+        if(check_color) {
+            color = searchAdvanceRequest.getColor();
+        }
+        boolean check_clarify = EnumClarityName.checkExistClarity(searchAdvanceRequest.getClarify());
+        String clarify = null;
+        if(check_clarify) {
+            clarify = searchAdvanceRequest.getClarify();
+        }
+        boolean check_shape = EnumShapeName.checkExistShape(searchAdvanceRequest.getShape());
+        String shape = null;
+        if(check_shape) {
+            shape = searchAdvanceRequest.getShape();
+        }
         String optionPrice = searchAdvanceRequest.getOptionPrice();
 
         String string_price = searchAdvanceRequest.getPrice();
@@ -97,6 +108,24 @@ public class DiamondServiceImp implements DiamondService {
         } else if(lists_price.size() == 2) {
             priceBegin = lists_price.get(0);
             priceEnd = lists_price.get(1);
+        }
+
+
+
+        if(optionPrice.equals("All product")) {
+            if(priceBegin != 0 && priceEnd != 0 && caratBegin != 0 && caratEnd != 0 && sizeBegin != 0 && sizeEnd != 0 && color != 0 && clarify != null && shape != null) {
+                lists_diamond = diamondRepository.getDiamondBySearchAdvanced(priceEnd, priceBegin, caratEnd, caratBegin, sizeEnd, sizeBegin, color, clarify, shape);
+            } else if(priceBegin != 0 && priceEnd != 0 && caratBegin != 0 && caratEnd != 0 && sizeBegin != 0 && sizeEnd != 0 && color != 0 && clarify != null && shape == null) {
+
+            }
+        } else if(optionPrice.equals("All product ASC")) {
+            if(priceBegin != 0 && priceEnd != 0 && caratBegin != 0 && caratEnd != 0 && sizeBegin != 0 && sizeEnd != 0 && color != 0 && clarify != null && shape != null) {
+                lists_diamond = diamondRepository.getDiamondBySearchAdvancedByASC(priceEnd, priceBegin, caratEnd, caratBegin, sizeEnd, sizeBegin, color, clarify, shape);
+            }
+        } else if(optionPrice.equals("All product DESC")) {
+            if(priceBegin != 0 && priceEnd != 0 && caratBegin != 0 && caratEnd != 0 && sizeBegin != 0 && sizeEnd != 0 && color != 0 && clarify != null && shape != null) {
+                lists_diamond = diamondRepository.getDiamondBySearchAdvancedByDESC(priceEnd, priceBegin, caratEnd, caratBegin, sizeEnd, sizeBegin, color, clarify, shape);
+            }
         }
 
         lists_diamond = diamondRepository.getDiamondBySearchAdvanced(priceEnd, priceBegin, caratEnd, caratBegin, sizeEnd, sizeBegin, color, clarify, shape);
