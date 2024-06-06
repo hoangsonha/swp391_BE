@@ -28,8 +28,6 @@ public interface DiamondRepository extends JpaRepository<Diamond, String> {
     @Query("select d from Diamond d where d.totalPrice <= ?1 and d.totalPrice >= ?2 and d.carat <= ?3 and d.carat >= ?4 and d.dimensions <= ?5 and d.dimensions >= ?6 and d.colorLevel = ?7 and d.clarify = ?8 and d.shape = ?9")
     public List<Diamond> getDiamondBySearchAdvanced(double priceEnd, double priceBegin, float caratEnd, float caratBegin, float sizeEnd, float sizeBegin, char colorLevel, String clarify, String shape);
 
-
-
     // situation shape is null
 
     @Modifying
@@ -41,7 +39,6 @@ public interface DiamondRepository extends JpaRepository<Diamond, String> {
     @Modifying
     @Query("select d from Diamond d where d.totalPrice <= ?1 and d.totalPrice >= ?2 and d.carat <= ?3 and d.carat >= ?4 and d.dimensions <= ?5 and d.dimensions >= ?6 and d.colorLevel = ?7")
     public List<Diamond> getDiamondBySearchAdvancedExcludeShapeClarify(double priceEnd, double priceBegin, float caratEnd, float caratBegin, float sizeEnd, float sizeBegin, char colorLevel);
-
 
     // situation shape and color is null
 
@@ -61,15 +58,11 @@ public interface DiamondRepository extends JpaRepository<Diamond, String> {
     @Query("select d from Diamond d where d.totalPrice <= ?1 and d.totalPrice >= ?2 and d.dimensions <= ?3 and d.dimensions >= ?4 and d.colorLevel = ?5 and d.clarify = ?6")
     public List<Diamond> getDiamondBySearchAdvancedExcludeShapeCarat(double priceEnd, double priceBegin, float sizeEnd, float sizeBegin, char colorLevel, String clarify);
 
-
     // situation shape and totalPrice is null
 
     @Modifying
     @Query("select d from Diamond d where d.carat <= ?1 and d.carat >= ?2 and d.dimensions <= ?3 and d.dimensions >= ?4 and d.colorLevel = ?5 and d.clarify = ?6")
     public List<Diamond> getDiamondBySearchAdvancedExcludeShapeTotalPrice(float caratEnd, float caratBegin, float sizeEnd, float sizeBegin, char colorLevel, String clarify);
-
-
-
 
     // situation clarify is null
 
@@ -101,9 +94,6 @@ public interface DiamondRepository extends JpaRepository<Diamond, String> {
     @Query("select d from Diamond d where d.carat <= ?1 and d.carat >= ?2 and d.dimensions <= ?3 and d.dimensions >= ?4 and d.colorLevel = ?5 and d.shape = ?6")
     public List<Diamond> getDiamondBySearchAdvancedExcludeClarifyTotalPrice(float caratEnd, float caratBegin, float sizeEnd, float sizeBegin, char colorLevel, String shape);
 
-
-
-
     // situation color is null
 
     @Modifying
@@ -113,24 +103,20 @@ public interface DiamondRepository extends JpaRepository<Diamond, String> {
     // situation color and dimensions is null
 
     @Modifying
-    @Query("select d from Diamond d where d.totalPrice <= ?1 and d.totalPrice >= ?2 and d.carat <= ?3 and d.carat >= ?4 and d.clarify = ?8 and d.shape = ?9")
+    @Query("select d from Diamond d where d.totalPrice <= ?1 and d.totalPrice >= ?2 and d.carat <= ?3 and d.carat >= ?4 and d.clarify = ?5 and d.shape = ?6")
     public List<Diamond> getDiamondBySearchAdvancedExcludeColorDimensions(double priceEnd, double priceBegin, float caratEnd, float caratBegin, String clarify, String shape);
 
     // situation color and carat is null
 
     @Modifying
-    @Query("select d from Diamond d where d.totalPrice <= ?1 and d.totalPrice >= ?2 and d.dimensions <= ?5 and d.dimensions >= ?6 and d.clarify = ?8 and d.shape = ?9")
+    @Query("select d from Diamond d where d.totalPrice <= ?1 and d.totalPrice >= ?2 and d.dimensions <= ?3 and d.dimensions >= ?4 and d.clarify = ?5 and d.shape = ?6")
     public List<Diamond> getDiamondBySearchAdvancedExcludeColorCarat(double priceEnd, double priceBegin, float sizeEnd, float sizeBegin, String clarify, String shape);
 
     // situation color and total price is null
 
     @Modifying
-    @Query("select d from Diamond d where d.carat <= ?3 and d.carat >= ?4 and d.dimensions <= ?5 and d.dimensions >= ?6 and d.clarify = ?8 and d.shape = ?9")
+    @Query("select d from Diamond d where d.carat <= ?1 and d.carat >= ?2 and d.dimensions <= ?3 and d.dimensions >= ?4 and d.clarify = ?5 and d.shape = ?6")
     public List<Diamond> getDiamondBySearchAdvancedExcludeColorTotalPrice(float caratEnd, float caratBegin, float sizeEnd, float sizeBegin, String clarify, String shape);
-
-
-
-
 
     // situation dimensions is null
 
@@ -168,10 +154,6 @@ public interface DiamondRepository extends JpaRepository<Diamond, String> {
     @Query("select d from Diamond d where d.carat <= ?1 and d.carat >= ?2 and d.dimensions <= ?3 and d.dimensions >= ?4 and d.colorLevel = ?5 and d.clarify = ?6 and d.shape = ?7")
     public List<Diamond> getDiamondBySearchAdvancedExcludeTotalPrice(float caratEnd, float caratBegin, float sizeEnd, float sizeBegin, char colorLevel, String clarify, String shape);
 
-
-
-
-
     // situation shape and color and clarify is null
 
     @Modifying
@@ -197,9 +179,6 @@ public interface DiamondRepository extends JpaRepository<Diamond, String> {
     public List<Diamond> getDiamondBySearchAdvancedExcludeDimensionsTotalPriceCarat(char colorLevel, String clarify, String shape);
 
 
-
-
-
     // situation carat and dimensions and clarity is null
 
     @Modifying
@@ -217,7 +196,6 @@ public interface DiamondRepository extends JpaRepository<Diamond, String> {
     @Modifying
     @Query("select d from Diamond d where d.totalPrice <= ?1 and d.totalPrice >= ?2 and d.carat <= ?3 and d.carat >= ?4 and d.clarify = ?5")
     public List<Diamond> getDiamondBySearchAdvancedExcludeColorDimensionShape(double priceEnd, double priceBegin, float caratEnd, float caratBegin, String clarify);
-
 
 
     // situation totalPrice and carat and color is null
@@ -268,8 +246,6 @@ public interface DiamondRepository extends JpaRepository<Diamond, String> {
     @Query("select d from Diamond d where d.carat <= ?1 and d.carat >= ?2 and d.dimensions <= ?3 and d.dimensions >= ?4 and d.colorLevel = ?5")
     public List<Diamond> getDiamondBySearchAdvancedExcludeTotalPriceShapeClarify(float caratEnd, float caratBegin, float sizeEnd, float sizeBegin, char colorLevel);
 
-
-
     // situation totalPrice and carat and dimensions and color is null
 
     @Modifying
@@ -300,15 +276,4 @@ public interface DiamondRepository extends JpaRepository<Diamond, String> {
     @Query("select d from Diamond d where d.carat <= ?1 and d.carat >= ?2 and d.dimensions <= ?3 and d.dimensions >= ?4")
     public List<Diamond> getDiamondBySearchAdvancedExcludeTotalPriceClarifyShapeColor(float caratEnd, float caratBegin, float sizeEnd, float sizeBegin);
 
-
-
-//    select * from railway.diamond where carat <= 1.15 and carat >= 0.75;
-//    select * from railway.diamond where dimensions <= 6 and dimensions >= 5.8;
-//    select * from railway.diamond where color_level = 'E';
-//    select * from railway.diamond where clarify = 'VS2';
-//    select * from railway.diamond where shape = 'Round';
-//    select * from railway.diamond where total_price <= 1000000000 and total_price >= 500000000;
-//
-//    select * from railway.diamond where total_price <= 1000000000 and total_price >= 500000000 and carat <= 1.15 and carat >= 0.75
-//    and dimensions <= 6 and dimensions >= 5.8 and color_level = 'E' and clarify = 'VS2' and shape = 'Round';
 }
