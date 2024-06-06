@@ -92,13 +92,17 @@ public class DiamondServiceImp implements DiamondService {
         if(check_shape) {
             shape = searchAdvanceRequest.getShape();
         }
-
+        boolean checkUpOrDown = false;
         String string_price = searchAdvanceRequest.getPrice();
         String[] str_price = string_price.split(" ");
         List<Double> lists_price = new ArrayList<>();
         for(int i =0; i< str_price.length; i++) {
+            if(str_price[i].toLowerCase().equals("trên")) {
+                checkUpOrDown = true;
+            }
             char c = str_price[i].charAt(0);
             if(c >= '0' && c <= '9') {
+                str_price[i] += "000000";
                 double d = Double.parseDouble(str_price[i]);
                 lists_price.add(d);
             }
@@ -106,7 +110,13 @@ public class DiamondServiceImp implements DiamondService {
         double priceBegin = 0;
         double priceEnd = 0;
         if(lists_price.size() == 1) {
-            priceBegin = lists_price.get(0);
+            if(checkUpOrDown) {
+                priceBegin = lists_price.get(0);
+                priceEnd = diamondRepository.getMaxTotalPrice();
+            } else {
+                priceBegin = 0;
+                priceEnd = lists_price.get(0);
+            }
         } else if(lists_price.size() == 2) {
             priceBegin = lists_price.get(0);
             priceEnd = lists_price.get(1);

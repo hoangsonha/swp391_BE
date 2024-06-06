@@ -15,6 +15,10 @@ public interface DiamondRepository extends JpaRepository<Diamond, String> {
     public Diamond getDiamondByDiamondID(String diamondID);
 
     @Modifying
+    @Query("select max(totalPrice) from Diamond")
+    public double getMaxTotalPrice();
+
+    @Modifying
     @Query("select d from Diamond d where d.totalPrice <= ?1 and d.totalPrice >= ?2 and d.carat <= ?3 and d.carat >= ?4 and d.dimensions <= ?5 and d.dimensions >= ?6 and d.colorLevel = ?7 and d.clarify = ?8 and d.shape = ?9 order by d.totalPrice asc")
     public List<Diamond> getDiamondBySearchAdvancedByASC(double priceEnd, double priceBegin, float caratEnd, float caratBegin, float sizeEnd, float sizeBegin, char colorLevel, String clarify, String shape);
 
@@ -275,5 +279,6 @@ public interface DiamondRepository extends JpaRepository<Diamond, String> {
     @Modifying
     @Query("select d from Diamond d where d.carat <= ?1 and d.carat >= ?2 and d.dimensions <= ?3 and d.dimensions >= ?4")
     public List<Diamond> getDiamondBySearchAdvancedExcludeTotalPriceClarifyShapeColor(float caratEnd, float caratBegin, float sizeEnd, float sizeBegin);
+
 
 }
