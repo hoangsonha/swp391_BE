@@ -18,6 +18,6 @@ public interface DiamondService {
 
     public void markDiamondAsDeleted(String diamondID);
 
-    public List<Diamond> searchAdvaned(SearchAdvanceRequest searchAdvanceRequest);
+    public List<Diamond> searchAdvanced(SearchAdvanceRequest searchAdvanceRequest, String optionPrice);
 
 }

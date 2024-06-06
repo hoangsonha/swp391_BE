@@ -16,5 +16,4 @@ public class SearchAdvanceRequest {
     private String clarify;
     private String shape;
     private String price;
-    private String optionPrice;
 }
