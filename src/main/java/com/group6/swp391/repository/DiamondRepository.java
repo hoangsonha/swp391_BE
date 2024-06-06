@@ -28,11 +28,48 @@ public interface DiamondRepository extends JpaRepository<Diamond, String> {
     @Query("select d from Diamond d where d.totalPrice <= ?1 and d.totalPrice >= ?2 and d.carat <= ?3 and d.carat >= ?4 and d.dimensions <= ?5 and d.dimensions >= ?6 and d.colorLevel = ?7 and d.clarify = ?8 and d.shape = ?9")
     public List<Diamond> getDiamondBySearchAdvanced(double priceEnd, double priceBegin, float caratEnd, float caratBegin, float sizeEnd, float sizeBegin, char colorLevel, String clarify, String shape);
 
+
+
     // situation shape is null
 
     @Modifying
     @Query("select d from Diamond d where d.totalPrice <= ?1 and d.totalPrice >= ?2 and d.carat <= ?3 and d.carat >= ?4 and d.dimensions <= ?5 and d.dimensions >= ?6 and d.colorLevel = ?7 and d.clarify = ?8")
     public List<Diamond> getDiamondBySearchAdvanced(double priceEnd, double priceBegin, float caratEnd, float caratBegin, float sizeEnd, float sizeBegin, char colorLevel, String clarify);
+
+    // situation shape and clarify is null
+
+    @Modifying
+    @Query("select d from Diamond d where d.totalPrice <= ?1 and d.totalPrice >= ?2 and d.carat <= ?3 and d.carat >= ?4 and d.dimensions <= ?5 and d.dimensions >= ?6 and d.colorLevel = ?7")
+    public List<Diamond> getDiamondBySearchAdvanced(double priceEnd, double priceBegin, float caratEnd, float caratBegin, float sizeEnd, float sizeBegin, char colorLevel);
+
+
+    // situation shape and color is null
+
+    @Modifying
+    @Query("select d from Diamond d where d.totalPrice <= ?1 and d.totalPrice >= ?2 and d.carat <= ?3 and d.carat >= ?4 and d.dimensions <= ?5 and d.dimensions >= ?6 and d.clarify = ?7")
+    public List<Diamond> getDiamondBySearchAdvanced(double priceEnd, double priceBegin, float caratEnd, float caratBegin, float sizeEnd, float sizeBegin, String clarify);
+
+    // situation shape and dimensions is null
+
+    @Modifying
+    @Query("select d from Diamond d where d.totalPrice <= ?1 and d.totalPrice >= ?2 and d.carat <= ?3 and d.carat >= ?4 and d.colorLevel = ?5 and d.clarify = ?6")
+    public List<Diamond> getDiamondBySearchAdvanced(double priceEnd, double priceBegin, float caratEnd, float caratBegin, char colorLevel, String clarify);
+
+    // situation shape and carat is null
+
+    @Modifying
+    @Query("select d from Diamond d where d.totalPrice <= ?1 and d.totalPrice >= ?2 and d.dimensions <= ?3 and d.dimensions >= ?4 and d.colorLevel = ?5 and d.clarify = ?6")
+    public List<Diamond> getDiamondBySearchAdvancedExcludeShapeCarat(double priceEnd, double priceBegin, float sizeEnd, float sizeBegin, char colorLevel, String clarify);
+
+
+    // situation shape and totalPrice is null
+
+    @Modifying
+    @Query("select d from Diamond d where d.carat <= ?1 and d.carat >= ?2 and d.dimensions <= ?3 and d.dimensions >= ?4 and d.colorLevel = ?5 and d.clarify = ?6")
+    public List<Diamond> getDiamondBySearchAdvanced(float caratEnd, float caratBegin, float sizeEnd, float sizeBegin, char colorLevel, String clarify);
+
+
+
 
     // situation clarify is null
 
@@ -40,31 +77,230 @@ public interface DiamondRepository extends JpaRepository<Diamond, String> {
     @Query("select d from Diamond d where d.totalPrice <= ?1 and d.totalPrice >= ?2 and d.carat <= ?3 and d.carat >= ?4 and d.dimensions <= ?5 and d.dimensions >= ?6 and d.colorLevel = ?7 and d.shape = ?8")
     public List<Diamond> getDiamondBySearchAdvancedExcludeClarify(double priceEnd, double priceBegin, float caratEnd, float caratBegin, float sizeEnd, float sizeBegin, char colorLevel, String shape);
 
+    // situation clarify and color is null
+
+    @Modifying
+    @Query("select d from Diamond d where d.totalPrice <= ?1 and d.totalPrice >= ?2 and d.carat <= ?3 and d.carat >= ?4 and d.dimensions <= ?5 and d.dimensions >= ?6 and d.shape = ?7")
+    public List<Diamond> getDiamondBySearchAdvancedExcludeClarifyColor(double priceEnd, double priceBegin, float caratEnd, float caratBegin, float sizeEnd, float sizeBegin, String shape);
+
+    // situation clarify and dimensions is null
+
+    @Modifying
+    @Query("select d from Diamond d where d.totalPrice <= ?1 and d.totalPrice >= ?2 and d.carat <= ?3 and d.carat >= ?4 and d.colorLevel = ?5 and d.shape = ?6")
+    public List<Diamond> getDiamondBySearchAdvancedExcludeClarifyDimensions(double priceEnd, double priceBegin, float caratEnd, float caratBegin, char colorLevel, String shape);
+
+    // situation clarify and carat is null
+
+    @Modifying
+    @Query("select d from Diamond d where d.totalPrice <= ?1 and d.totalPrice >= ?2 and d.dimensions <= ?3 and d.dimensions >= ?4 and d.colorLevel = ?5 and d.shape = ?6")
+    public List<Diamond> getDiamondBySearchAdvancedExcludeClarifyCarat(double priceEnd, double priceBegin, float sizeEnd, float sizeBegin, char colorLevel, String shape);
+
+    // situation clarify and totalPrice is null
+
+    @Modifying
+    @Query("select d from Diamond d where d.carat <= ?1 and d.carat >= ?2 and d.dimensions <= ?3 and d.dimensions >= ?4 and d.colorLevel = ?5 and d.shape = ?6")
+    public List<Diamond> getDiamondBySearchAdvancedExcludeClarifyTotalPrice(float caratEnd, float caratBegin, float sizeEnd, float sizeBegin, char colorLevel, String shape);
+
+
+
+
     // situation color is null
 
     @Modifying
     @Query("select d from Diamond d where d.totalPrice <= ?1 and d.totalPrice >= ?2 and d.carat <= ?3 and d.carat >= ?4 and d.dimensions <= ?5 and d.dimensions >= ?6 and d.clarify = ?7 and d.shape = ?8")
     public List<Diamond> getDiamondBySearchAdvancedExcludeColor(double priceEnd, double priceBegin, float caratEnd, float caratBegin, float sizeEnd, float sizeBegin, String clarify, String shape);
 
-    // situation dimensions is not null
+    // situation color and dimensions is null
+
+    @Modifying
+    @Query("select d from Diamond d where d.totalPrice <= ?1 and d.totalPrice >= ?2 and d.carat <= ?3 and d.carat >= ?4 and d.clarify = ?8 and d.shape = ?9")
+    public List<Diamond> getDiamondBySearchAdvancedExcludeColorDimensions(double priceEnd, double priceBegin, float caratEnd, float caratBegin, String clarify, String shape);
+
+    // situation color and carat is null
+
+    @Modifying
+    @Query("select d from Diamond d where d.totalPrice <= ?1 and d.totalPrice >= ?2 and d.dimensions <= ?5 and d.dimensions >= ?6 and d.clarify = ?8 and d.shape = ?9")
+    public List<Diamond> getDiamondBySearchAdvancedExcludeColorCarat(double priceEnd, double priceBegin, float sizeEnd, float sizeBegin, String clarify, String shape);
+
+    // situation color and total price is null
+
+    @Modifying
+    @Query("select d from Diamond d where d.carat <= ?3 and d.carat >= ?4 and d.dimensions <= ?5 and d.dimensions >= ?6 and d.clarify = ?8 and d.shape = ?9")
+    public List<Diamond> getDiamondBySearchAdvancedExcludeColorTotalPrice(float caratEnd, float caratBegin, float sizeEnd, float sizeBegin, String clarify, String shape);
+
+
+
+
+
+    // situation dimensions is null
 
     @Modifying
     @Query("select d from Diamond d where d.totalPrice <= ?1 and d.totalPrice >= ?2 and d.carat <= ?3 and d.carat >= ?4 and d.colorLevel = ?5 and d.clarify = ?6 and d.shape = ?7")
     public List<Diamond> getDiamondBySearchAdvancedExcludeDimensions(double priceEnd, double priceBegin, float caratEnd, float caratBegin, char colorLevel, String clarify, String shape);
 
-    // situation carat is not null
+    // situation dimensions and carat is null
+
+    @Modifying
+    @Query("select d from Diamond d where d.totalPrice <= ?1 and d.totalPrice >= ?2 and d.colorLevel = ?3 and d.clarify = ?4 and d.shape = ?5")
+    public List<Diamond> getDiamondBySearchAdvancedDimensionsCarat(double priceEnd, double priceBegin, char colorLevel, String clarify, String shape);
+
+    // situation dimensions and totalPrice is null
+
+    @Modifying
+    @Query("select d from Diamond d where d.carat <= ?1 and d.carat >= ?2 and d.colorLevel = ?3 and d.clarify = ?4 and d.shape = ?5")
+    public List<Diamond> getDiamondBySearchAdvancedExcludeDimensionsTotalPrice(float caratEnd, float caratBegin, char colorLevel, String clarify, String shape);
+
+    // situation carat is null
 
     @Modifying
     @Query("select d from Diamond d where d.totalPrice <= ?1 and d.totalPrice >= ?2 and d.dimensions <= ?3 and d.dimensions >= ?4 and d.colorLevel = ?5 and d.clarify = ?6 and d.shape = ?7")
     public List<Diamond> getDiamondBySearchAdvancedExcludeCarat(double priceEnd, double priceBegin, float sizeEnd, float sizeBegin, char colorLevel, String clarify, String shape);
 
-    // situation totalPrice is not null
+    // situation carat and total Price is null
+
+    @Modifying
+    @Query("select d from Diamond d where d.dimensions <= ?1 and d.dimensions >= ?2 and d.colorLevel = ?3 and d.clarify = ?4 and d.shape = ?5")
+    public List<Diamond> getDiamondBySearchAdvancedExcludeCaratTotalPrice(float sizeEnd, float sizeBegin, char colorLevel, String clarify, String shape);
+
+    // situation totalPrice is null
 
     @Modifying
     @Query("select d from Diamond d where d.carat <= ?1 and d.carat >= ?2 and d.dimensions <= ?3 and d.dimensions >= ?4 and d.colorLevel = ?5 and d.clarify = ?6 and d.shape = ?7")
     public List<Diamond> getDiamondBySearchAdvancedExcludeTotalPrice(float caratEnd, float caratBegin, float sizeEnd, float sizeBegin, char colorLevel, String clarify, String shape);
 
-    // situation shape and color is not null
+
+
+
+
+    // situation shape and color and clarify is null
+
+    @Modifying
+    @Query("select d from Diamond d where d.totalPrice <= ?1 and d.totalPrice >= ?2 and d.carat <= ?3 and d.carat >= ?4 and d.dimensions <= ?5 and d.dimensions >= ?6")
+    public List<Diamond> getDiamondBySearchAdvancedExcludeShapeColorClarify(double priceEnd, double priceBegin, float caratEnd, float caratBegin, float sizeEnd, float sizeBegin);
+
+    // situation dimensions and color and clarify is null
+
+    @Modifying
+    @Query("select d from Diamond d where d.totalPrice <= ?1 and d.totalPrice >= ?2 and d.carat <= ?3 and d.carat >= ?4 and d.shape = ?5")
+    public List<Diamond> getDiamondBySearchAdvancedExcludeDimensionsColorClarify(double priceEnd, double priceBegin, float caratEnd, float caratBegin, String shape);
+
+    // situation dimensions and color and carat is null
+
+    @Modifying
+    @Query("select d from Diamond d where d.totalPrice <= ?1 and d.totalPrice >= ?2 and d.clarify = ?3 and d.shape = ?4")
+    public List<Diamond> getDiamondBySearchAdvancedExcludeDimensionsColorCarat(double priceEnd, double priceBegin, String clarify, String shape);
+
+    // situation dimensions and totalPrice and carat is null
+
+    @Modifying
+    @Query("select d from Diamond d where d.colorLevel = ?1 and d.clarify = ?2 and d.shape = ?3")
+    public List<Diamond> getDiamondBySearchAdvancedExcludeDimensionsTotalPriceCarat(char colorLevel, String clarify, String shape);
+
+
+
+
+
+    // situation carat and dimensions and clarity is null
+
+    @Modifying
+    @Query("select d from Diamond d where d.totalPrice <= ?1 and d.totalPrice >= ?2 and d.colorLevel = ?7 and d.shape = ?9")
+    public List<Diamond> getDiamondBySearchAdvancedExcludeCaratDimensionClarity(double priceEnd, double priceBegin, char colorLevel, String shape);
+
+    // situation carat and dimensions and shape is null
+
+    @Modifying
+    @Query("select d from Diamond d where d.totalPrice <= ?1 and d.totalPrice >= ?2 and d.colorLevel = ?7 and d.clarify = ?8")
+    public List<Diamond> getDiamondBySearchAdvancedExcludeCaratDimensionShape(double priceEnd, double priceBegin, char colorLevel, String clarify);
+
+    // situation color and dimensions and shape is null
+
+    @Modifying
+    @Query("select d from Diamond d where d.totalPrice <= ?1 and d.totalPrice >= ?2 and d.carat <= ?3 and d.carat >= ?4 and d.clarify = ?8")
+    public List<Diamond> getDiamondBySearchAdvancedExcludeColorDimensionShape(double priceEnd, double priceBegin, float caratEnd, float caratBegin, String clarify);
+
+
+
+    // situation totalPrice and carat and color is null
+
+    @Modifying
+    @Query("select d from Diamond d where d.dimensions <= ?5 and d.dimensions >= ?6 and d.clarify = ?8 and d.shape = ?9")
+    public List<Diamond> getDiamondBySearchAdvancedExcludeTotalPriceCaratColor(float sizeEnd, float sizeBegin, String clarify, String shape);
+
+    // situation totalPrice and carat and clarify is null
+
+    @Modifying
+    @Query("select d from Diamond d where d.dimensions <= ?5 and d.dimensions >= ?6 and d.colorLevel = ?7 and d.shape = ?9")
+    public List<Diamond> getDiamondBySearchAdvancedExcludeTotalPriceCaratClarify(float sizeEnd, float sizeBegin, char colorLevel, String shape);
+
+    // situation totalPrice and carat and shape is null
+
+    @Modifying
+    @Query("select d from Diamond d where d.dimensions <= ?5 and d.dimensions >= ?6 and d.colorLevel = ?7 and d.clarify = ?8")
+    public List<Diamond> getDiamondBySearchAdvancedExcludeTotalPriceCaratShape(float sizeEnd, float sizeBegin, char colorLevel, String clarify);
+
+    // situation totalPrice and dimensions and clarify is null
+
+    @Modifying
+    @Query("select d from Diamond d where d.carat <= ?3 and d.carat >= ?4 and d.colorLevel = ?7 and d.shape = ?9")
+    public List<Diamond> getDiamondBySearchAdvancedExcludeTotalPriceDimensionsClarify(float caratEnd, float caratBegin, char colorLevel, String shape);
+
+    // situation totalPrice and dimensions and color is null
+
+    @Modifying
+    @Query("select d from Diamond d where d.carat <= ?3 and d.carat >= ?4 and d.clarify = ?8 and d.shape = ?9")
+    public List<Diamond> getDiamondBySearchAdvancedExcludeTotalPriceColorDimensions(float caratEnd, float caratBegin, String clarify, String shape);
+
+    // situation totalPrice and dimensions and shape is null
+
+    @Modifying
+    @Query("select d from Diamond d where d.carat <= ?3 and d.carat >= ?4 and d.colorLevel = ?7 and d.clarify = ?8")
+    public List<Diamond> getDiamondBySearchAdvancedExcludeTotalPriceDimensionsShape(float caratEnd, float caratBegin, char colorLevel, String clarify);
+
+    // situation totalPrice and color and clarify is null
+
+    @Modifying
+    @Query("select d from Diamond d where d.carat <= ?3 and d.carat >= ?4 and d.dimensions <= ?5 and d.dimensions >= ?6 and d.shape = ?9")
+    public List<Diamond> getDiamondBySearchAdvancedExcludeTotalPriceColorClarify(float caratEnd, float caratBegin, float sizeEnd, float sizeBegin, String shape);
+
+    // situation totalPrice and clarify and shape is null
+
+    @Modifying
+    @Query("select d from Diamond d where d.carat <= ?3 and d.carat >= ?4 and d.dimensions <= ?5 and d.dimensions >= ?6 and d.colorLevel = ?7")
+    public List<Diamond> getDiamondBySearchAdvancedExcludeTotalPriceShapeClarify(float caratEnd, float caratBegin, float sizeEnd, float sizeBegin, char colorLevel);
+
+
+
+    // situation totalPrice and carat and dimensions and color is null
+
+    @Modifying
+    @Query("select d from Diamond d where d.clarify = ?8 and d.shape = ?9")
+    public List<Diamond> getDiamondBySearchAdvancedExcludeTotalPriceCaratDimensionsColor(String clarify, String shape);
+
+    // situation clarify and carat and dimensions and color is null
+
+    @Modifying
+    @Query("select d from Diamond d where d.totalPrice <= ?1 and d.totalPrice >= ?2 and d.shape = ?9")
+    public List<Diamond> getDiamondBySearchAdvancedExcludeClarifyCaratDimensionsColor(double priceEnd, double priceBegin, String shape);
+
+    // situation clarify and shape and dimensions and color is null
+
+    @Modifying
+    @Query("select d from Diamond d where d.totalPrice <= ?1 and d.totalPrice >= ?2 and d.carat <= ?3 and d.carat >= ?4")
+    public List<Diamond> getDiamondBySearchAdvancedExcludeClarifyShapeDimensionsColor(double priceEnd, double priceBegin, float caratEnd, float caratBegin);
+
+    // situation totalPrice and clarify and dimensions and color is null
+
+    @Modifying
+    @Query("select d from Diamond d where d.carat <= ?3 and d.carat >= ?4 and d.shape = ?9")
+    public List<Diamond> getDiamondBySearchAdvancedExcludeTotalPriceClarifyDimensionsColor(float caratEnd, float caratBegin, String shape);
+
+    // situation totalPrice and clarify and shape and color is null
+
+    @Modifying
+    @Query("select d from Diamond d where d.carat <= ?3 and d.carat >= ?4 and d.dimensions <= ?5 and d.dimensions >= ?6")
+    public List<Diamond> getDiamondBySearchAdvancedExcludeTotalPriceClarifyShapeColor(float caratEnd, float caratBegin, float sizeEnd, float sizeBegin);
+
+
 
 //    select * from railway.diamond where carat <= 1.15 and carat >= 0.75;
 //    select * from railway.diamond where dimensions <= 6 and dimensions >= 5.8;
