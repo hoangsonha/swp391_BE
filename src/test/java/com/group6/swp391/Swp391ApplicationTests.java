@@ -26,29 +26,50 @@ class Swp391ApplicationTests {
     @Autowired private UserRepository userRepository;
     @Autowired private UserService userService;
     @Autowired private DiamondRepository diamondRepository;
+
     @Test
     void contextLoads() {
+
+        User user = userRepository.getUserByEmail("hoangsonha492@gmail.com");
+    int year = 2024;
+    int month = 6;
+    int day = 7;
+    int hour = 0;
+    int minute = 3;
+    int second = 30;
+
+        int year1 = 2025;
+        int month1 = 1;
+        int day1 = 1;
+        int hour1 = 0;
+        int minute1 = 3;
+        int second1 = 30;
+
+        System.out.println(userService.calculateSecondIn5Minute(user));
+
+
+
 //    select * from railway.diamond where total_price <= 1000000000 and total_price >= 500000000 and carat <= 1.15 and carat >= 0.75
 //    and dimensions <= 6 and dimensions >= 5.8 and color_level = 'E' and clarify = 'VS2' and shape = 'Round';
-
-        String string_price = "tren 500 trieu dong";
-        String[] str_price = string_price.split(" ");
-        List<Double> lists_price = new ArrayList<>();
-        for(int i =0; i< str_price.length; i++) {
-            char c = str_price[i].charAt(0);
-            if(c >= '0' && c <= '9') {
-                System.out.println(str_price[i]);
-                str_price[i] += "000000";
-                System.out.println(str_price[i]);
-                double d = Double.parseDouble(str_price[i]);
-                System.out.println(d);
-                lists_price.add(d);
-            }
-        }
-
-        for(Double d : lists_price) {
-            System.out.println(d);
-        }
+//
+//        String string_price = "tren 500 trieu dong";
+//        String[] str_price = string_price.split(" ");
+//        List<Double> lists_price = new ArrayList<>();
+//        for(int i =0; i< str_price.length; i++) {
+//            char c = str_price[i].charAt(0);
+//            if(c >= '0' && c <= '9') {
+//                System.out.println(str_price[i]);
+//                str_price[i] += "000000";
+//                System.out.println(str_price[i]);
+//                double d = Double.parseDouble(str_price[i]);
+//                System.out.println(d);
+//                lists_price.add(d);
+//            }
+//        }
+//
+//        for(Double d : lists_price) {
+//            System.out.println(d);
+//        }
 
 //        boolean check = userService.checkEmailOrPhone("hoangsonhadev@gmail.com0334386995");
 //        if(check == false) {

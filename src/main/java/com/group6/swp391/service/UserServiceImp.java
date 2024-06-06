@@ -283,11 +283,11 @@ public class UserServiceImp implements UserService {
     public boolean sendSMS(OTPRequest otpRequest) {
         try {
             String phoneOrEmail = otpRequest.getEmailOrPhone();
-            int type = 5;
+            int type = 2;
             String otp = generatedNumber();
             String content = "Dear Customer, Absolutely do not provide this authentication Code to anyone. Enter OTP code" + otp + " to reset the password";
             String sender = "07eda63bd942bf35";
-            SpeedSMSAPI api = new SpeedSMSAPI("BeAfmVJjdj9CrAhg7oU49zqMpC9pV83r");
+            SpeedSMSAPI api = new SpeedSMSAPI("Your token");
             String result = api.sendSMS(phoneOrEmail, content, type, sender);
             otpMap.put(phoneOrEmail, otp);
             return true;
@@ -356,29 +356,67 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public int calculateSecondIn5Minute(User user) {
-        int hourInDB = getPartDate(user.getTimeLoginFailed(), Calendar.HOUR);
+    public long calculateSecondIn5Minute(User user) {
+        int yearInDB = getPartDate(user.getTimeLoginFailed(), Calendar.YEAR);
+        int monthInDB = getPartDate(user.getTimeLoginFailed(), Calendar.MONTH);
+        int dayInDB = getPartDate(user.getTimeLoginFailed(), Calendar.DATE);
+        int hourInDB = getPartDate(user.getTimeLoginFailed(), Calendar.HOUR_OF_DAY);
         int minuteInDB = getPartDate(user.getTimeLoginFailed(), Calendar.MINUTE);
         int secondInDB = getPartDate(user.getTimeLoginFailed(), Calendar.SECOND);
-        int hourNow = getPartDate(new Date(), Calendar.HOUR);
+        monthInDB += 1;
+        int yearInNow = getPartDate(new Date(), Calendar.YEAR);
+        int monthInNow = getPartDate(new Date(), Calendar.MONTH);
+        int dayInNow = getPartDate(new Date(), Calendar.DATE);
+        int hourNow = getPartDate(new Date(), Calendar.HOUR_OF_DAY);
         int minuteNow = getPartDate(new Date(), Calendar.MINUTE);
         int secondNow = getPartDate(new Date(), Calendar.SECOND);
+        monthInNow += 1;
 
-        int minuteInSecond = (minuteInDB * 60) + secondInDB;
-        int minuteInSecondNow = (minuteNow * 60) + secondNow;
-        int minus = 0;
-        if(hourNow == hourInDB) {
-            minus = minuteInSecondNow - minuteInSecond;
-        } else if(hourNow > hourInDB) {
-            minuteInSecondNow += 3600;
-            minus = minuteInSecondNow - minuteInSecond;
-        } else if(hourNow < hourInDB) {
-            int totalSecond = (12 * 60 * 60);
-            int totalSecondInDB = (hourInDB * 60 + minuteInDB) * 60;
-            int remainSecond = totalSecond - totalSecondInDB;
-            minus = remainSecond + minuteInSecondNow;
+        int countDayInYearInDB = countDayInYear(yearInDB, monthInDB, dayInDB);
+        int countDayInYearInNow = countDayInYear(yearInNow, monthInNow, dayInNow);
+        long countSecondInDB = (countDayInYearInDB * 24 * 60 * 60) + (hourInDB * 60 * 60 + (minuteInDB * 60 + secondInDB));
+        long countSecondInNow = countDayInYearInNow * 24 * 60 * 60 + (hourNow * 60 * 60 + (minuteNow * 60 + secondNow));
+        long countSecond = 0;
+        if (yearInDB == yearInNow) {
+            countSecond = countSecondInNow - countSecondInDB;
+        } else {
+            if (yearInDB < yearInNow) {
+                long countSecondIn1Year = countDayIn1Year(yearInDB) * 24 * 60 * 60;
+                long countSecondInBD = countSecondIn1Year - countSecondInDB;
+                countSecond = countSecondInBD + countSecondInNow;
+            }
         }
-        return minus;
+        return countSecond;
+    }
+
+    public int countDayInMonth(int year, int month) {
+        if(month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12) {
+            return 31;
+        } else if(month == 4 || month == 6 || month == 9 || month == 11) {
+            return 30;
+        }
+        if(year % 4 == 0 && year % 100 != 0) {
+            if(month == 2) {
+                return 29;
+            }
+        }
+        return 28;
+    }
+
+    public int countDayInYear(int year, int month, int day) {
+        int count = 0;
+        for(int i = 1; i < month; i++) {
+            count += countDayInMonth(year, i);
+        }
+        count += day;
+        return count - 1;
+    }
+
+    public int countDayIn1Year(int year) {
+        if(year % 4 == 0 && year % 100 != 0) {
+            return 366;
+        }
+        return 365;
     }
 
     @Override
@@ -409,6 +447,5 @@ public class UserServiceImp implements UserService {
         }
         return check;
     }
-
 
 }

@@ -48,7 +48,7 @@ public interface UserService {
 
     public int getPartDate(Date date, int calendarPart);
 
-    public int calculateSecondIn5Minute(User user);
+    public long calculateSecondIn5Minute(User user);
 
     public boolean checkEmailOrPhone(String s);
 

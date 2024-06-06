@@ -10,12 +10,14 @@ import com.group6.swp391.request.*;
 import com.group6.swp391.response.ObjectResponse;
 import com.group6.swp391.response.TokenResponse;
 import com.group6.swp391.security.CustomUserDetail;
+import com.group6.swp391.service.DiamondService;
 import com.group6.swp391.service.RoleService;
 import com.group6.swp391.service.UserService;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.annotations.Parameter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
@@ -44,6 +46,7 @@ public class MainController {
     @Autowired private AuthenticationManager authenticationManager;
     @Autowired private ListToken listToken;
     @Autowired private BCryptPasswordEncoder bCryptPasswordEncoder;
+    @Autowired private DiamondService diamondService;
 
     @GetMapping("/all_users")
     public List<User> getAll() {
@@ -111,7 +114,7 @@ public class MainController {
                         if(quantityLoginFailed == 0) {
                             userService.setTimeLoginFailed(new Date(), user.getEmail());
                         } else {
-                            int minus = userService.calculateSecondIn5Minute(user);
+                            long minus = userService.calculateSecondIn5Minute(user);
                             if(minus >= 300) {
                                 userService.setQuantityLoginFailed(1, user.getEmail());
                                 quantityLoginFailed = 0;
@@ -180,36 +183,10 @@ public class MainController {
     }
 
     @GetMapping("/search_advanced")
-    public ResponseEntity<List<Diamond>> getDiamondBySearchAdvanced(@RequestBody SearchAdvanceRequest searchAdvanceRequest) {
-        return null;
+    public ResponseEntity<ObjectResponse> getDiamondBySearchAdvanced(@RequestBody SearchAdvanceRequest searchAdvanceRequest, @Param("optionalPrice") String optionalPrice) {
+        List<Diamond> lists = diamondService.searchAdvanced(searchAdvanceRequest, optionalPrice);
+        return lists.size() > 0 ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Get all diamond by search advance successfully", lists))
+                : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Get all diamond by search advance failed", null));
     }
-
-
-
-
-//=-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-//    @PostMapping("/login_google")
-//    public ResponseEntity<TokenResponse> userLoginWithGoolge(@AuthenticationPrincipal OAuth2User user, HttpServletResponse response) throws IOException {
-//        User us = userService.getUserByEmail(user.getAttribute("email"));
-//        if(us == null) {
-//            String randomString = UUID.randomUUID().toString();
-//            Set<Role> roles = new HashSet<>();
-//            Role role = roleService.getRoleByRoleName(EnumRoleName.ROLE_USER);
-//            roles.add(role);
-//            us = new User(user.getAttribute("given_name"), user.getAttribute("family_name"), user.getAttribute("email"), null, null, null, user.getAttribute("picture"), randomString, user.getAttribute("email_verified"), true, roles);
-//            userService.save(us);
-//            CustomUserDetail customUserDetail = CustomUserDetail.mapUserToUserDetail(us);
-//            String s = jwtToken.generatedToken(customUserDetail);
-//            return ResponseEntity.status(HttpStatus.OK).body(new TokenResponse("Success", "Login account successfully", s));
-//        }
-//        CustomUserDetail customUserDetail = CustomUserDetail.mapUserToUserDetail(us);
-//        String s = jwtToken.generatedToken(customUserDetail);
-//
-//        response.sendError(HttpServletResponse.SC_BAD_REQUEST);
-//
-//        return ResponseEntity.status(HttpStatus.OK).body(new TokenResponse("Success", "Login account successfully", s));
-//    }
-//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 
 }
