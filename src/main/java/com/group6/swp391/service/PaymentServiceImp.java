@@ -5,6 +5,8 @@ import com.group6.swp391.repository.PaymentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class PaymentServiceImp implements PaymentService {
 
@@ -19,5 +21,10 @@ public class PaymentServiceImp implements PaymentService {
     @Override
     public Payment createPayment(Payment payment) {
         return paymentRepository.save(payment);
+    }
+
+    @Override
+    public void createPayments(List<Payment> payments) {
+        paymentRepository.saveAll(payments);
     }
 }

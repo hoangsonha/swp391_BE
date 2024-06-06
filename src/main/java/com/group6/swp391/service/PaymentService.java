@@ -2,8 +2,12 @@ package com.group6.swp391.service;
 
 import com.group6.swp391.model.Payment;
 
-public interface PaymentService {
-    public void save(Payment payment);
+import java.util.List;
 
-    public Payment createPayment(Payment payment);
+public interface PaymentService {
+    void save(Payment payment);
+
+    Payment createPayment(Payment payment);
+
+    void createPayments(List<Payment> payments);
 }

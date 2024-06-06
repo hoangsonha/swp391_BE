@@ -3,6 +3,7 @@ package com.group6.swp391.service;
 import com.group6.swp391.model.Order;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface OrderService {
 
@@ -10,7 +11,7 @@ public interface OrderService {
 
     Order getOrderByOrderID(int orderID);
 
-    void save(Order order);
+    Order save(Order order);
 
     List<Order> getAllOrder();
 
