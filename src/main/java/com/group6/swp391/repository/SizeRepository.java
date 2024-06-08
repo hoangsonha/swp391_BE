@@ -9,6 +9,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface SizeRepository extends JpaRepository<Size, Integer> {
 
-    @Query("SELECT s FROM Size s WHERE s.sizeValue =:sizeValue")
-    Size finByValue(@Param("sizeValue") int sizeValue);
+    @Query("SELECT s FROM Size s WHERE s.sizeValue =:value")
+    Size findByValue(@Param("value") int value);
 }

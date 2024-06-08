@@ -70,6 +70,9 @@ public class Product extends BaseEntity {
     @Column(name = "original_price")
     private double originalPrice;
 
+    @Column(name = "wage_price")
+    private double wagePrice;
+
     @Column(name = "ratio")
     private double ratio;
 
@@ -81,9 +84,7 @@ public class Product extends BaseEntity {
     @JsonIgnoreProperties("product")
     private List<Thumnail> productImages;
 
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     @JsonIgnoreProperties("product")
-    private List<ProductSize> productSizes;
-
-
+    private List<Size> sizes;
 }

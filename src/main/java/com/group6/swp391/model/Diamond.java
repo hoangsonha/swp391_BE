@@ -14,7 +14,7 @@ import java.util.List;
 @Builder
 public class Diamond {
     @Id
-    @Column(name = "diamond_id", nullable = false, length = 50)
+    @Column(name = "diamond_id", nullable = false, columnDefinition = "NVARCHAR(100)")
     private String diamondID;
 
     @Column(name = "diamond_name", nullable = false, columnDefinition = "NVARCHAR(50)")

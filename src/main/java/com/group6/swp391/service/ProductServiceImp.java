@@ -13,8 +13,8 @@ public class ProductServiceImp  implements  ProductService{
     ProductRepository productRepository;
 
     @Override
-    public Product createProduct(Product product) {
-        return productRepository.save(product);
+    public void createProduct(Product product) {
+        productRepository.save(product);
     }
 
     @Override
@@ -40,5 +40,24 @@ public class ProductServiceImp  implements  ProductService{
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void updateProduct(String id, Product product) {
+        try {
+            Product existingProduct = productRepository.findProductId(id);
+            if(existingProduct == null) {
+                throw new RuntimeException("Product not found");
+            } else {
+                productRepository.save(product);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public List<Product> getProductsByCategory(String categoryName) {
+        return productRepository.findByCategory(categoryName);
     }
 }

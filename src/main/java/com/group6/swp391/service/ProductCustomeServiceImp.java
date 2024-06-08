@@ -24,8 +24,8 @@ public class ProductCustomeServiceImp implements  ProductCustomeService{
             existingProduct.setProdcutCustomId(productCustom.getProdcutCustomId());
             existingProduct.setProduct(productCustom.getProduct());
             existingProduct.setDiamond(productCustom.getDiamond());
-            existingProduct.setWagePrice(productCustom.getWagePrice());
-            existingProduct.setRatio(productCustom.getRatio());
+   //         existingProduct.setWagePrice(productCustom.getWagePrice());
+     //       existingProduct.setRatio(productCustom.getRatio());
             existingProduct.setWarrantyCard(productCustom.getWarrantyCard());
             existingProduct.setTotalPrice(productCustom.getTotalPrice());
             productCustomeRepository.save(existingProduct);

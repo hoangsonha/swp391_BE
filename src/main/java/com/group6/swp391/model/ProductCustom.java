@@ -1,15 +1,14 @@
 package com.group6.swp391.model;
 
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
-@Setter
 @Getter
+@Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ProductCustom {
     //thang nay sinh ra sau khi nhan addcart
     @Id
@@ -27,13 +26,13 @@ public class ProductCustom {
     @Column(name = "total_name")
     private double totalPrice; // totalPrice = (diamondPirce + productPrice + wagePrice) * (1 + ratio))
 
-    @Column(name = "ratio")
-    private double ratio;
-
-    @Column(name = "wage_price")
-    private double wagePrice;
-
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "warranty_card_id", unique = true)
     private WarrantyCard warrantyCard;
+
+    public ProductCustom(Product product, double totalPrice, WarrantyCard warrantyCard) {
+        this.product = product;
+        this.totalPrice = totalPrice;
+        this.warrantyCard = warrantyCard;
+    }
 }

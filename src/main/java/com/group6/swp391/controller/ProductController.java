@@ -1,12 +1,12 @@
 package com.group6.swp391.controller;
 
 import com.group6.swp391.model.*;
-import com.group6.swp391.response.ProductResponse;
-import com.group6.swp391.response.SizeRespone;
+import com.group6.swp391.request.ProductRequest;
 import com.group6.swp391.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -16,77 +16,56 @@ import java.util.List;
 @RequestMapping("/swp391/api/products")
 @CrossOrigin(origins = "*")
 public class ProductController {
-    @Autowired
-    ProductServiceImp productServiceImp;
-    @Autowired
-    SizeServiceImp sizeServiceImp;
-    @Autowired
-    ProductSizeServiceImp productSizeServiceImp;
-    @Autowired
-    ThumbnailSericeImp thumbnailSericeImp;
+    @Autowired ProductServiceImp productServiceImp;
     @Autowired CategoryServiceImp categoryServiceImp;
-
     @Autowired DiamondServiceImp diamondServiceImp;
+    @Autowired SizeServiceImp sizeServiceImp;
+    @Autowired ThumnailServiceImp thumnailServiceImp;
 
-    @PostMapping("/create_product")
-    public ResponseEntity<?> createProduct(@RequestBody ProductResponse productResponse) {
+    @PostMapping("create_product")
+    public ResponseEntity<?> createProduct(@RequestBody ProductRequest productRequest) {
         try {
-            Product product = productResponse.getProduct();
-            List<SizeRespone> sizeRespones = productResponse.getSizes();
-            List<Thumnail> thumnails = productResponse.getThumnails();
-                if(product == null) {
-                    return new ResponseEntity<>("Product is null", HttpStatus.BAD_REQUEST);
+            Product product = productRequest.getProduct();
+            if(productServiceImp.getProductById(product.getProductID()) != null) {
+                return ResponseEntity.badRequest().body("Product already exists");
+            } else {
+                product.setStatus(true);
+                product.setTotalPrice((product.getWagePrice() + product.getOriginalPrice())*(1+ product.getRatio()));
+                Category existingCate = categoryServiceImp.getByName(product.getCategory().getCategoryName());
+                if(existingCate == null) {
+                    throw new RuntimeException("Category not found");
                 } else {
-                    if(productServiceImp.getProductById(product.getProductID()) != null) {
-                        return ResponseEntity.status(HttpStatus.CONFLICT).body("Product already exists");
-                    } else {
-                        Category existingCategory = categoryServiceImp.getByName(product.getCategory().getCategoryName());
-                        if(existingCategory == null) {
-                            return ResponseEntity.status(HttpStatus.CONFLICT).body("Category does not exist");
-                        } else {
-                            product.setCategory(existingCategory);
-                        }
-                        product.setStatus(true);
-                        product.setTotalPrice(product.getOriginalPrice() * (1 + product.getRatio()));
-                        productServiceImp.createProduct(product);
-                        // xu li size
-
-                        List<ProductSize> productSizes = new ArrayList<>();
-                        for (SizeRespone sizeRespone : sizeRespones) {
-                            Size size =sizeServiceImp.getSizeByValue(sizeRespone.getSizeValue());
-                            if(size == null) {
-                                size = new Size();
-                                size.setSizeValue(sizeRespone.getSizeValue());
-                                sizeServiceImp.createSize(size);
-                            } else {
-                                size.setSizeValue(sizeRespone.getSizeValue());
-                            }
-                                ProductSize productSize = new ProductSize();
-                                productSize.setQuantiy(sizeRespone.getQuantitySize());
-                                productSize.setProduct(product);
-                                productSize.setSize(size);
-                                productSizes.add(productSize);
-                                productSizeServiceImp.createProductSize(productSize);
-                        }
-                        product.setProductSizes(productSizes);
-                        // xu li hinh anh
-                        List<Thumnail> setThumnails = new ArrayList<>();
-                        for (Thumnail item : thumnails) {
-                            Thumnail thumnail = new Thumnail();
-                            thumnail.setImageUrl(item.getImageUrl());
-                            thumnail.setProduct(product);
-                            setThumnails.add(thumnail);
-                            thumbnailSericeImp.createThumbnail(thumnail);
-                        }
-                        product.setProductImages(setThumnails);
-                    }
+                    product.setCategory(existingCate);
                 }
-                return ResponseEntity.status(HttpStatus.CREATED).body("create product success");
+                productServiceImp.createProduct(product);
+                List<Size> setSize = new ArrayList<>();
+                for (Size size : productRequest.getSizes()) {
+                    Size newSize = new Size();
+                    newSize.setSizeValue(size.getSizeValue());
+                    newSize.setQuantity(size.getQuantity());
+                    newSize.setProduct(product);
+                    setSize.add(newSize);
+                    sizeServiceImp.createSize(newSize);
+                }
+                List<Thumnail> setThumnail = new ArrayList<>();
+                for (Thumnail th : productRequest.getProductImages()) {
+                    Thumnail newThumnail = new Thumnail();
+                    newThumnail.setImageUrl(th.getImageUrl());
+                    newThumnail.setProduct(product);
+                    setThumnail.add(newThumnail);
+                    thumnailServiceImp.createThumnail(newThumnail);
+                }
+
+                product.setProductImages(setThumnail);
+                product.setSizes(setSize);
+            }
+            return ResponseEntity.ok().body("Product created successfully");
 
         } catch (Exception e) {
-             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
+
 
     @GetMapping("/all_products")
     public ResponseEntity<?> getAllProducts() {
@@ -107,6 +86,55 @@ public class ProductController {
         }
     }
 
+    @GetMapping("/category/{category_name}")
+    public ResponseEntity<List<Product>> getProductByCategory(@PathVariable("category_name") String category_name) {
+        try {
+            List<Product> products = productServiceImp.getProductsByCategory(category_name);
+            if(products == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            }
+            return ResponseEntity.ok(products);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @PutMapping("update/{product_id}")
+    public ResponseEntity<?> updateProduct(@PathVariable("product_id") String id,@RequestBody Product product) {
+        try {
+            Product existingProduct = productServiceImp.getProductById(id);
+            if(existingProduct == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("product not found");
+            }
+            existingProduct.setProductID(product.getProductID());
+            existingProduct.setProductName(product.getProductName());
+            existingProduct.setBathStone(product.getBathStone());
+            existingProduct.setBrand(product.getBrand());
+            existingProduct.setGoldType(product.getGoldType());
+            existingProduct.setGoldWeight(product.getGoldWeight());
+            existingProduct.setShapeDiamond(product.getShapeDiamond());
+            existingProduct.setDimensionsDiamond(product.getDimensionsDiamond());
+            existingProduct.setMessage(product.getMessage());
+            existingProduct.setOldGold(product.getOldGold());
+            existingProduct.setProductType(product.getProductType());
+            existingProduct.setQuantity(product.getQuantity());
+            existingProduct.setQuantityStonesOfDiamond(product.getQuantityStonesOfDiamond());
+            existingProduct.setTotalPrice(product.getTotalPrice());
+            existingProduct.setOriginalPrice(product.getOriginalPrice());
+            existingProduct.setWagePrice(product.getWagePrice());
+            existingProduct.setRatio(product.getRatio());
+            Category existingCategory = categoryServiceImp.getByName(product.getCategory().getCategoryName());
+            if(existingCategory == null) {
+                throw new RuntimeException("Category not found");
+            }
+            updateProductSizes(existingProduct, product.getSizes());
+            updateProductThumbnails(existingProduct, product.getProductImages());
+            productServiceImp.updateProduct(id, existingProduct);
+            return ResponseEntity.ok().body("Product updated successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
 
     @DeleteMapping("/delete/{product_id}")
     public ResponseEntity<String> deleteProductStatus(@PathVariable("product_id") String productID) {
@@ -129,4 +157,64 @@ public class ProductController {
 //        List<Diamond> diamonds = diamondServiceImp.getByCondition(product.getShapeDiamond(), product.getDimensionsDiamond());
 //        return new ResponseEntity<>(diamonds, HttpStatus.OK);
 //    }
+
+    private void updateProductSizes(Product existingProduct, List<Size> newSizes) {
+        List<Size> currentSizes = existingProduct.getSizes();
+        List<Size> sizesToRemove = new ArrayList<>(currentSizes);
+
+        for (Size newSize : newSizes) {
+            boolean found = false;
+            for (Size existingSize : currentSizes) {
+                if (existingSize.getSizeID() == newSize.getSizeID()) {
+                    // Cập nhật thông tin cho size đã tồn tại
+                    existingSize.setSizeValue(newSize.getSizeValue());
+                    existingSize.setQuantity(newSize.getQuantity());
+                    sizesToRemove.remove(existingSize);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                // Thêm size mới vào danh sách nếu không tìm thấy size cũ
+                newSize.setProduct(existingProduct);
+                currentSizes.add(newSize);
+            }
+        }
+
+        // Xóa các sizes không còn liên kết
+        currentSizes.removeAll(sizesToRemove);
+        for (Size sizeToRemove : sizesToRemove) {
+            sizeServiceImp.deleteSize(sizeToRemove.getSizeID());
+        }
+    }
+
+    private void updateProductThumbnails(Product existingProduct, List<Thumnail> newThumbnails) {
+        List<Thumnail> currentThumbnails = existingProduct.getProductImages();
+        List<Thumnail> thumbnailsToRemove = new ArrayList<>(currentThumbnails);
+
+        for (Thumnail newThumbnail : newThumbnails) {
+            boolean found = false;
+            for (Thumnail existingThumbnail : currentThumbnails) {
+                if (existingThumbnail.getImageId() == newThumbnail.getImageId()) {
+                    // Cập nhật URL cho thumbnail đã tồn tại
+                    existingThumbnail.setImageUrl(newThumbnail.getImageUrl());
+                    thumbnailsToRemove.remove(existingThumbnail);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                // Thêm thumbnail mới vào danh sách nếu không tìm thấy thumbnail cũ
+                newThumbnail.setProduct(existingProduct);
+                currentThumbnails.add(newThumbnail);
+            }
+        }
+
+        // Xóa các thumbnails không còn liên kết
+        currentThumbnails.removeAll(thumbnailsToRemove);
+        for (Thumnail thumnailToRemove : thumbnailsToRemove) {
+            thumnailServiceImp.deleteThumnail(thumnailToRemove.getImageId());
+        }
+    }
+
 }
