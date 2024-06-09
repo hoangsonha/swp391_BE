@@ -79,21 +79,8 @@ public class DiamondController {
                 return ResponseEntity.badRequest().body("Diamond not found with ID: " + id);
             }
             existingDiamond.setDiamondName(diamond.getDiamondName());
-            existingDiamond.setCarat(diamond.getCarat());
-            existingDiamond.setCertificate(diamond.getCertificate());
-            existingDiamond.setClarify(diamond.getClarify());
-            existingDiamond.setColor(diamond.getColor());
-            existingDiamond.setColorLevel(diamond.getColorLevel());
-            existingDiamond.setCut(diamond.getCut());
-            existingDiamond.setShape(diamond.getShape());
-            existingDiamond.setDimensions(diamond.getDimensions());
-            existingDiamond.setFlourescence(diamond.getFlourescence());
-            existingDiamond.setImage(diamond.getImage());
-            existingDiamond.setInputDate(diamond.getInputDate());
             existingDiamond.setOriginPrice(diamond.getOriginPrice());
-            existingDiamond.setStatus(diamond.isStatus());
             existingDiamond.setTotalPrice(diamond.getOriginPrice()*(1+ diamond.getRatio()));
-            existingDiamond.setWarrantyCard(diamond.getWarrantyCard());
             existingDiamond.setRatio(diamond.getRatio());
             diamondService.updateDiamond(existingDiamond);
             return ResponseEntity.ok("Diamond updated successfully with ID: " + existingDiamond.getDiamondID());
