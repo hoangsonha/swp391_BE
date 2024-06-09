@@ -119,7 +119,7 @@ public class ProductController {
             existingProduct.setProductType(product.getProductType());
             existingProduct.setQuantity(product.getQuantity());
             existingProduct.setQuantityStonesOfDiamond(product.getQuantityStonesOfDiamond());
-            existingProduct.setTotalPrice(product.getTotalPrice());
+            existingProduct.setTotalPrice((product.getWagePrice() + product.getOriginalPrice()) * (1 + product.getRatio()));
             existingProduct.setOriginalPrice(product.getOriginalPrice());
             existingProduct.setWagePrice(product.getWagePrice());
             existingProduct.setRatio(product.getRatio());
@@ -151,12 +151,6 @@ public class ProductController {
         }
     }
 
-//    @GetMapping("/product/{product_id}")
-//    public ResponseEntity<List<Diamond>> getProductById(@PathVariable("product_id") String productId) {
-//        Product product = productServiceImp.getProductById(productId);
-//        List<Diamond> diamonds = diamondServiceImp.getByCondition(product.getShapeDiamond(), product.getDimensionsDiamond());
-//        return new ResponseEntity<>(diamonds, HttpStatus.OK);
-//    }
 
     private void updateProductSizes(Product existingProduct, List<Size> newSizes) {
         List<Size> currentSizes = existingProduct.getSizes();

@@ -92,7 +92,7 @@ public class DiamondController {
             existingDiamond.setInputDate(diamond.getInputDate());
             existingDiamond.setOriginPrice(diamond.getOriginPrice());
             existingDiamond.setStatus(diamond.isStatus());
-            existingDiamond.setTotalPrice(diamond.getTotalPrice());
+            existingDiamond.setTotalPrice(diamond.getOriginPrice()*(1+ diamond.getRatio()));
             existingDiamond.setWarrantyCard(diamond.getWarrantyCard());
             existingDiamond.setRatio(diamond.getRatio());
             diamondService.updateDiamond(existingDiamond);
@@ -126,17 +126,17 @@ public class DiamondController {
         }
     }
 
-//    @GetMapping("/get_condition")
-//    public ResponseEntity<?> getCondition (
-//            @RequestParam("shape") String shape,
-//            @RequestParam("dimensions") float dimensions) {
-//        List<Diamond> list = diamondServiceImp.getByCondition(shape, dimensions);
-//
-//        if (list == null || list.isEmpty()) {
-//            return ResponseEntity.badRequest().body("Diamond list is empty");
-//        } else {
-//            return ResponseEntity.ok(list);
-//        }
-//    }
+    @GetMapping("/get_condition")
+    public ResponseEntity<?> getCondition (
+            @RequestParam("shape") String shape,
+            @RequestParam("dimensions") float dimensions) {
+        List<Diamond> list = diamondServiceImp.getByCondition(shape, dimensions);
+
+        if (list == null || list.isEmpty()) {
+            return ResponseEntity.badRequest().body("Diamond list is empty");
+        } else {
+            return ResponseEntity.ok(list);
+        }
+    }
 
 }
