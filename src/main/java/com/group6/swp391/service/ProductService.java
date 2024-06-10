@@ -12,4 +12,6 @@ public interface ProductService {
     void deleteProductStatus(String productId);
     void updateProduct(String id, Product product);
     List<Product> getProductsByCategory(String categoryName);
+    List<Product> getProductByCondition(String shape, float dimension);
+    void deleteProducts(List<String> productIds);
 }

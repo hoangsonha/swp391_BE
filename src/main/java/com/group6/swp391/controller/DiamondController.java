@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -123,6 +122,27 @@ public class DiamondController {
             return ResponseEntity.badRequest().body("Diamond list is empty");
         } else {
             return ResponseEntity.ok(list);
+        }
+    }
+
+    @PostMapping("/delete_diamonds")
+    public ResponseEntity<String> deleteDiamonds(@RequestBody List<String> diamondIds) {
+        try {
+            if (diamondIds == null || diamondIds.isEmpty()) {
+                return ResponseEntity.badRequest().body("Diamond list is empty");
+            }
+            for (String diamondId : diamondIds) {
+                Diamond diamond = diamondServiceImp.getDiamondByDiamondID(diamondId);
+                if (diamond == null) {
+                    return ResponseEntity.badRequest().body("Diamond not found with ID: " + diamondId);
+                } else {
+                    diamond.setStatus(false);
+                }
+            }
+            diamondServiceImp.deleteDiamonds(diamondIds);
+            return ResponseEntity.ok("Diamond deleted successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Delete diamond failed");
         }
     }
 

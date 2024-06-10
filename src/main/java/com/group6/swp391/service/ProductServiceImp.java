@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImp  implements  ProductService{
@@ -59,5 +60,26 @@ public class ProductServiceImp  implements  ProductService{
     @Override
     public List<Product> getProductsByCategory(String categoryName) {
         return productRepository.findByCategory(categoryName);
+    }
+
+    @Override
+    public List<Product> getProductByCondition(String shape, float dimension) {
+        return productRepository.getByCondition(shape, dimension);
+    }
+
+    @Override
+    public void deleteProducts(List<String> productIds) {
+        try {
+            for (String id : productIds) {
+                Product product = productRepository.findProductId(id);
+                if(product == null) {
+                    throw new RuntimeException("Product not found");
+                } else {
+                    productRepository.save(product);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

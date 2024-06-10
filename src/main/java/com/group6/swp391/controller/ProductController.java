@@ -151,6 +151,28 @@ public class ProductController {
         }
     }
 
+    @PostMapping("/delete_products")
+    public ResponseEntity<String> deleteProducts(@RequestBody List<String> prodcutIds) {
+        try {
+            if(prodcutIds == null || prodcutIds.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            }
+            for (int i = 0; i < prodcutIds.size(); i++) {
+                String productID = prodcutIds.get(i);
+                Product product = productServiceImp.getProductById(productID);
+                if(product == null) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+                } else {
+                    product.setStatus(false);
+                }
+            }
+            productServiceImp.deleteProducts(prodcutIds);
+            return ResponseEntity.ok().body("delete products successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
 
     private void updateProductSizes(Product existingProduct, List<Size> newSizes) {
         List<Size> currentSizes = existingProduct.getSizes();

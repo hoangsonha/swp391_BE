@@ -1,17 +1,17 @@
 package com.group6.swp391.service;
 
 import com.group6.swp391.model.ProductCustom;
-import com.group6.swp391.repository.ProductCustomeRepository;
+import com.group6.swp391.repository.ProductCustomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ProductCustomeServiceImp implements  ProductCustomeService{
     @Autowired
-    ProductCustomeRepository productCustomeRepository;
+    ProductCustomRepository productCustomRepository;
     @Override
     public ProductCustom createProductCustom(ProductCustom productCustom) {
-        return productCustomeRepository.save(productCustom);
+        return productCustomRepository.save(productCustom);
     }
 
 
@@ -28,7 +28,7 @@ public class ProductCustomeServiceImp implements  ProductCustomeService{
      //       existingProduct.setRatio(productCustom.getRatio());
             existingProduct.setWarrantyCard(productCustom.getWarrantyCard());
             existingProduct.setTotalPrice(productCustom.getTotalPrice());
-            productCustomeRepository.save(existingProduct);
+            productCustomRepository.save(existingProduct);
         }
         return null;
     }
@@ -40,6 +40,6 @@ public class ProductCustomeServiceImp implements  ProductCustomeService{
 
     @Override
     public ProductCustom getProductCustomById(String id) {
-        return productCustomeRepository.getProductCustomByProdcutCustomId(id);
+        return productCustomRepository.getProductCustomByProdcutCustomId(id);
     }
 }

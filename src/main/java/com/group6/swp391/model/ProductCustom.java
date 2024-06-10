@@ -24,7 +24,7 @@ public class ProductCustom {
     private Diamond diamond;
 
     @Column(name = "total_name")
-    private double totalPrice; // totalPrice = (diamondPirce + productPrice + wagePrice) * (1 + ratio))
+    private double totalPrice;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "warranty_card_id", unique = true)

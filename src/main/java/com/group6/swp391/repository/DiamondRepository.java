@@ -14,6 +14,9 @@ public interface DiamondRepository extends JpaRepository<Diamond, String> {
 
     public Diamond getDiamondByDiamondID(String diamondID);
 
+    @Query("SELECT d FROM Diamond d WHERE d.shape = :shape AND ABS(d.dimensions - :dimensions) < 0.1")
+    List<Diamond> getByCondition(@Param("shape") String shape,@Param("dimensions") float dimensions);
+
     @Modifying
     @Query("select max(totalPrice) from Diamond")
     public double getMaxTotalPrice();

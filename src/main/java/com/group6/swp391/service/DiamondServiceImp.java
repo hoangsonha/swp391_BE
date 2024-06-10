@@ -234,5 +234,26 @@ public class DiamondServiceImp implements DiamondService {
         return lists_diamond;
     }
 
+    @Override
+    public List<Diamond> getByCondition(String shape, float dimensions) {
+        return diamondRepository.getByCondition(shape, dimensions);
+    }
+
+    @Override
+    public void deleteDiamonds(List<String> diamondIDs) {
+        try {
+            for (String diamondID : diamondIDs) {
+                Diamond diamond = diamondRepository.getDiamondByDiamondID(diamondID);
+                if(diamond != null) {
+                    diamondRepository.save(diamond);
+                } else {
+                    throw new RuntimeException("Diamond " + diamondID + " not found");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
 }
