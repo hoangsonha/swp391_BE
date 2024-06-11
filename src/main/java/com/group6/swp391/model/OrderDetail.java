@@ -21,7 +21,7 @@ public class OrderDetail {
 
     @ManyToOne
     @JoinColumn(name = "prodcut_custom_id")
-    private ProductCustom productCustom;
+    private ProductCustomize productCustomize;
 
     @ManyToOne
     @JoinColumn(name = "diamond_id")

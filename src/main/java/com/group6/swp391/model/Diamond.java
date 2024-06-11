@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -69,24 +71,9 @@ public class Diamond {
     @Column(name = "ratio")
     private double ratio;
 
-    public Diamond(String diamondName, float carat, String certificate, String clarify, String color,
-                   char colorLevel, String cut, float dimensions, String flourescence, String image, Date inputDate,
-                   double originPrice, boolean status, double totalPrice, WarrantyCard warrantyCard, double ratio) {
-        this.diamondName = diamondName;
-        this.carat = carat;
-        this.certificate = certificate;
-        this.clarify = clarify;
-        this.color = color;
-        this.colorLevel = colorLevel;
-        this.cut = cut;
-        this.dimensions = dimensions;
-        this.flourescence = flourescence;
-        this.image = image;
-        this.inputDate = inputDate;
-        this.originPrice = originPrice;
-        this.status = status;
-        this.totalPrice = originPrice * ratio;
-        this.warrantyCard = warrantyCard;
-        this.ratio = ratio;
-    }
+    @ManyToOne
+    @JoinColumn(name = "cart_id")
+    private Cart cart;
+
+
 }
