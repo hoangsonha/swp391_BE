@@ -15,7 +15,6 @@ import java.util.Set;
 @Setter
 @Getter
 @NoArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Cart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,7 +26,6 @@ public class Cart {
     private User user;
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonIgnoreProperties("cart")
     private Set<CartItem> items = new HashSet<>();
 
     // Methods to add and remove items from cart
