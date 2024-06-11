@@ -1,8 +1,7 @@
 package com.group6.swp391.cart;
 
 import com.group6.swp391.model.Diamond;
-import com.group6.swp391.model.Product;
-import com.group6.swp391.model.ProductCustom;
+import com.group6.swp391.model.ProductCustomize;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,9 +27,9 @@ public class Cart {
     public boolean add(Object goods) {
         boolean check = false;
         try {
-            if(goods instanceof ProductCustom) {
-                ProductCustom productCustom = (ProductCustom) goods;
-                this.map.add(productCustom.getProdcutCustomId(), productCustom);
+            if(goods instanceof ProductCustomize) {
+                ProductCustomize productCustomize = (ProductCustomize) goods;
+                this.map.add(productCustomize.getProdcutCustomId(), productCustomize);
                 check = true;
             } else if(goods instanceof Diamond) {
                 Diamond diamond = (Diamond)goods;
@@ -48,9 +47,9 @@ public class Cart {
     public boolean remove(Object goods) {
         boolean check = false;
         try {
-            if(goods instanceof ProductCustom) {
-                ProductCustom productCustom = (ProductCustom) goods;
-                this.map.remove(productCustom.getProdcutCustomId(), productCustom);
+            if(goods instanceof ProductCustomize) {
+                ProductCustomize productCustomize = (ProductCustomize) goods;
+                this.map.remove(productCustomize.getProdcutCustomId(), productCustomize);
             } else if(goods instanceof Diamond) {
                 Diamond diamond = (Diamond)goods;
                 this.map.remove(diamond.getDiamondID(), diamond);
@@ -70,8 +69,8 @@ public class Cart {
                 Iterator<Object> ite = this.map.get(i).iterator();
                 for (Iterator<Object> it = ite; it.hasNext(); ) {
                     Object t = it.next();
-                    if(t instanceof ProductCustom) {
-                        ProductCustom p = (ProductCustom) t;
+                    if(t instanceof ProductCustomize) {
+                        ProductCustomize p = (ProductCustomize) t;
                         if(p.getDiamond() != null) {
                             total += 1;
                         }
@@ -95,8 +94,8 @@ public class Cart {
                 Iterator<Object> ite = this.map.get(i).iterator();
                 for (Iterator<Object> it = ite; it.hasNext(); ) {
                     Object t = it.next();
-                    if(t instanceof ProductCustom) {
-                        ProductCustom p = (ProductCustom) t;
+                    if(t instanceof ProductCustomize) {
+                        ProductCustomize p = (ProductCustomize) t;
                         total += p.getTotalPrice();
                     } else if(t instanceof Diamond) {
                         Diamond d = (Diamond)t;
@@ -116,8 +115,8 @@ public class Cart {
             Iterator<Object> ite = this.map.get(i).iterator();
             for (Iterator<Object> it = ite; it.hasNext(); ) {
                 Object t = it.next();
-                if(t instanceof ProductCustom) {
-                    ProductCustom p = (ProductCustom) t;
+                if(t instanceof ProductCustomize) {
+                    ProductCustomize p = (ProductCustomize) t;
                     if(p.getDiamond() != null) {
                         lists.add(p.getDiamond());
                     }
@@ -136,8 +135,8 @@ public class Cart {
             Iterator<Object> ite = this.map.get(i).iterator();
             for (Iterator<Object> it = ite; it.hasNext(); ) {
                 Object t = it.next();
-                if(t instanceof ProductCustom) {
-                    ProductCustom p = (ProductCustom) t;
+                if(t instanceof ProductCustomize) {
+                    ProductCustomize p = (ProductCustomize) t;
                     if(p.getDiamond() != null) {
                         lists.add(p.getDiamond());
                     }

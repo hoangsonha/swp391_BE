@@ -21,9 +21,9 @@ public class Payment {
     @JoinColumn(name = "order_id", referencedColumnName = "order_id")
     private Order order;
     private Date paymentDate;
-    private double paymentAmount;
+    private double paymentAmount; //50%
     private double totalAmount;
-    private double remainingAmount;
+    private double remainingAmount; 
 
     public Payment(double paymentAmount, Order order, Date paymentDate, double remainingAmount, double totalAmount) {
         this.paymentAmount = paymentAmount;

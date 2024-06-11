@@ -2,11 +2,10 @@ package com.group6.swp391.controller;
 
 import com.group6.swp391.cart.Cart;
 import com.group6.swp391.model.Diamond;
-import com.group6.swp391.model.Product;
-import com.group6.swp391.model.ProductCustom;
+import com.group6.swp391.model.ProductCustomize;
 import com.group6.swp391.response.CartResponse;
 import com.group6.swp391.service.DiamondService;
-import com.group6.swp391.service.ProductCustomeService;
+import com.group6.swp391.service.ProductCustomizeService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,16 +20,16 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 public class CartController {
 
-    @Autowired private ProductCustomeService productCustomeService;
+    @Autowired private ProductCustomizeService productCustomizeService;
     @Autowired private DiamondService diamondService;
 
     @GetMapping("/add_cart/{id}")
     public ResponseEntity<String> addCart(HttpSession session, @PathVariable String id) {
         int check_id = 0;
-        ProductCustom productCustom = null;
+        ProductCustomize productCustomize = null;
         Diamond diamond = null;
         if(id.startsWith("P") || id.startsWith("p")) {
-            productCustom = productCustomeService.getProductCustomById(id);
+            productCustomize = productCustomizeService.getProductCustomizeById(id);
             check_id = 1;
         } else if(id.startsWith("D") || id.startsWith("d")) {
             diamond = diamondService.getDiamondByDiamondID(id);
@@ -41,8 +40,8 @@ public class CartController {
          if(cart == null) {
              cart = new Cart();
              if(check_id == 1) {
-                 if(productCustom != null) {
-                     boolean add_cart = cart.add(productCustom);
+                 if(productCustomize != null) {
+                     boolean add_cart = cart.add(productCustomize);
                      if(add_cart) {
                          session.setAttribute("CART", cart);
                          check = true;
@@ -59,8 +58,8 @@ public class CartController {
              }
          } else {
             if(check_id == 1) {
-                if(productCustom != null) {
-                    boolean add_cart = cart.add(productCustom);
+                if(productCustomize != null) {
+                    boolean add_cart = cart.add(productCustomize);
                     if(add_cart) {
                         check = true;
                     }
@@ -98,8 +97,8 @@ public class CartController {
         String message = "";
         if(cart != null) {
             if(id.startsWith("P") || id.startsWith("p")) {
-                ProductCustom productCustom = productCustomeService.getProductCustomById(id);
-                cart.remove(productCustom);
+                ProductCustomize productCustomize = productCustomizeService.getProductCustomizeById(id);
+                cart.remove(productCustomize);
                 message = "Delete product successfully!!!";
             } else if(id.startsWith("D") || id.startsWith("d")) {
                 Diamond diamond = diamondService.getDiamondByDiamondID(id);
@@ -112,10 +111,10 @@ public class CartController {
 
     @GetMapping("/remove_diamond_selected_in_product/{productID}/{diamondID}")
     public ResponseEntity<String> removeDiamondSelectedInProduct(HttpSession session, @PathVariable("productID") String productID, @PathVariable("diamondID") String diamondID) {
-        ProductCustom productCustom = productCustomeService.getProductCustomById(productID);
+        ProductCustomize productCustomize = productCustomizeService.getProductCustomizeById(productID);
         Cart cart = (Cart) session.getAttribute("CART");
         if(cart != null) {
-            productCustom.setDiamond(null);
+            productCustomize.setDiamond(null);
         }
         return ResponseEntity.status(HttpStatus.OK).body("Delete diamond successfully!!!");
     }

@@ -1,15 +1,19 @@
 package com.group6.swp391.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity(name = "user")
 @Getter
 @Setter
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,6 +47,7 @@ public class User extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "roleID")
     private Role role;
+
 
     public User(String firstName, String lastName, String email, String password, String phone, String address, String avata, String codeVerify, boolean enabled, boolean nonLooked, Role role, int quantityLoginFailed, Date timeLoginFailed) {
         this.firstName = firstName;
