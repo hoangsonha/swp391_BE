@@ -66,7 +66,7 @@ public class WebSecurityConfig {
                         .anyRequest().authenticated())
 
                 .sessionManagement(m -> m.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                  .oauth2Login(oauth2 -> oauth2.successHandler(customOAuth2AuthenticationSuccessHandler).loginPage("/public/login"));
+                  .oauth2Login(oauth2 -> oauth2.successHandler(customOAuth2AuthenticationSuccessHandler));
 //                .logout(logout -> logout.logoutUrl("/logout").addLogoutHandler(logoutHandler).logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext()));
 
 //                .formLogin((login) -> login.loginPage("/login").loginProcessingUrl("/login").usernameParameter("name").passwordParameter("password")
