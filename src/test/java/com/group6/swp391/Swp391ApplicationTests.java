@@ -30,22 +30,22 @@ class Swp391ApplicationTests {
     @Test
     void contextLoads() {
 
-        User user = userRepository.getUserByEmail("hoangsonha492@gmail.com");
-    int year = 2024;
-    int month = 6;
-    int day = 7;
-    int hour = 0;
-    int minute = 3;
-    int second = 30;
-
-        int year1 = 2025;
-        int month1 = 1;
-        int day1 = 1;
-        int hour1 = 0;
-        int minute1 = 3;
-        int second1 = 30;
-
-        System.out.println(userService.calculateSecondIn5Minute(user));
+//        User user = userRepository.getUserByEmail("hoangsonha492@gmail.com");
+//    int year = 2024;
+//    int month = 6;
+//    int day = 7;
+//    int hour = 0;
+//    int minute = 3;
+//    int second = 30;
+//
+//        int year1 = 2025;
+//        int month1 = 1;
+//        int day1 = 1;
+//        int hour1 = 0;
+//        int minute1 = 3;
+//        int second1 = 30;
+//
+//        System.out.println(userService.calculateSecondIn5Minute(user));
 
 
 
