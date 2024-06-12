@@ -147,16 +147,6 @@ public class OrderController {
 
     @GetMapping("/all_orders")
     public ResponseEntity<?> getAllOrders() {
-        List<Order> orders;
-        try {
-            orders = orderService.getAllOrder();
-            if  (orders == null) {
-                return ResponseEntity.badRequest().body("Order list is not available");
-            } else {
-                return ResponseEntity.ok(orders);
-            }
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Get all orders failed");
-        }
+        return ResponseEntity.ok(orderService.getAllOrder());
     }
 }
