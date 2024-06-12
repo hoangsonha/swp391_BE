@@ -64,9 +64,6 @@ public class Diamond {
     @Column(name = "total_price")
     private double totalPrice;
 
-    @OneToOne(mappedBy = "diamond", cascade = CascadeType.ALL)
-    @JoinColumn(name = "warranty_card_id", unique = true)
-    private WarrantyCard warrantyCard;
 
     @Column(name = "ratio")
     private double ratio;

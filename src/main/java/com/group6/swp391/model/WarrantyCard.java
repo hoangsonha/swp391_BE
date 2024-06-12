@@ -3,6 +3,7 @@ package com.group6.swp391.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -20,6 +21,11 @@ public class WarrantyCard {
     @Column(name = "purchase_date")
     private Date purchaseDate;
 
+    @PrePersist
+    protected void onCreate() {
+        this.purchaseDate = new Date();
+    }
+
     @Column(name = "expiration_date")
     private Date expirationDate;
 
@@ -27,9 +33,11 @@ public class WarrantyCard {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public WarrantyCard(Date purchaseDate, Date expirationDate, User user) {
-        this.purchaseDate = purchaseDate;
-        this.expirationDate = expirationDate;
-        this.user = user;
-    }
+    @OneToOne
+    @JoinColumn(name = "product_customize_id", unique = true)
+    private ProductCustomize productCustomize;
+
+    @OneToOne
+    @JoinColumn(name = "diamond_id", unique = true)
+    private Diamond diamond;
 }

@@ -2,11 +2,18 @@ package com.group6.swp391.repository;
 
 import com.group6.swp391.model.WarrantyCard;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.Date;
+import java.util.List;
 
 @Repository
 public interface WarrantyCardRepository extends JpaRepository<WarrantyCard, Integer> {
+    @Query("SELECT wc FROM WarrantyCard wc WHERE wc.expirationDate BETWEEN :now AND :futureDate")
+    List<WarrantyCard> findWarrantyCardsExpiringSoon(@Param("now") Date now, @Param("futureDate") Date futureDate);
 
-    public WarrantyCard getWarrantyCardByWarrantyCardID(int warrantyCardID);
-
+    @Query("SELECT wc FROM  WarrantyCard wc WHERE wc.user.userID =:userId")
+    List<WarrantyCard> findByUser(@Param("userId") int userId);
 }
