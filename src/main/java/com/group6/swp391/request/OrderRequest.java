@@ -24,4 +24,5 @@ public class OrderRequest {
     int quantity;
     String status;
     User user;
+    List<OrderDetailRequest> orderDetail;
 }
