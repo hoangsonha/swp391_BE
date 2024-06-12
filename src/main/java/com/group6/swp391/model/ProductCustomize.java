@@ -1,13 +1,9 @@
 package com.group6.swp391.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.group6.swp391.model.Cart;
+
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Getter

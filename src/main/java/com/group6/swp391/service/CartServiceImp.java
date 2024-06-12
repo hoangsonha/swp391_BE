@@ -8,6 +8,7 @@ import com.group6.swp391.repository.CartRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -48,5 +49,10 @@ public class CartServiceImp implements CartService {
     @Override
     public Cart getCart(int userId) {
         return cartRepository.findByUserId(userId);
+    }
+
+    @Override
+    public List<Cart> getAllCarts() {
+        return cartRepository.findAll();
     }
 }

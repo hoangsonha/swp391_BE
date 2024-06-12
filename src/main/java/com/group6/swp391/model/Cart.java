@@ -1,8 +1,9 @@
 package com.group6.swp391.model;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,6 +16,8 @@ import java.util.Set;
 @Setter
 @Getter
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonPropertyOrder({"cartId", "userId", "items"})
 public class Cart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,9 +26,11 @@ public class Cart {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", unique = true)
+    @JsonProperty("userId")
     private User user;
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnoreProperties("cart")
     private Set<CartItem> items = new HashSet<>();
 
     // Methods to add and remove items from cart
