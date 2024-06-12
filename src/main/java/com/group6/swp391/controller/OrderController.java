@@ -74,6 +74,38 @@ public class OrderController {
         }
     }
 
+    @PutMapping("/update_order/{id}")
+    public ResponseEntity<?> updateOrder(@PathVariable int id, @RequestBody OrderRequest orderRequest) {
+        Order order = orderService.getOrderByOrderID(id);
+        if (order == null) {
+            return ResponseEntity.badRequest().body("Order not found");
+        }
+        order.setAddressShipping(orderRequest.getAddressShipping());
+        order.setFullName(orderRequest.getFullName());
+        order.setOrderDate(orderRequest.getOrderDate());
+        order.setPhoneShipping(orderRequest.getPhoneShipping());
+        order.setPrice(orderRequest.getPrice());
+        order.setQuantity(orderRequest.getQuantity());
+        order.setStatus(orderRequest.getStatus());
+        order.setUser(orderRequest.getUser());
+
+        List<OrderDetail> existingDetails = order.getOrderDetails();
+        existingDetails.clear();
+
+        for (OrderDetailRequest detailRequest : orderRequest.getOrderDetail()) {
+            OrderDetail detail = new OrderDetail();
+            detail.setOrder(order);
+            detail.setProductCustomize(detailRequest.getProductCustomize());
+            detail.setDiamond(detailRequest.getDiamond());
+            detail.setQuantity(detailRequest.getQuantity());
+            detail.setPrice(detailRequest.getPrice());
+            existingDetails.add(detail);
+        }
+        orderService.save(order);
+        return ResponseEntity.ok("Order updated successfully with ID: " + order.getOrderID());
+    }
+
+
     @GetMapping("/all_orders")
     public ResponseEntity<?> getAllOrders() {
         return ResponseEntity.ok(orderService.getAllOrder());
