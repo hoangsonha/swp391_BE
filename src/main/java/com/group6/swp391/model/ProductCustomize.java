@@ -14,7 +14,7 @@ import lombok.*;
 public class ProductCustomize {
     //thang nay sinh ra sau khi nhan addcart
     @Id
-    @Column(name = "prodcut_custom_id")
+    @Column(name = "product_customize_id")
     private String prodcutCustomId;
 
     @ManyToOne
@@ -31,7 +31,7 @@ public class ProductCustomize {
     @Column(name = "size")
     private int size;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "productCustomize", cascade = CascadeType.ALL)
     @JoinColumn(name = "warranty_card_id", unique = true)
     private WarrantyCard warrantyCard;
 }
