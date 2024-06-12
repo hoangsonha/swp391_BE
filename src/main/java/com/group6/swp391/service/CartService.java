@@ -8,6 +8,6 @@ public interface CartService {
     void addCart(int userId, String productId);
     Cart getCart(int userId);
     List<Cart> getAllCarts();
-
+    void removeCart(int cartItemId);
 
 }

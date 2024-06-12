@@ -4,6 +4,7 @@ import com.group6.swp391.model.Cart;
 import com.group6.swp391.model.CartItem;
 import com.group6.swp391.model.Diamond;
 import com.group6.swp391.model.ProductCustomize;
+import com.group6.swp391.repository.CartItemRepository;
 import com.group6.swp391.repository.CartRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,10 @@ public class CartServiceImp implements CartService {
     @Autowired UserServiceImp userServiceImp;
 
     @Autowired DiamondServiceImp diamondServiceImp;
+
+    @Autowired CartItemRepository CartItemRepository;
+    @Autowired
+    private CartItemRepository cartItemRepository;
 
     @Override
     public void addCart(int userId, String productId) {
@@ -54,5 +59,17 @@ public class CartServiceImp implements CartService {
     @Override
     public List<Cart> getAllCarts() {
         return cartRepository.findAll();
+    }
+
+    @Override
+    public void removeCart(int cartItemId) {
+        CartItem cartItemToRemove = cartItemRepository.findById(cartItemId).orElse(null);
+        if (cartItemToRemove != null) {
+            Cart cart = cartItemToRemove.getCart();
+            if (cart != null) {
+                cart.removeItem(cartItemToRemove);
+                cartRepository.save(cart);
+            }
+        }
     }
 }

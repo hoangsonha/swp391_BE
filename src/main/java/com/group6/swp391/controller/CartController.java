@@ -1,122 +1,61 @@
 package com.group6.swp391.controller;
 
-import com.group6.swp391.cart.Cart;
-import com.group6.swp391.model.Diamond;
-import com.group6.swp391.model.ProductCustomize;
-import com.group6.swp391.response.CartResponse;
-import com.group6.swp391.service.DiamondService;
-import com.group6.swp391.service.ProductCustomizeService;
-import jakarta.servlet.http.HttpSession;
+import com.group6.swp391.model.Cart;
+import com.group6.swp391.request.CartRequest;
+import com.group6.swp391.service.CartServiceImp;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/swp391/api/cart")
+@RequestMapping("/swp391/api/carts")
 @CrossOrigin(origins = "*")
 public class CartController {
+    @Autowired
+    CartServiceImp cartServiceImp;
 
-    @Autowired private ProductCustomizeService productCustomizeService;
-    @Autowired private DiamondService diamondService;
-
-    @GetMapping("/add_cart/{id}")
-    public ResponseEntity<String> addCart(HttpSession session, @PathVariable String id) {
-        int check_id = 0;
-        ProductCustomize productCustomize = null;
-        Diamond diamond = null;
-        if(id.startsWith("P") || id.startsWith("p")) {
-            productCustomize = productCustomizeService.getProductCustomizeById(id);
-            check_id = 1;
-        } else if(id.startsWith("D") || id.startsWith("d")) {
-            diamond = diamondService.getDiamondByDiamondID(id);
-            check_id = 2;
-        }
-        boolean check = false;
-        Cart cart = (Cart) session.getAttribute("CART");
-         if(cart == null) {
-             cart = new Cart();
-             if(check_id == 1) {
-                 if(productCustomize != null) {
-                     boolean add_cart = cart.add(productCustomize);
-                     if(add_cart) {
-                         session.setAttribute("CART", cart);
-                         check = true;
-                     }
-                 }
-             } else if(check_id == 2) {
-                 if(diamond != null) {
-                     boolean add_cart = cart.add(diamond);
-                     if(add_cart) {
-                         session.setAttribute("CART", cart);
-                         check = true;
-                     }
-                 }
-             }
-         } else {
-            if(check_id == 1) {
-                if(productCustomize != null) {
-                    boolean add_cart = cart.add(productCustomize);
-                    if(add_cart) {
-                        check = true;
-                    }
-                }
-            } else if(check_id == 2) {
-                if(diamond != null) {
-                    boolean add_cart = cart.add(diamond);
-                    if(add_cart) {
-                        check = true;
-                    }
-                }
+    @PostMapping("/add_cart")
+    public ResponseEntity<?> addCart(@RequestBody CartRequest cartRequest) {
+        try {
+            if(cartRequest.getProductId() == null) {
+                return ResponseEntity.badRequest().body("Product is required");
             }
-         }
-         return check ? ResponseEntity.status(HttpStatus.OK).body("Added cart successfully")
-              : ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Added cart failed");
-    }
-
-    @GetMapping("/view_cart")
-    public ResponseEntity<CartResponse> viewCart(HttpSession session) {
-        Cart cart = (Cart) session.getAttribute("CART");
-        List<Diamond> listsDiamond = new ArrayList<>();
-        int totalQuantity = 0;
-        double totalPrice = 0;
-        if(cart != null) {
-            totalQuantity = cart.getTotalQuantity();
-            totalPrice = cart.getTotalPrice();
-            listsDiamond = cart.getTotalDiamond();
+            cartServiceImp.addCart(cartRequest.getUserId(), cartRequest.getProductId());
+            return ResponseEntity.ok().body("added cart successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
-        return ResponseEntity.status(HttpStatus.OK).body(new CartResponse("Success", "View Cart successfully", cart, listsDiamond, totalQuantity, totalPrice));
     }
 
-    @GetMapping("/remove_diamond/{id}")
-    public ResponseEntity<String> removeGoods(HttpSession session, @PathVariable String id) {
-        Cart cart = (Cart) session.getAttribute("CART");
-        String message = "";
-        if(cart != null) {
-            if(id.startsWith("P") || id.startsWith("p")) {
-                ProductCustomize productCustomize = productCustomizeService.getProductCustomizeById(id);
-                cart.remove(productCustomize);
-                message = "Delete product successfully!!!";
-            } else if(id.startsWith("D") || id.startsWith("d")) {
-                Diamond diamond = diamondService.getDiamondByDiamondID(id);
-                cart.remove(diamond);
-                message = "Delete diamond successfully!!!";
+
+    @GetMapping("/cartUser/{user_id}")
+    public ResponseEntity<?> getCartByUserId(@PathVariable("user_id") int userId) {
+        try {
+            Cart exsitingCart = cartServiceImp.getCart(userId);
+            if (exsitingCart == null) {
+                return ResponseEntity.badRequest().body("user not found");
             }
+            return ResponseEntity.ok(exsitingCart);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
-        return ResponseEntity.status(HttpStatus.OK).body(message);
     }
 
-    @GetMapping("/remove_diamond_selected_in_product/{productID}/{diamondID}")
-    public ResponseEntity<String> removeDiamondSelectedInProduct(HttpSession session, @PathVariable("productID") String productID, @PathVariable("diamondID") String diamondID) {
-        ProductCustomize productCustomize = productCustomizeService.getProductCustomizeById(productID);
-        Cart cart = (Cart) session.getAttribute("CART");
-        if(cart != null) {
-            productCustomize.setDiamond(null);
-        }
-        return ResponseEntity.status(HttpStatus.OK).body("Delete diamond successfully!!!");
+    @GetMapping("/all_carts")
+    public ResponseEntity<List<Cart>> getAll() {
+        List<Cart>carts = cartServiceImp.getAllCarts();
+        return ResponseEntity.ok(carts);
     }
 
+    @DeleteMapping("delete/{cart_item_id}")
+    public ResponseEntity<String> removeCart(@PathVariable("cart_item_id") int itemId) {
+        try {
+            cartServiceImp.removeCart(itemId);
+            return ResponseEntity.ok().body("Item removed from cart successfully!");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }
