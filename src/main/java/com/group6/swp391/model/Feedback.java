@@ -9,11 +9,11 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class FeedBack extends BaseEntity {
+public class Feedback extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "feedBack_id")
-    private int feedBackID;
+    @Column(name = "feedback_id")
+    private int feedbackID;
 
     @Column(name = "comment", length = 1024)
     private String comment;
@@ -24,7 +24,7 @@ public class FeedBack extends BaseEntity {
     @JoinColumn(name = "order_id", referencedColumnName = "order_id")
     private Order order;
 
-    public FeedBack(String comment, double rating, Order order) {
+    public Feedback(String comment, double rating, Order order) {
         this.comment = comment;
         this.rating = rating;
         this.order = order;
