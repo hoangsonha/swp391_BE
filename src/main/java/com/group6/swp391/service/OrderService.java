@@ -16,5 +16,7 @@ public interface OrderService {
 
     List<Order> getAllOrder();
 
+    void markOrderAsDeleted(int orderID);
+
     void createOrderDetails(List<OrderDetail> orderDetails);
 }

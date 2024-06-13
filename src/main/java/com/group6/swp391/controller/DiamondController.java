@@ -103,7 +103,7 @@ public class DiamondController {
 //    }
 
     @DeleteMapping("/delete_diamond/{id}")
-    public ResponseEntity<?> deleteDianmond(@PathVariable("id") String id) {
+    public ResponseEntity<?> deleteDiamond(@PathVariable("id") String id) {
         try {
             diamondService.markDiamondAsDeleted(id);
             return ResponseEntity.ok("Deleted Diamond with ID: " + id);

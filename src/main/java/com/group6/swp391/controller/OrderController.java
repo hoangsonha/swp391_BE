@@ -105,6 +105,15 @@ public class OrderController {
         return ResponseEntity.ok("Order updated successfully with ID: " + order.getOrderID());
     }
 
+    @DeleteMapping("/delete_order/{id}")
+    public ResponseEntity<?> deleteOrder(@PathVariable int id) {
+        try {
+            orderService.markOrderAsDeleted(id);
+            return ResponseEntity.ok("Order deleted successfully with ID: " + id);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
 
     @GetMapping("/all_orders")
     public ResponseEntity<?> getAllOrders() {

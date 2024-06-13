@@ -29,7 +29,7 @@ public class Order {
 
     private int quantity;
 
-    @Column(name = "full_name", nullable = false,columnDefinition = "nvarchar(300)")
+    @Column(name = "full_name", nullable = false, columnDefinition = "nvarchar(300)")
     private String fullName;
 
     @Column(name = "address_shipping", nullable = false, columnDefinition = "nvarchar(300)")
@@ -51,11 +51,16 @@ public class Order {
     protected void onCreate() {
         orderDate = LocalDateTime.now();
     }
+
     private double price;
 
     private String status;
 
-    public Order(String addressShipping, String fullName, LocalDateTime orderDate, List<Payment> payment, String phoneShipping, double price, int quantity, String status, User user) {
+    private boolean deleteStatus;
+
+    public Order(String addressShipping, String fullName, LocalDateTime orderDate,
+                 List<Payment> payment, String phoneShipping, double price, int quantity,
+                 String status, User user) {
         this.addressShipping = addressShipping;
         this.fullName = fullName;
         this.orderDate = orderDate;
@@ -65,5 +70,6 @@ public class Order {
         this.quantity = quantity;
         this.status = status;
         this.user = user;
+
     }
 }

@@ -38,6 +38,21 @@ public class OrderServiceImp implements OrderService {
     }
 
     @Override
+    public void markOrderAsDeleted(int orderID) {
+        try {
+            Order order = getOrderByOrderID(orderID);
+            if (order != null) {
+                order.setDeleteStatus(false);
+                orderRepository.save(order);
+            } else {
+                throw new RuntimeException("Order not found with id: " + orderID);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
     public void createOrderDetails(List<OrderDetail> orderDetails) {
         orderDetailRepository.saveAll(orderDetails);
     }
