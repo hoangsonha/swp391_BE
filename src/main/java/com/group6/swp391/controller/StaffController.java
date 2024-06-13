@@ -9,6 +9,7 @@ import com.group6.swp391.service.RoleService;
 import com.group6.swp391.service.UserService;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,7 +45,7 @@ public class StaffController {
 
     @PreAuthorize("hasRole('STAFF')")
     @PostMapping("/register")
-    public ResponseEntity<ObjectResponse> adminRegister(@RequestBody UserRegister userRegister, HttpServletRequest request) throws MessagingException, UnsupportedEncodingException {
+    public ResponseEntity<ObjectResponse> adminRegister(@Valid @RequestBody UserRegister userRegister, HttpServletRequest request) throws MessagingException, UnsupportedEncodingException {
         String randomString = UUID.randomUUID().toString();
         Role role = roleService.getRoleByRoleName(EnumRoleName.ROLE_USER);
 
@@ -65,7 +66,7 @@ public class StaffController {
             }
         }
         return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Create account successfully", user))
-                : ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new ObjectResponse("Failed", "Create account failed", user));
+                : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Create account failed", user));
     }
 
     @PreAuthorize("hasRole('STAFF')")
@@ -73,7 +74,7 @@ public class StaffController {
     public ResponseEntity<ObjectResponse> adminDeleteAccount(@PathVariable("id") int id) {
         boolean check = userService.deleteUser(id);
         return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Delete account successfully", null))
-                : ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new ObjectResponse("Failed", "Delete account failed", null));
+                : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Delete account failed", null));
     }
 
 }

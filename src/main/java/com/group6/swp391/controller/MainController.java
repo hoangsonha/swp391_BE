@@ -16,6 +16,7 @@ import com.group6.swp391.service.UserService;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.Parameter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +55,7 @@ public class MainController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<ObjectResponse> userRegister(@RequestBody UserRegister userRegister, HttpServletRequest request) throws MessagingException, UnsupportedEncodingException {
+    public ResponseEntity<ObjectResponse> userRegister(@Valid @RequestBody UserRegister userRegister, HttpServletRequest request) throws MessagingException, UnsupportedEncodingException {
         Role role = roleService.getRoleByRoleName(EnumRoleName.ROLE_USER);
 
         String randomString = UUID.randomUUID().toString();
@@ -71,7 +72,7 @@ public class MainController {
             check = userService.sendVerificationEmail(user, siteUrl);
         }
         return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Create account successfully", user))
-                :ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new ObjectResponse("Failed", "Create account failed", user));
+                :ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Create account failed", null));
     }
 
     @GetMapping("/verify")
@@ -79,16 +80,16 @@ public class MainController {
         boolean check = false;
         try {
             check = userService.verifyAccount(code);
+            if(check) response.sendRedirect("http://localhost:5173/");
         } catch(Exception e) {
             log.error("Can not verify account");
         }
 //        return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Verify account successfully", null))
 //                :ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Verify account failed ", null));
-        response.sendRedirect("http://localhost:5173/");
     }
 
     @PostMapping("/login")
-    public ResponseEntity<TokenResponse> loginPage(@RequestBody UserLogin userLogin, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<TokenResponse> loginPage(@Valid @RequestBody UserLogin userLogin, HttpServletRequest request, HttpServletResponse response) {
         try {
             String gRecaptchaResponse = userLogin.getRecaptchaResponse();
             boolean check_captcha = userService.verifyRecaptcha(gRecaptchaResponse);
@@ -152,7 +153,7 @@ public class MainController {
     }
 
     @PostMapping("/forget_password")
-    public ResponseEntity<ObjectResponse> getForgetPassword(@RequestBody OTPRequest otpRequest, HttpServletRequest request, HttpServletResponse response) throws MessagingException, UnsupportedEncodingException {
+    public ResponseEntity<ObjectResponse> getForgetPassword(@Valid @RequestBody OTPRequest otpRequest, HttpServletRequest request, HttpServletResponse response) throws MessagingException, UnsupportedEncodingException {
         boolean checkOTPRequest = userService.checkEmailOrPhone(otpRequest.getEmailOrPhone());
         String siteUrl = request.getRequestURL().toString().replace(request.getServletPath(), "");
         boolean check = false;
@@ -167,7 +168,7 @@ public class MainController {
     }
 
     @PostMapping("/validationOTP")
-    public ResponseEntity<ObjectResponse> getValidationOTP(@RequestBody OTPValidationRequest otpValidationRequest) {
+    public ResponseEntity<ObjectResponse> getValidationOTP(@Valid @RequestBody OTPValidationRequest otpValidationRequest) {
         boolean check = userService.validateOTP(otpValidationRequest);
         return check ?
                 ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Authentication successfully", null))
@@ -175,7 +176,7 @@ public class MainController {
     }
 
     @PostMapping("/set_password")
-    public ResponseEntity<ObjectResponse> SetPassword(@RequestBody ChangePasswordRequest changePasswordRequest) {
+    public ResponseEntity<ObjectResponse> SetPassword(@Valid @RequestBody ChangePasswordRequest changePasswordRequest) {
         boolean check = userService.setNewPassword(changePasswordRequest.getEmailOrPhone(), changePasswordRequest.getNewPassword());
         return check ?
                 ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Change password successfully", null))

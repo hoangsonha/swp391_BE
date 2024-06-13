@@ -10,6 +10,7 @@ import com.group6.swp391.service.RoleService;
 import com.group6.swp391.service.UserService;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +31,7 @@ public class UserController {
     @Autowired private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @PostMapping("/register")
-    public ResponseEntity<ObjectResponse> userRegister(@RequestBody UserRegister userRegister, HttpServletRequest request) throws MessagingException, UnsupportedEncodingException {
+    public ResponseEntity<ObjectResponse> userRegister(@Valid @RequestBody UserRegister userRegister, HttpServletRequest request) throws MessagingException, UnsupportedEncodingException {
         Role role = roleService.getRoleByRoleName(EnumRoleName.ROLE_USER);
 
         String randomString = UUID.randomUUID().toString();
@@ -47,7 +48,7 @@ public class UserController {
             check = userService.sendVerificationEmail(user, siteUrl);
         }
         return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Create account successfully", user))
-                :ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new ObjectResponse("Failed", "Create account failed", user));
+                :ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Create account failed", user));
     }
 
     @PreAuthorize("hasRole('USER')")
@@ -63,7 +64,7 @@ public class UserController {
             userService.save(user);
             return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Update account successfully", user));
         }
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new ObjectResponse("Failed", "Update account failed", null));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Update account failed", null));
     }
 
     @PreAuthorize("hasRole('USER')")

@@ -9,6 +9,7 @@ import com.group6.swp391.service.RoleService;
 import com.group6.swp391.service.UserService;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,7 +46,7 @@ public class AdminController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/register")
-    public ResponseEntity<ObjectResponse> adminRegister(@RequestBody AdminRegister adminRegister, HttpServletRequest request) throws MessagingException, UnsupportedEncodingException {
+    public ResponseEntity<ObjectResponse> adminRegister(@Valid @RequestBody AdminRegister adminRegister, HttpServletRequest request) throws MessagingException, UnsupportedEncodingException {
         String randomString = UUID.randomUUID().toString();
         Role role = null;
         String role_register = adminRegister.getRole();
@@ -80,7 +81,7 @@ public class AdminController {
             }
         }
         return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Create account successfully", user))
-                :ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new ObjectResponse("Failed", "Create account failed", user));
+                :ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Create account failed", null));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -88,7 +89,7 @@ public class AdminController {
     public ResponseEntity<ObjectResponse> adminLockedAccount(@PathVariable("id") int id) {
         boolean check = userService.lockedUser(id);
         return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Lock account successfully", null))
-                :ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new ObjectResponse("Failed", "Lock account failed", null));
+                :ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Lock account failed", null));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -100,7 +101,7 @@ public class AdminController {
             userService.setQuantityLoginFailed(0, user.getEmail());
         }
         return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Lock account successfully", null))
-                :ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new ObjectResponse("Failed", "Lock account failed", null));
+                :ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Lock account failed", null));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -108,7 +109,7 @@ public class AdminController {
     public ResponseEntity<ObjectResponse> adminDeleteAccount(@PathVariable("id") int id) {
         boolean check = userService.deleteUser(id);
         return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Delete account successfully", null))
-                :ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new ObjectResponse("Failed", "Delete account failed", null));
+                :ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Delete account failed", null));
     }
 
 }
