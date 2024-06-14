@@ -119,4 +119,14 @@ public class OrderController {
     public ResponseEntity<?> getAllOrders() {
         return ResponseEntity.ok(orderService.getAllOrder());
     }
+
+    @GetMapping("/orders_by_diamond/{id}")
+    public ResponseEntity<?> getOrdersByDiamondID(@PathVariable String id) {
+        try {
+            List<Order> orders = orderService.getOrderByDiamondID(id);
+            return ResponseEntity.ok(orders);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
 }

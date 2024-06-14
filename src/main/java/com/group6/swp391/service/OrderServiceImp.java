@@ -7,8 +7,8 @@ import com.group6.swp391.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class OrderServiceImp implements OrderService {
@@ -55,6 +55,18 @@ public class OrderServiceImp implements OrderService {
     @Override
     public void createOrderDetails(List<OrderDetail> orderDetails) {
         orderDetailRepository.saveAll(orderDetails);
+    }
+
+    @Override
+    public List<Order> getOrderByDiamondID(String diamondID) {
+        List<OrderDetail> orderDetails = orderDetailRepository.findByDiamond_DiamondID(diamondID);
+        List<Order> orders = new ArrayList<>();
+        for (OrderDetail detail : orderDetails) {
+            if (!orders.contains((detail.getOrder()))) {
+                orders.add(detail.getOrder());
+            }
+        }
+        return orders;
     }
 
 }
