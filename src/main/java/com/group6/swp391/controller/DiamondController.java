@@ -77,11 +77,24 @@ public class DiamondController {
             if (existingDiamond == null) {
                 return ResponseEntity.badRequest().body("Diamond not found with ID: " + id);
             }
-            existingDiamond.setDiamondName(diamond.getDiamondName());
-            existingDiamond.setImage(diamond.getImage());
-            existingDiamond.setOriginPrice(diamond.getOriginPrice());
+            if (diamond.getDiamondName() != null) {
+                existingDiamond.setDiamondName(diamond.getDiamondName());
+            }
+            if(diamond.getImage() != null) {
+                existingDiamond.setImage(diamond.getImage());
+            }
+
+            Double originalPrice = diamond.getOriginPrice();
+            if(originalPrice != null) {
+                existingDiamond.setOriginPrice(diamond.getOriginPrice());
+            }
+
+            Double ratio = diamond.getRatio();
+            if(ratio != null) {
+                existingDiamond.setRatio(diamond.getRatio());
+            }
             existingDiamond.setTotalPrice(diamond.getOriginPrice()*(1+ diamond.getRatio()));
-            existingDiamond.setRatio(diamond.getRatio());
+
             diamondService.updateDiamond(existingDiamond);
             return ResponseEntity.ok("Diamond updated successfully with ID: " + existingDiamond.getDiamondID());
         } catch (Exception e) {
