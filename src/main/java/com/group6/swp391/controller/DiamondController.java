@@ -78,6 +78,7 @@ public class DiamondController {
                 return ResponseEntity.badRequest().body("Diamond not found with ID: " + id);
             }
             existingDiamond.setDiamondName(diamond.getDiamondName());
+            existingDiamond.setImage(diamond.getImage());
             existingDiamond.setOriginPrice(diamond.getOriginPrice());
             existingDiamond.setTotalPrice(diamond.getOriginPrice()*(1+ diamond.getRatio()));
             existingDiamond.setRatio(diamond.getRatio());
