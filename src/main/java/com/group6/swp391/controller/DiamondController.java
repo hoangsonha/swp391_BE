@@ -84,17 +84,17 @@ public class DiamondController {
                 existingDiamond.setImage(diamond.getImage());
             }
 
-            Double originalPrice = diamond.getOriginPrice();
-            if(originalPrice != null) {
+            if(diamond.getOriginPrice() > 0.0 && diamond.getRatio() > 0.0) {
                 existingDiamond.setOriginPrice(diamond.getOriginPrice());
-            }
-
-            Double ratio = diamond.getRatio();
-            if(ratio != null) {
                 existingDiamond.setRatio(diamond.getRatio());
+                existingDiamond.setTotalPrice(diamond.getOriginPrice()*(1+ diamond.getRatio()));
+            } else if(diamond.getOriginPrice() <= 0.0 && diamond.getRatio() > 0.0) {
+                existingDiamond.setRatio(diamond.getRatio());
+                existingDiamond.setTotalPrice(existingDiamond.getOriginPrice() * (1 + diamond.getRatio()));
+            } else if(diamond.getOriginPrice() > 0.0 && diamond.getRatio() <= 0.0) {
+                existingDiamond.setOriginPrice(diamond.getOriginPrice());
+                existingDiamond.setTotalPrice(diamond.getOriginPrice() * (1 + existingDiamond.getRatio()));
             }
-            existingDiamond.setTotalPrice(diamond.getOriginPrice()*(1+ diamond.getRatio()));
-
             diamondService.updateDiamond(existingDiamond);
             return ResponseEntity.ok("Diamond updated successfully with ID: " + existingDiamond.getDiamondID());
         } catch (Exception e) {
