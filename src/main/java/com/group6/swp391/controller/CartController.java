@@ -1,6 +1,8 @@
 package com.group6.swp391.controller;
 
 import com.group6.swp391.model.Cart;
+import com.group6.swp391.model.CartItem;
+import com.group6.swp391.repository.CartItemRepository;
 import com.group6.swp391.request.CartRequest;
 import com.group6.swp391.service.CartServiceImp;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,12 +17,18 @@ import java.util.List;
 public class CartController {
     @Autowired
     CartServiceImp cartServiceImp;
+    @Autowired
+    CartItemRepository CartItemRepository;
 
     @PostMapping("/add_cart")
     public ResponseEntity<?> addCart(@RequestBody CartRequest cartRequest) {
         try {
             if(cartRequest.getProductId() == null) {
                 return ResponseEntity.badRequest().body("Product is required");
+            }
+            CartItem cartItem = CartItemRepository.findByProductId(cartRequest.getProductId());
+            if(cartItem != null) {
+                return ResponseEntity.badRequest().body("Product already exists");
             }
             cartServiceImp.addCart(cartRequest.getUserId(), cartRequest.getProductId());
             return ResponseEntity.ok().body("added cart successfully");

@@ -6,7 +6,6 @@ import com.group6.swp391.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -106,29 +105,82 @@ public class ProductController {
             if(existingProduct == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("product not found");
             }
-            existingProduct.setProductID(product.getProductID());
-            existingProduct.setProductName(product.getProductName());
-            existingProduct.setBathStone(product.getBathStone());
-            existingProduct.setBrand(product.getBrand());
-            existingProduct.setGoldType(product.getGoldType());
-            existingProduct.setGoldWeight(product.getGoldWeight());
-            existingProduct.setShapeDiamond(product.getShapeDiamond());
-            existingProduct.setDimensionsDiamond(product.getDimensionsDiamond());
-            existingProduct.setMessage(product.getMessage());
-            existingProduct.setOldGold(product.getOldGold());
-            existingProduct.setProductType(product.getProductType());
-            existingProduct.setQuantity(product.getQuantity());
-            existingProduct.setQuantityStonesOfDiamond(product.getQuantityStonesOfDiamond());
-            existingProduct.setTotalPrice((product.getWagePrice() + product.getOriginalPrice()) * (1 + product.getRatio()));
-            existingProduct.setOriginalPrice(product.getOriginalPrice());
-            existingProduct.setWagePrice(product.getWagePrice());
-            existingProduct.setRatio(product.getRatio());
-            Category existingCategory = categoryServiceImp.getByName(product.getCategory().getCategoryName());
-            if(existingCategory == null) {
-                throw new RuntimeException("Category not found");
+            if(product.getProductName() != null) {
+                existingProduct.setProductName(product.getProductName());
             }
-            updateProductSizes(existingProduct, product.getSizes());
-            updateProductThumbnails(existingProduct, product.getProductImages());
+            if(product.getBathStone() != null) {
+                existingProduct.setBathStone(product.getBathStone());
+            }
+            if(product.getBrand() != null) {
+                existingProduct.setBrand(product.getBrand());
+            }
+            if(product.getGoldType() != null) {
+                existingProduct.setGoldType(product.getGoldType());
+            }
+            if(product.getGoldWeight() > 0.0) {
+                existingProduct.setGoldWeight(product.getGoldWeight());
+            }
+            if(product.getShapeDiamond() != null) {
+                existingProduct.setShapeDiamond(product.getShapeDiamond());
+            }
+            if(product.getDimensionsDiamond() > 0.0) {
+                existingProduct.setDimensionsDiamond(product.getDimensionsDiamond());
+            }
+            if(product.getMessage() != null) {
+                existingProduct.setMessage(product.getMessage());
+            }
+            if(product.getOldGold() != null) {
+                existingProduct.setOldGold(product.getOldGold());
+            }
+            if(product.getProductType() != null) {
+                existingProduct.setProductType(product.getProductType());
+            }
+            if(product.getQuantity() > 0) {
+                existingProduct.setQuantity(product.getQuantity());
+            }
+            if(product.getQuantityStonesOfDiamond() > 0 ) {
+                existingProduct.setQuantityStonesOfDiamond(product.getQuantityStonesOfDiamond());
+            }
+            if(product.getOriginalPrice() > 0 && product.getWagePrice() > 0 && product.getRatio() > 0) {
+                existingProduct.setOriginalPrice(product.getOriginalPrice());
+                existingProduct.setWagePrice(product.getWagePrice());
+                existingProduct.setRatio(product.getRatio());
+                existingProduct.setTotalPrice((product.getWagePrice() + product.getOriginalPrice()) * (1 + product.getRatio()));
+            } else if(product.getOriginalPrice() > 0 && product.getWagePrice() > 0 && product.getRatio() <= 0) {
+                existingProduct.setOriginalPrice(product.getOriginalPrice());
+                existingProduct.setWagePrice(product.getWagePrice());
+                existingProduct.setTotalPrice((product.getOriginalPrice() + product.getWagePrice()) * (1 + existingProduct.getRatio()));
+            } else if(product.getOriginalPrice() > 0 && product.getWagePrice() <= 0 && product.getRatio() <= 0) {
+                existingProduct.setOriginalPrice(product.getOriginalPrice());
+                existingProduct.setTotalPrice((product.getOriginalPrice() + existingProduct.getWagePrice()) * (1 + existingProduct.getRatio()));
+            } else if (product.getOriginalPrice() > 0 && product.getWagePrice() <= 0 && product.getRatio() > 0){
+                existingProduct.setOriginalPrice(product.getOriginalPrice());
+                existingProduct.setRatio(product.getRatio());
+                existingProduct.setTotalPrice((product.getOriginalPrice() + existingProduct.getWagePrice()) * (1 + product.getRatio()));
+            } else if(product.getOriginalPrice() <= 0 && product.getWagePrice() > 0 && product.getRatio() > 0) {
+                existingProduct.setWagePrice(product.getWagePrice());
+                existingProduct.setRatio(product.getRatio());
+                existingProduct.setTotalPrice((existingProduct.getOriginalPrice() + product.getWagePrice()) * (1 + product.getRatio()));
+            } else if(product.getOriginalPrice() <= 0 && product.getWagePrice() <= 0 && product.getRatio() > 0) {
+                existingProduct.setRatio(product.getRatio());
+                existingProduct.setTotalPrice((existingProduct.getOriginalPrice() + existingProduct.getWagePrice()) * (1 + product.getRatio()));
+            } else if(product.getOriginalPrice() <= 0 && product.getWagePrice() > 0 && product.getRatio() <= 0) {
+                existingProduct.setWagePrice(product.getWagePrice());
+                existingProduct.setTotalPrice((existingProduct.getOriginalPrice() + product.getWagePrice()) * (1 + existingProduct.getRatio()));
+            }
+            if(product.getCategory().getCategoryName() != null) {
+                Category existingCategory = categoryServiceImp.getByName(product.getCategory().getCategoryName());
+                if(existingCategory == null) {
+                    throw new RuntimeException("Category not found");
+                }
+                product.setCategory(existingCategory);
+            }
+            if(product.getSizes() != null) {
+                updateProductSizes(existingProduct, product.getSizes());
+            }
+            if (product.getProductImages() != null) {
+                updateProductThumbnails(existingProduct, product.getProductImages());
+            }
             productServiceImp.updateProduct(id, existingProduct);
             return ResponseEntity.ok().body("Product updated successfully");
         } catch (Exception e) {
