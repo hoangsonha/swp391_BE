@@ -1,6 +1,7 @@
 package com.group6.swp391.controller;
 
 import com.group6.swp391.model.Feedback;
+import com.group6.swp391.request.FeedbackRequest;
 import com.group6.swp391.service.FeedbackService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -43,6 +44,20 @@ public class FeedbackController {
             }
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error retrieving feedback for product ID: " + id);
+        }
+    }
+
+    @PostMapping("/submit_feedback")
+    public ResponseEntity<?> submitFeedback(@RequestBody FeedbackRequest feedbackRequest) {
+        try {
+            Feedback feedback = feedbackService.saveFeedback(feedbackRequest);
+            if (feedback != null) {
+                return ResponseEntity.ok(feedback);
+            } else {
+                return ResponseEntity.badRequest().body("Error saving feedback: Invalid product, diamond, or user ID");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error saving feedback: " + e.getMessage());
         }
     }
 }

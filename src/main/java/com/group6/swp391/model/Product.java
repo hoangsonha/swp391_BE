@@ -87,4 +87,7 @@ public class Product extends BaseEntity {
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     @JsonIgnoreProperties("product")
     private List<Size> sizes;
+
+    @OneToMany(mappedBy = "product")
+    private List<Feedback> feedbacks;
 }

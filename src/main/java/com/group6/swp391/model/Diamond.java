@@ -64,10 +64,10 @@ public class Diamond {
     @Column(name = "total_price")
     private double totalPrice;
 
-
     @Column(name = "ratio")
     private double ratio;
 
-
+    @OneToMany(mappedBy = "diamond")
+    private List<Feedback> feedbacks;
 
 }

@@ -7,6 +7,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity(name = "user")
@@ -48,6 +49,8 @@ public class User extends BaseEntity {
     @JoinColumn(name = "roleID")
     private Role role;
 
+    @OneToMany(mappedBy = "user")
+    private List<Feedback> feedbacks;
 
     public User(String firstName, String lastName, String email, String password, String phone, String address, String avata, String codeVerify, boolean enabled, boolean nonLooked, Role role, int quantityLoginFailed, Date timeLoginFailed) {
         this.firstName = firstName;

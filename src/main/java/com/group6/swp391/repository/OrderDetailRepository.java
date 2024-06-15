@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface OrderDetailRepository extends JpaRepository<OrderDetail, Integer> {
-    List<OrderDetail> findByDiamond_DiamondID(String diamondID);
+    List<OrderDetail> findByDiamondDiamondID(String diamondID);
 }

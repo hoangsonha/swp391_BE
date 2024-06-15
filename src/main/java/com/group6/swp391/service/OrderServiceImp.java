@@ -59,7 +59,7 @@ public class OrderServiceImp implements OrderService {
 
     @Override
     public List<Order> getOrderByDiamondID(String diamondID) {
-        List<OrderDetail> orderDetails = orderDetailRepository.findByDiamond_DiamondID(diamondID);
+        List<OrderDetail> orderDetails = orderDetailRepository.findByDiamondDiamondID(diamondID);
         List<Order> orders = new ArrayList<>();
         for (OrderDetail detail : orderDetails) {
             if (!orders.contains((detail.getOrder()))) {

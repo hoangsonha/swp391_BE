@@ -25,12 +25,16 @@ public class Feedback extends BaseEntity {
 //    private Order order;
 
     @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "diamondID")
+    @JoinColumn(name = "diamond_id")
     private Diamond diamond;
 
     @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "productID")
+    @JoinColumn(name = "product_id")
     private Product product;
+
+    @ManyToOne(cascade = CascadeType.MERGE)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     public Feedback(String comment, double rating, Diamond diamond, Product product) {
         this.comment = comment;
