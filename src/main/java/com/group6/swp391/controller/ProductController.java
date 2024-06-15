@@ -98,7 +98,7 @@ public class ProductController {
         }
     }
 
-    @PutMapping("update/{product_id}")
+    @PutMapping("/update/{product_id}")
     public ResponseEntity<?> updateProduct(@PathVariable("product_id") String id,@RequestBody Product product) {
         try {
             Product existingProduct = productServiceImp.getProductById(id);
