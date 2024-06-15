@@ -168,13 +168,6 @@ public class ProductController {
                 existingProduct.setWagePrice(product.getWagePrice());
                 existingProduct.setTotalPrice((existingProduct.getOriginalPrice() + product.getWagePrice()) * (1 + existingProduct.getRatio()));
             }
-            if(product.getCategory().getCategoryName() != null) {
-                Category existingCategory = categoryServiceImp.getByName(product.getCategory().getCategoryName());
-                if(existingCategory == null) {
-                    throw new RuntimeException("Category not found");
-                }
-                product.setCategory(existingCategory);
-            }
             if(product.getSizes() != null) {
                 updateProductSizes(existingProduct, product.getSizes());
             }
