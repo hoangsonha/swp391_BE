@@ -4,10 +4,7 @@ import com.group6.swp391.model.Feedback;
 import com.group6.swp391.service.FeedbackService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -31,6 +28,21 @@ public class FeedbackController {
             }
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Get all feedbacks failed");
+        }
+    }
+
+    @GetMapping("/feedbacks_by_product/{id}")
+    public ResponseEntity<?> getFeedbacksByProductID(@PathVariable String id) {
+        List<Feedback> feedbacks;
+        try {
+            feedbacks = feedbackService.getFeedbacksByProductID(id);
+            if (feedbacks.isEmpty()) {
+                return ResponseEntity.badRequest().body("No feedback found for product ID: " + id);
+            } else {
+                return ResponseEntity.ok(feedbacks);
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error retrieving feedback for product ID: " + id);
         }
     }
 }

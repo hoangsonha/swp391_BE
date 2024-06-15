@@ -17,4 +17,9 @@ public class FeedbackServiceImp implements FeedbackService {
     public List<Feedback> getAllFeedbacks() {
         return feedbackRepository.findAll();
     }
+
+    @Override
+    public List<Feedback> getFeedbacksByProductID(String productID) {
+        return feedbackRepository.findByDiamond_DiamondID(productID);
+    }
 }

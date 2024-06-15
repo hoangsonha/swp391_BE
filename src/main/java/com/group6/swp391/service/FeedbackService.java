@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface FeedbackService {
     List<Feedback> getAllFeedbacks();
+
+    List<Feedback> getFeedbacksByProductID(String productID);
 }
