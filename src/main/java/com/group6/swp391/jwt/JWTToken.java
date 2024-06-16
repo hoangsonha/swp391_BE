@@ -36,6 +36,7 @@ public class JWTToken {
                 .subject(customUserDetail.getUsername())
                 .issuedAt(date)
                 .expiration(exp)
+                .claim("userID", customUserDetail.getUserID())
                 .claim("firstName", customUserDetail.getFirstName())
                 .claim("lastName", customUserDetail.getLastName())
                 .claim("role", customUserDetail.getGrantedAuthorities())
