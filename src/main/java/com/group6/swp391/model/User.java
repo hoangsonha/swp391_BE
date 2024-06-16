@@ -1,5 +1,6 @@
 package com.group6.swp391.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.*;
@@ -50,6 +51,7 @@ public class User extends BaseEntity {
     private Role role;
 
     @OneToMany(mappedBy = "user")
+    @JsonIgnoreProperties("user")
     private List<Feedback> feedbacks;
 
     public User(String firstName, String lastName, String email, String password, String phone, String address, String avata, String codeVerify, boolean enabled, boolean nonLooked, Role role, int quantityLoginFailed, Date timeLoginFailed) {

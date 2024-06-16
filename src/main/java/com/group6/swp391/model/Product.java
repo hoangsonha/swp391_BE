@@ -89,5 +89,6 @@ public class Product extends BaseEntity {
     private List<Size> sizes;
 
     @OneToMany(mappedBy = "product")
+    @JsonIgnoreProperties("product")
     private List<Feedback> feedbacks;
 }
