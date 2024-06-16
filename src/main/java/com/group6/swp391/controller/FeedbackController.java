@@ -32,18 +32,18 @@ public class FeedbackController {
         }
     }
 
-    @GetMapping("/feedbacks_by_product/{id}")
-    public ResponseEntity<?> getFeedbacksByProductID(@PathVariable String id) {
+    @GetMapping("/feedbacks_by_diamond/{id}")
+    public ResponseEntity<?> getFeedbacksByDiamondID(@PathVariable String id) {
         List<Feedback> feedbacks;
         try {
-            feedbacks = feedbackService.getFeedbacksByProductID(id);
+            feedbacks = feedbackService.getFeedbacksByDiamondID(id);
             if (feedbacks.isEmpty()) {
-                return ResponseEntity.badRequest().body("No feedback found for product ID: " + id);
+                return ResponseEntity.badRequest().body("No feedback found for diamond ID: " + id);
             } else {
                 return ResponseEntity.ok(feedbacks);
             }
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error retrieving feedback for product ID: " + id);
+            return ResponseEntity.badRequest().body("Error retrieving feedback for diamond ID: " + id);
         }
     }
 
