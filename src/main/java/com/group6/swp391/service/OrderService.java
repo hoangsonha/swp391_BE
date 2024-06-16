@@ -2,6 +2,7 @@ package com.group6.swp391.service;
 
 import com.group6.swp391.model.Order;
 import com.group6.swp391.model.OrderDetail;
+import com.group6.swp391.model.Payment;
 
 import java.util.List;
 
@@ -20,4 +21,6 @@ public interface OrderService {
     void createOrderDetails(List<OrderDetail> orderDetails);
 
     List<Order> getOrderByDiamondID(String diamondID);
+
+    Order saveOrder(Order order, List<OrderDetail> orderDetails, List<Payment> payments);
 }

@@ -2,8 +2,10 @@ package com.group6.swp391.service;
 
 import com.group6.swp391.model.Order;
 import com.group6.swp391.model.OrderDetail;
+import com.group6.swp391.model.Payment;
 import com.group6.swp391.repository.OrderDetailRepository;
 import com.group6.swp391.repository.OrderRepository;
+import com.group6.swp391.repository.PaymentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +18,8 @@ public class OrderServiceImp implements OrderService {
     @Autowired private OrderRepository orderRepository;
 
     @Autowired private OrderDetailRepository orderDetailRepository;
+    @Autowired
+    private PaymentRepository paymentRepository;
 
     @Override
     public Order createOrder(Order order) {
@@ -67,6 +71,30 @@ public class OrderServiceImp implements OrderService {
             }
         }
         return orders;
+    }
+
+    @Override
+    public Order saveOrder(Order order, List<OrderDetail> orderDetails, List<Payment> payments) {
+        try {
+            Order savedOrder = orderRepository.save(order);
+            for (OrderDetail detail :  orderDetails) {
+                detail.setOrder(savedOrder);
+            }
+            orderDetailRepository.saveAll(orderDetails);
+
+            for (Payment payment : payments) {
+                payment.setOrder(savedOrder);
+            }
+            paymentRepository.saveAll(payments);
+
+            savedOrder.setOrderDetails(orderDetails);
+            savedOrder.setPayments(payments);
+
+            return savedOrder;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
 }

@@ -14,11 +14,10 @@ import java.util.List;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class OrderRequest {
-    int OrderID;
     String addressShipping;
     String fullName;
     LocalDateTime orderDate;
-    List<Payment> payments;
+    List<PaymentRequest> payments;
     String phoneShipping;
     double price;
     int quantity;
