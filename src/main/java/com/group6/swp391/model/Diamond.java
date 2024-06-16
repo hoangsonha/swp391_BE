@@ -1,5 +1,7 @@
 package com.group6.swp391.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -14,6 +16,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Diamond {
     @Id
     @Column(name = "diamond_id", nullable = false, columnDefinition = "NVARCHAR(100)")
@@ -68,6 +71,7 @@ public class Diamond {
     private double ratio;
 
     @OneToMany(mappedBy = "diamond")
+    @JsonIgnoreProperties("diamond")
     private List<Feedback> feedbacks;
 
 }

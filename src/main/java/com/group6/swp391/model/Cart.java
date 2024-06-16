@@ -25,6 +25,20 @@ public class Cart {
     @JsonIgnore
     private User user;
 
+    @Transient
+    private int userId;
+
+    @Transient
+    private String fullName;
+
+    public int getUserId() {
+        return  user != null ? user.getUserID() : null;
+    }
+
+    public String getFullName() {
+        return user != null ? ( user.getFirstName() + " " + user.getLastName()) : null;
+    }
+
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonIgnoreProperties("cart")
     private Set<CartItem> items = new HashSet<>();
