@@ -1,5 +1,8 @@
 package com.group6.swp391.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,6 +15,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class WarrantyCard {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,10 +35,20 @@ public class WarrantyCard {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private User user;
+
+    public int getUserId() {
+        return  user != null ? user.getUserID() : null;
+    }
+
+    public String getFullName() {
+        return user != null ? ( user.getFirstName() + " " + user.getLastName()) : null;
+    }
 
     @OneToOne
     @JoinColumn(name = "product_customize_id", unique = true)
+    @JsonIgnoreProperties("warrantyCard")
     private ProductCustomize productCustomize;
 
     @OneToOne

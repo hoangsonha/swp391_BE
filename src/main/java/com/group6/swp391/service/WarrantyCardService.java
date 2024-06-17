@@ -11,5 +11,6 @@ public interface WarrantyCardService {
     WarrantyCard createNew(WarrantyCard warrantyCard);
     void deleteWarrantyCard(int id);
     List<WarrantyCard> findWarrantyCardsExpiringSoon();
+    List<WarrantyCard> getAll();
 
 }

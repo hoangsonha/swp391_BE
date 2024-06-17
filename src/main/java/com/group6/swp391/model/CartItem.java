@@ -13,7 +13,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class CartItem {
 
     @Id
@@ -32,7 +32,7 @@ public class CartItem {
 
     @ManyToOne
     @JoinColumn(name = "diamond_id")
-    private Diamond diamond;
+    private Diamond diamondAdd;
 
     private int quantity;
     private double totalPrice;

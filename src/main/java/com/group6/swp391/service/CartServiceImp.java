@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 @Service
-public class CartServiceImp implements CartService {
+public class  CartServiceImp implements CartService {
     @Autowired CartRepository cartRepository;
 
     @Autowired ProductCustomizeServiceImp productCustomizeServiceImp;
@@ -41,10 +41,12 @@ public class CartServiceImp implements CartService {
         if(productId.startsWith("P")||productId.startsWith("p")) {
             ProductCustomize productCustomize = productCustomizeServiceImp.getProductCustomizeById(productId);
             cartItem.setProductCustomize(productCustomize);
+            //cartItem.setDiamond(null);
             cartItem.setTotalPrice(productCustomize.getTotalPrice()*cartItem.getQuantity());
         } else {
             Diamond diamond = diamondServiceImp.getDiamondByDiamondID(productId);
-            cartItem.setDiamond(diamond);
+            cartItem.setDiamondAdd(diamond);
+            cartItem.setProductCustomize(null);
             cartItem.setTotalPrice(diamond.getTotalPrice()*cartItem.getQuantity());
         }
         cart.addItem(cartItem);
