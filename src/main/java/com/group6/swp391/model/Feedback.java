@@ -23,10 +23,6 @@ public class Feedback extends BaseEntity {
 
     private double rating;
 
-//    @OneToOne(cascade = CascadeType.ALL)
-//    @JoinColumn(name = "order_id", referencedColumnName = "order_id")
-//    private Order order;
-
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "diamond_id")
     @JsonIgnore

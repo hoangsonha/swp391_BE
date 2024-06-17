@@ -1,5 +1,8 @@
 package com.group6.swp391.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,6 +20,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,6 +29,7 @@ public class Order {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private User user;
 
     private int quantity;
@@ -39,12 +44,14 @@ public class Order {
     private String phoneShipping;
 
     @OneToMany(mappedBy = "order")
+    @JsonIgnoreProperties("order")
     private List<Payment> payments = new ArrayList<>();
 
     @Column(name = "order_date", nullable = false)
     private LocalDateTime orderDate;
 
     @OneToMany(mappedBy = "order")
+    @JsonIgnoreProperties("order")
     private List<OrderDetail> orderDetails = new ArrayList<>();
 
     @PrePersist

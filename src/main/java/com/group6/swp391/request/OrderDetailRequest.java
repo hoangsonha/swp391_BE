@@ -14,8 +14,8 @@ import lombok.experimental.FieldDefaults;
 public class OrderDetailRequest {
     int orderDetailID;
     Order order;
-    ProductCustomize productCustomize;
-    Diamond diamond;
+    String productCustomizeID;
+    String diamondID;
     private int quantity;
     private double price;
 }

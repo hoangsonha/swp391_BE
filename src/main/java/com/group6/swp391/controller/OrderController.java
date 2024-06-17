@@ -163,17 +163,16 @@ public class OrderController {
                 orderDetail.setQuantity(detailRequest.getQuantity());
                 orderDetail.setPrice(detailRequest.getPrice());
 
-                if (detailRequest.getDiamond().getDiamondID() != null) {
-                    Diamond diamond = diamondService.getDiamondByDiamondID(detailRequest.getDiamond().getDiamondID());
+                if (detailRequest.getDiamondID() != null) {
+                    Diamond diamond = diamondService.getDiamondByDiamondID(detailRequest.getDiamondID());
                     if (diamond == null) {
                         return ResponseEntity.badRequest().body("Invalid diamond ID");
                     }
                     orderDetail.setDiamond(diamond);
-                } else if (detailRequest.getProductCustomize().getProdcutCustomId() != null) {
-                    ProductCustomize productCustomize = productCustomizeService.getProductCustomizeById(detailRequest
-                            .getProductCustomize().getProdcutCustomId());
+                } else if (detailRequest.getProductCustomizeID() != null) {
+                    ProductCustomize productCustomize = productCustomizeService.getProductCustomizeById(detailRequest.getProductCustomizeID());
                     if (productCustomize == null) {
-                        return ResponseEntity.badRequest().body("Invalid product ID");
+                        return ResponseEntity.badRequest().body("Invalid product customize ID");
                     }
                     orderDetail.setProductCustomize(productCustomize);
                 } else {
