@@ -1,6 +1,8 @@
 package com.group6.swp391.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -31,8 +33,5 @@ public class ProductCustomize {
     @Column(name = "size")
     private int size;
 
-    @OneToOne(mappedBy = "productCustomize", cascade = CascadeType.ALL)
-    @JoinColumn(name = "warranty_card_id", unique = true)
-    private WarrantyCard warrantyCard;
 }
 

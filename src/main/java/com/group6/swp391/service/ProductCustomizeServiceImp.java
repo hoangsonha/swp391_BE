@@ -27,7 +27,6 @@ public class ProductCustomizeServiceImp implements ProductCustomizeService {
             existingProduct.setProdcutCustomId(productCustomize.getProdcutCustomId());
             existingProduct.setProduct(productCustomize.getProduct());
             existingProduct.setDiamond(productCustomize.getDiamond());
-            existingProduct.setWarrantyCard(productCustomize.getWarrantyCard());
             existingProduct.setTotalPrice(productCustomize.getTotalPrice());
             productCustomizeRepository.save(existingProduct);
         }

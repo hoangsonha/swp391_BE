@@ -3,6 +3,7 @@ package com.group6.swp391.request;
 import lombok.*;
 
 import java.util.Date;
+import java.util.List;
 
 @Setter
 @Getter
@@ -12,7 +13,6 @@ import java.util.Date;
 @Data
 public class WarrantyCardRequest {
     private int userId;
-    private String productCustomizeId;
-    private String diamondId;
+    List<String> objectId;
     private Date expirationDate;
 }

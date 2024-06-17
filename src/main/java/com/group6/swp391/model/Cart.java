@@ -14,7 +14,6 @@ import java.util.Set;
 @Getter
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({"cartId", "userId", "items"})
 public class Cart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,7 +38,7 @@ public class Cart {
         return user != null ? ( user.getFirstName() + " " + user.getLastName()) : null;
     }
 
-    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "cart")
     @JsonIgnoreProperties("cart")
     private Set<CartItem> items = new HashSet<>();
 

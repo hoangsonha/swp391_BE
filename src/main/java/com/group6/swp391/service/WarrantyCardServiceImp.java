@@ -47,4 +47,9 @@ public class WarrantyCardServiceImp implements WarrantyCardService {
         Date futureDate = calendar.getTime();
         return warrantyCardRepository.findWarrantyCardsExpiringSoon(now, futureDate);
     }
+
+    @Override
+    public List<WarrantyCard> getAll() {
+        return warrantyCardRepository.findAll();
+    }
 }

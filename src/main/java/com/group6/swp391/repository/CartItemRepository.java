@@ -9,6 +9,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CartItemRepository extends JpaRepository<CartItem, Integer> {
 
-    @Query("SELECT cI FROM CartItem  cI WHERE cI.productCustomize.prodcutCustomId =:ID OR cI.diamond.diamondID =:ID")
+    @Query("SELECT cI FROM CartItem  cI WHERE cI.productCustomize.prodcutCustomId =:ID OR cI.diamondAdd.diamondID =:ID")
     CartItem findByProductId(@Param(("ID")) String productId);
 }
