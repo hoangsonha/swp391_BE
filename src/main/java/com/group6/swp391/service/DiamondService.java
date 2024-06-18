@@ -21,6 +21,9 @@ public interface DiamondService {
     public List<Diamond> searchAdvanced(SearchAdvanceRequest searchAdvanceRequest, String optionPrice);
 
     List<Diamond> getByCondition(String shape, float dimensions);
+
     void deleteDiamonds(List<String> diamondIDs);
+
+    Diamond saveDiamond(Diamond diamond);
 
 }

@@ -25,11 +25,6 @@ public class OrderServiceImp implements OrderService {
     private PaymentRepository paymentRepository;
 
     @Override
-    public Order createOrder(Order order) {
-        return orderRepository.save(order);
-    }
-
-    @Override
     public Order getOrderByOrderID(int orderID) {
         return orderRepository.getOrderByOrderID(orderID);
     }
@@ -57,11 +52,6 @@ public class OrderServiceImp implements OrderService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public void createOrderDetails(List<OrderDetail> orderDetails) {
-        orderDetailRepository.saveAll(orderDetails);
     }
 
     @Override
@@ -98,30 +88,14 @@ public class OrderServiceImp implements OrderService {
         }
     }
 
-//    @Override
-//    public Order saveOrder(Order order, List<OrderDetail> orderDetails, List<Payment> payments) {
-//        try {
-//            Order savedOrder = orderRepository.save(order);
-//            for (OrderDetail detail : orderDetails) {
-//                detail.setOrder(savedOrder);
-//            }
-//            orderDetailRepository.saveAll(orderDetails);
-//
-//            for (Payment payment : payments) {
-//                payment.setOrder(savedOrder);
-//            }
-//            paymentRepository.saveAll(payments);
-//
-//            savedOrder.setOrderDetails(orderDetails);
-//            savedOrder.setPayments(payments);
-//
-//            return savedOrder;
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return null;
-//        }
-//    }
+    @Override
+    public Order getNewestOrder() {
+        return orderRepository.findTopByOrderByOrderDateDesc();
+    }
 
-
+    @Override
+    public List<Order> getOrdersByStatus(String status) {
+        return orderRepository.findByStatus(status);
+    }
 
 }

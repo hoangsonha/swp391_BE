@@ -255,5 +255,10 @@ public class DiamondServiceImp implements DiamondService {
         }
     }
 
+    @Override
+    public Diamond saveDiamond(Diamond diamond) {
+        return diamondRepository.save(diamond);
+    }
+
 
 }

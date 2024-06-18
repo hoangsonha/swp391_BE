@@ -8,8 +8,6 @@ import java.util.List;
 
 public interface OrderService {
 
-    Order createOrder(Order order);
-
     Order getOrderByOrderID(int orderID);
 
     Order save(Order order);
@@ -18,12 +16,13 @@ public interface OrderService {
 
     void markOrderAsDeleted(int orderID);
 
-    void createOrderDetails(List<OrderDetail> orderDetails);
-
     List<Order> getOrderByDiamondID(String diamondID);
 
     List<Order> getOrderByUserID(int userID);
 
-    //Order saveOrder(Order order, List<OrderDetail> orderDetails, List<Payment> payments);
     Order saveOrder(Order order, List<OrderDetail> orderDetails);
+
+    Order getNewestOrder();
+
+    List<Order> getOrdersByStatus(String status);
 }
