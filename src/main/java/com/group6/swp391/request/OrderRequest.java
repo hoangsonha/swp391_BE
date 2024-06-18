@@ -17,7 +17,7 @@ public class OrderRequest {
     String addressShipping;
     String fullName;
     LocalDateTime orderDate;
-    List<PaymentRequest> payments;
+    //List<PaymentRequest> payments;
     String phoneShipping;
     double price;
     int quantity;

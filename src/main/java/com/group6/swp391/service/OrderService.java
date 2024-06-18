@@ -24,5 +24,6 @@ public interface OrderService {
 
     List<Order> getOrderByUserID(int userID);
 
-    Order saveOrder(Order order, List<OrderDetail> orderDetails, List<Payment> payments);
+    //Order saveOrder(Order order, List<OrderDetail> orderDetails, List<Payment> payments);
+    Order saveOrder(Order order, List<OrderDetail> orderDetails);
 }

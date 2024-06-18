@@ -25,12 +25,10 @@ public class OrderDetail {
 
     @ManyToOne
     @JoinColumn(name = "product_customize_id")
-    @JsonIgnore
     private ProductCustomize productCustomize;
 
     @ManyToOne
     @JoinColumn(name = "diamond_id")
-    @JsonIgnore
     private Diamond diamond;
 
     @Column(name = "quantity", nullable = false)

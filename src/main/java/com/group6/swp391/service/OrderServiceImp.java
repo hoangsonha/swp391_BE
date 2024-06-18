@@ -15,9 +15,12 @@ import java.util.List;
 @Service
 public class OrderServiceImp implements OrderService {
 
-    @Autowired private OrderRepository orderRepository;
+    @Autowired
+    private OrderRepository orderRepository;
 
-    @Autowired private OrderDetailRepository orderDetailRepository;
+    @Autowired
+    private OrderDetailRepository orderDetailRepository;
+
     @Autowired
     private PaymentRepository paymentRepository;
 
@@ -80,27 +83,45 @@ public class OrderServiceImp implements OrderService {
     }
 
     @Override
-    public Order saveOrder(Order order, List<OrderDetail> orderDetails, List<Payment> payments) {
+    public Order saveOrder(Order order, List<OrderDetail> orderDetails) {
         try {
             Order savedOrder = orderRepository.save(order);
-            for (OrderDetail detail :  orderDetails) {
+            for (OrderDetail detail : orderDetails) {
                 detail.setOrder(savedOrder);
             }
             orderDetailRepository.saveAll(orderDetails);
-
-            for (Payment payment : payments) {
-                payment.setOrder(savedOrder);
-            }
-            paymentRepository.saveAll(payments);
-
             savedOrder.setOrderDetails(orderDetails);
-            savedOrder.setPayments(payments);
-
             return savedOrder;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
+
+//    @Override
+//    public Order saveOrder(Order order, List<OrderDetail> orderDetails, List<Payment> payments) {
+//        try {
+//            Order savedOrder = orderRepository.save(order);
+//            for (OrderDetail detail : orderDetails) {
+//                detail.setOrder(savedOrder);
+//            }
+//            orderDetailRepository.saveAll(orderDetails);
+//
+//            for (Payment payment : payments) {
+//                payment.setOrder(savedOrder);
+//            }
+//            paymentRepository.saveAll(payments);
+//
+//            savedOrder.setOrderDetails(orderDetails);
+//            savedOrder.setPayments(payments);
+//
+//            return savedOrder;
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return null;
+//        }
+//    }
+
+
 
 }
