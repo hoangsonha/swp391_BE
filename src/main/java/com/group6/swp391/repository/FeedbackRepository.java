@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface FeedbackRepository extends JpaRepository<Feedback, Integer> {
     List<Feedback> findByDiamondDiamondID(String diamondID);
+    List<Feedback> findByUserUserID(int userID);
 }

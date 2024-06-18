@@ -10,5 +10,7 @@ public interface FeedbackService {
 
     List<Feedback> getFeedbacksByDiamondID(String productID);
 
+    List<Feedback> getFeedbacksByUserID(int userID);
+
     Feedback saveFeedback(FeedbackRequest feedbackRequest);
 }

@@ -47,6 +47,21 @@ public class FeedbackController {
         }
     }
 
+    @GetMapping("/feedbacks_by_user/{id}")
+    public ResponseEntity<?> getFeedbacksByUserID(@PathVariable int id) {
+        List<Feedback> feedbacks;
+        try {
+            feedbacks = feedbackService.getFeedbacksByUserID(id);
+            if (feedbacks.isEmpty()) {
+                return ResponseEntity.badRequest().body("No feedback for user ID: " + id);
+            } else {
+                return ResponseEntity.ok(feedbacks);
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error retrieving feedback for user ID: " + id);
+        }
+    }
+
     @PostMapping("/submit_feedback")
     public ResponseEntity<?> submitFeedback(@RequestBody FeedbackRequest feedbackRequest) {
         try {
