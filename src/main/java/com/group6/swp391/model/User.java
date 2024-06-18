@@ -2,6 +2,8 @@ package com.group6.swp391.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.group6.swp391.enums.EnumGenderName;
+import com.group6.swp391.enums.EnumRoleName;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -41,6 +43,13 @@ public class User extends BaseEntity {
     @Column(name = "non_locked")
     private boolean nonLocked;
 
+    @Column(name= "gender")
+    @Enumerated(EnumType.STRING)
+    private EnumGenderName gender;
+
+    @Column(name= "year_of_birth")
+    private int yearOfBirth;
+
     private int quantityLoginFailed;
 
     @DateTimeFormat(pattern = "YYYY-MM-DD hh:mm:ss")
@@ -54,7 +63,7 @@ public class User extends BaseEntity {
     @JsonIgnoreProperties("user")
     private List<Feedback> feedbacks;
 
-    public User(String firstName, String lastName, String email, String password, String phone, String address, String avata, String codeVerify, boolean enabled, boolean nonLooked, Role role, int quantityLoginFailed, Date timeLoginFailed) {
+    public User(String firstName, String lastName, String email, String password, String phone, String address, String avata, String codeVerify, boolean enabled, boolean nonLooked, Role role, int quantityLoginFailed, Date timeLoginFailed, EnumGenderName gender, int yearOfBirth) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -67,6 +76,9 @@ public class User extends BaseEntity {
         this.nonLocked = nonLooked;
         this.role = role;
         this.quantityLoginFailed = quantityLoginFailed;
+        this.gender = gender;
+        this.yearOfBirth = yearOfBirth;
         this.timeLoginFailed = timeLoginFailed;
     }
+
 }

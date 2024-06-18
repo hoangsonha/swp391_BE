@@ -37,7 +37,7 @@ public class UserController {
         String randomString = UUID.randomUUID().toString();
         boolean check = true;
 
-        User user = new User(null, null, userRegister.getEmail(), bCryptPasswordEncoder.encode(userRegister.getPassword()), null, null, null, randomString, false, true, role, 0, null);
+        User user = new User(null, null, userRegister.getEmail(), bCryptPasswordEncoder.encode(userRegister.getPassword()), null, null, null, randomString, false, true, role, 0, null, null, 0);
         if(userRegister == null || userService.getUserByEmail(userRegister.getEmail()) != null) {
             check = false;
         }
@@ -61,6 +61,9 @@ public class UserController {
             user.setPassword(bCryptPasswordEncoder.encode(userInformation.getPassword()));
             user.setAddress(userInformation.getAddress());
             user.setAvata(userInformation.getAvata());
+            user.setPhone(userInformation.getPhoneNumber());
+            user.setGender(userInformation.getGender());
+            user.setYearOfBirth(user.getYearOfBirth());
             userService.save(user);
             return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Update account successfully", user));
         }
@@ -68,9 +71,13 @@ public class UserController {
     }
 
     @PreAuthorize("hasRole('USER')")
-    @GetMapping("/test_user")
-    public String getTestUser() {
-        return "Hello, User Page";
+    @GetMapping("/get/{id}")
+    public ResponseEntity<ObjectResponse> getUser(@PathVariable("id") int id) {
+        User user = userService.getUserByID(id);
+        if(user != null) {
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Get account successfully", user));
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Get account failed", null));
     }
 
 }
