@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CartItemRepository extends JpaRepository<CartItem, Integer> {
 
-    @Query("SELECT cI FROM CartItem  cI WHERE cI.productCustomize.prodcutCustomId =:ID OR cI.diamondAdd.diamondID =:ID")
-    CartItem findByProductId(@Param(("ID")) String productId);
+   // @Query("SELECT cI FROM CartItem  cI WHERE cI.productCustomize.prodcutCustomId =:ID OR cI.diamondAdd.diamondID =:ID")
+   @Query("SELECT CASE WHEN COUNT(cI) > 0 THEN true ELSE false END FROM CartItem cI JOIN Cart c ON  cI.cart.cartId = c.cartId WHERE c.user.userID = :userID AND (cI.productCustomize.prodcutCustomId = :itemID OR cI.diamondAdd.diamondID = :itemID)")
+   boolean existsByUserIdAndProductCustomizeIdOrDiamondId(@Param("userID") int userId, @Param("itemID") String itemId);
 }

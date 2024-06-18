@@ -21,24 +21,9 @@ public class Cart {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", unique = true)
-    @JsonIgnore
     private User user;
 
-    @Transient
-    private int userId;
-
-    @Transient
-    private String fullName;
-
-    public int getUserId() {
-        return  user != null ? user.getUserID() : null;
-    }
-
-    public String getFullName() {
-        return user != null ? ( user.getFirstName() + " " + user.getLastName()) : null;
-    }
-
-    @OneToMany(mappedBy = "cart")
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnoreProperties("cart")
     private Set<CartItem> items = new HashSet<>();
 
