@@ -1,5 +1,6 @@
 package com.group6.swp391.request;
 
+import com.group6.swp391.enums.EnumGenderName;
 import lombok.*;
 
 @Getter
@@ -14,4 +15,7 @@ public class UserInformation {
     private String password;
     private String avata;
     private String address;
+    private EnumGenderName gender;
+    private int yearOfBirth;
+    private String phoneNumber;
 }
