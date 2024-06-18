@@ -66,10 +66,16 @@ public class OrderServiceImp implements OrderService {
         List<OrderDetail> orderDetails = orderDetailRepository.findByDiamondDiamondID(diamondID);
         List<Order> orders = new ArrayList<>();
         for (OrderDetail detail : orderDetails) {
-            if (!orders.contains((detail.getOrder()))) {
+            if (!orders.contains(detail.getOrder())) {
                 orders.add(detail.getOrder());
             }
         }
+        return orders;
+    }
+
+    @Override
+    public List<Order> getOrderByUserID(int userID) {
+        List<Order> orders = orderRepository.findByUserUserID(userID);
         return orders;
     }
 

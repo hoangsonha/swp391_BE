@@ -22,5 +22,7 @@ public interface OrderService {
 
     List<Order> getOrderByDiamondID(String diamondID);
 
+    List<Order> getOrderByUserID(int userID);
+
     Order saveOrder(Order order, List<OrderDetail> orderDetails, List<Payment> payments);
 }
