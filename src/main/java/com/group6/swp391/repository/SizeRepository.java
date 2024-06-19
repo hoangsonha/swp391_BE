@@ -1,5 +1,6 @@
 package com.group6.swp391.repository;
 
+import com.group6.swp391.model.Product;
 import com.group6.swp391.model.Size;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -11,4 +12,6 @@ public interface SizeRepository extends JpaRepository<Size, Integer> {
 
     @Query("SELECT s FROM Size s WHERE s.sizeValue =:value")
     Size findByValue(@Param("value") int value);
+
+    Size findByProductAndSizeValue(Product product, int sizeValue);
 }

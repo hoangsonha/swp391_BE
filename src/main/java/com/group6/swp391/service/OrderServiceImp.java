@@ -1,11 +1,9 @@
 package com.group6.swp391.service;
 
-import com.group6.swp391.model.Order;
-import com.group6.swp391.model.OrderDetail;
-import com.group6.swp391.model.Payment;
+import com.group6.swp391.model.*;
 import com.group6.swp391.repository.OrderDetailRepository;
 import com.group6.swp391.repository.OrderRepository;
-import com.group6.swp391.repository.PaymentRepository;
+import com.group6.swp391.repository.SizeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,9 +18,11 @@ public class OrderServiceImp implements OrderService {
 
     @Autowired
     private OrderDetailRepository orderDetailRepository;
+    @Autowired
+    private SizeRepository sizeRepository;
 
     @Autowired
-    private PaymentRepository paymentRepository;
+    private DiamondServiceImp diamondServiceImp;
 
     @Override
     public Order getOrderByOrderID(int orderID) {
@@ -72,12 +72,53 @@ public class OrderServiceImp implements OrderService {
         return orders;
     }
 
+    private void decrementSizeQuantity(ProductCustomize productCustomize, int quantity) {
+        try {
+            Product product = productCustomize.getProduct();
+            int sizeValue = productCustomize.getSize();
+
+            Size size = sizeRepository.findByProductAndSizeValue(product, sizeValue);
+            if (size == null) {
+                throw new RuntimeException("Size not found for product: "
+                        + product.getProductID() + ", size: " + sizeValue);
+            }
+            if (size.getQuantity() < quantity) {
+                throw  new RuntimeException("Not enough quantity for product: "
+                        + product.getProductID() + ", size: " + sizeValue);
+            }
+
+            size.setQuantity(size.getQuantity() - quantity);
+            sizeRepository.save(size);
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+        }
+    }
+
+//    @Override
+//    public Order saveOrder(Order order, List<OrderDetail> orderDetails) {
+//        try {
+//            Order savedOrder = orderRepository.save(order);
+//            for (OrderDetail detail : orderDetails) {
+//                detail.setOrder(savedOrder);
+//            }
+//            orderDetailRepository.saveAll(orderDetails);
+//            savedOrder.setOrderDetails(orderDetails);
+//            return savedOrder;
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return null;
+//        }
+//    }
+
     @Override
     public Order saveOrder(Order order, List<OrderDetail> orderDetails) {
         try {
             Order savedOrder = orderRepository.save(order);
             for (OrderDetail detail : orderDetails) {
                 detail.setOrder(savedOrder);
+                if (detail.getProductCustomize() != null) {
+                    decrementSizeQuantity(detail.getProductCustomize(), detail.getQuantity());
+                }
             }
             orderDetailRepository.saveAll(orderDetails);
             savedOrder.setOrderDetails(orderDetails);
