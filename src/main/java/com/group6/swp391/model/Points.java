@@ -1,5 +1,7 @@
 package com.group6.swp391.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,7 +13,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Points {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class Points  extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "points_id")
@@ -19,11 +22,19 @@ public class Points {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private User user;
 
-    private int point;
+    private double point;
+
+    private double usedPoints;
 
     @OneToOne
-    @JoinColumn(name = "order_id")
+    @JoinColumn(name = "order_id", unique = true)
+    @JsonIgnore
     private Order order;
+
+    public int getOrderId() {
+        return order != null ? order.getOrderID() : null;
+    }
 }

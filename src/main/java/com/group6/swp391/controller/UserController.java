@@ -37,7 +37,7 @@ public class UserController {
         String randomString = UUID.randomUUID().toString();
         boolean check = true;
 
-        User user = new User(null, null, userRegister.getEmail(), bCryptPasswordEncoder.encode(userRegister.getPassword()), null, null, null, randomString, false, true, role, 0, null, null, 0);
+        User user = new User(null, null, userRegister.getEmail(), bCryptPasswordEncoder.encode(userRegister.getPassword()), null, null, null, randomString, false, true, role, 0, null, null, null);
         if(userRegister == null || userService.getUserByEmail(userRegister.getEmail()) != null) {
             check = false;
         }

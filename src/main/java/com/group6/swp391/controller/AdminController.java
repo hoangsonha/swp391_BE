@@ -69,7 +69,7 @@ public class AdminController {
         boolean active = false;
         User user = new User(adminRegister.getFirstName(), adminRegister.getLastName(), adminRegister.getEmail(),
                 bCryptPasswordEncoder.encode(adminRegister.getPassword()), adminRegister.getPhone(), adminRegister.getAddress(), adminRegister.getAvata(),
-                randomString, active, true, role, 0, null, null, 0);
+                randomString, active, true, role, 0, null, null, null);
         if(userService.getUserByEmail(adminRegister.getEmail()) != null || adminRegister == null) {
             check = false;
         }

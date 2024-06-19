@@ -1,17 +1,15 @@
 package com.group6.swp391.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.group6.swp391.enums.EnumGenderName;
-import com.group6.swp391.enums.EnumRoleName;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity(name = "user")
 @Getter
@@ -48,7 +46,7 @@ public class User extends BaseEntity {
     private EnumGenderName gender;
 
     @Column(name= "year_of_birth")
-    private int yearOfBirth;
+    private Date yearOfBirth;
 
     private int quantityLoginFailed;
 
@@ -61,9 +59,27 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy = "user")
     @JsonIgnoreProperties("user")
-    private List<Feedback> feedbacks;
+    @JsonIgnore
+    private List<Points> points;
 
-    public User(String firstName, String lastName, String email, String password, String phone, String address, String avata, String codeVerify, boolean enabled, boolean nonLooked, Role role, int quantityLoginFailed, Date timeLoginFailed, EnumGenderName gender, int yearOfBirth) {
+    @Transient
+    public double getTotalPoints() {
+        if (points == null) {
+            return 0;
+        }
+        return points.stream().mapToDouble(Points::getPoint).sum();
+    }
+
+    @Transient
+    public double getTotalUsedPoints() {
+        if (points == null) {
+            return 0;
+        }
+        return points.stream().mapToDouble(Points::getUsedPoints).sum();
+    }
+
+
+    public User(String firstName, String lastName, String email, String password, String phone, String address, String avata, String codeVerify, boolean enabled, boolean nonLooked, Role role, int quantityLoginFailed, Date timeLoginFailed, EnumGenderName gender, Date yearOfBirth) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -80,5 +96,4 @@ public class User extends BaseEntity {
         this.yearOfBirth = yearOfBirth;
         this.timeLoginFailed = timeLoginFailed;
     }
-
 }
