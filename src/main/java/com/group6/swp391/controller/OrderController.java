@@ -32,6 +32,8 @@ public class OrderController {
     @Autowired
     private ProductCustomizeService productCustomizeService;
 
+    @Autowired PointsServiceImp pointsServiceImp;
+
     @DeleteMapping("/delete_order/{id}")
     public ResponseEntity<?> deleteOrder(@PathVariable int id) {
         try {
@@ -172,6 +174,7 @@ public class OrderController {
             if (savedOrder == null) {
                 return ResponseEntity.badRequest().body("Error saving order");
             }
+            pointsServiceImp.createPoints(savedOrder.getUser().getUserID(), savedOrder.getOrderID(), orderRequest.getUsedPoint());
 
             return ResponseEntity.ok("Create Order successfully");
         } catch (Exception e) {

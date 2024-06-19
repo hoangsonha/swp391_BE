@@ -20,8 +20,9 @@ public class OrderRequest {
     //List<PaymentRequest> payments;
     String phoneShipping;
     double price;
-    int quantity;
     String status;
+    int quantity;
     User user;
+    double usedPoint;
     List<OrderDetailRequest> orderDetail;
 }
