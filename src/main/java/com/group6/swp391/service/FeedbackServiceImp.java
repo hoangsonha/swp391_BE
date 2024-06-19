@@ -45,6 +45,11 @@ public class FeedbackServiceImp implements FeedbackService {
     }
 
     @Override
+    public List<Feedback> getFeedbacksByProductID(String productID) {
+        return feedbackRepository.findByProductProductID(productID);
+    }
+
+    @Override
     public Feedback saveFeedback(FeedbackRequest feedbackRequest) {
         try {
             Diamond diamond = null;

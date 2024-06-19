@@ -8,9 +8,11 @@ import java.util.List;
 public interface FeedbackService {
     List<Feedback> getAllFeedbacks();
 
-    List<Feedback> getFeedbacksByDiamondID(String productID);
+    List<Feedback> getFeedbacksByDiamondID(String diamondID);
 
     List<Feedback> getFeedbacksByUserID(int userID);
+
+    List<Feedback> getFeedbacksByProductID(String productID);
 
     Feedback saveFeedback(FeedbackRequest feedbackRequest);
 }

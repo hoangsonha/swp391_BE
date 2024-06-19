@@ -62,6 +62,21 @@ public class FeedbackController {
         }
     }
 
+    @GetMapping("/feedbacks_by_product/{id}")
+    public ResponseEntity<?> getFeedbacksByProductID(@PathVariable String id) {
+        List<Feedback> feedbacks;
+        try {
+            feedbacks = feedbackService.getFeedbacksByProductID(id);
+            if (feedbacks.isEmpty()) {
+                return ResponseEntity.badRequest().body("No feedback for product ID: " + id);
+            } else {
+                return ResponseEntity.ok(feedbacks);
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error retrieving feedback for product ID: " + id);
+        }
+    }
+
     @PostMapping("/submit_feedback")
     public ResponseEntity<?> submitFeedback(@RequestBody FeedbackRequest feedbackRequest) {
         try {
