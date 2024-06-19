@@ -96,7 +96,7 @@ public class OrderController {
     @PostMapping("/submit_order")
     public ResponseEntity<?> submitOrder(@RequestBody OrderRequest orderRequest) {
         try {
-            User user = userService.getUserByID(orderRequest.getUserID());
+            User user = userService.getUserByID(orderRequest.getUser().getUserID());
             if (user == null) {
                 return ResponseEntity.badRequest().body("User does not exist");
             }
