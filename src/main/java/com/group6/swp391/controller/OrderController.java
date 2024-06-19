@@ -3,12 +3,9 @@ package com.group6.swp391.controller;
 import com.group6.swp391.model.*;
 import com.group6.swp391.request.OrderDetailRequest;
 import com.group6.swp391.request.OrderRequest;
-import com.group6.swp391.request.PaymentRequest;
 import com.group6.swp391.service.*;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -158,6 +155,14 @@ public class OrderController {
                     if (productCustomize == null) {
                         return ResponseEntity.badRequest().body("Invalid product customize ID");
                     }
+
+                    // Update diamond status to false in ProductCustomize
+                    Diamond diamondInProductCustomize = productCustomize.getDiamond();
+                    if (diamondInProductCustomize != null) {
+                        diamondInProductCustomize.setStatus(false);
+                        diamondService.saveDiamond(diamondInProductCustomize);
+                    }
+
                     productCustomizeOrderDetail.setProductCustomize(productCustomize);
                     orderDetails.add(productCustomizeOrderDetail);
 
