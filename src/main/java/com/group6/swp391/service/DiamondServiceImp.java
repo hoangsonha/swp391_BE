@@ -6,6 +6,7 @@ import com.group6.swp391.enums.EnumShapeName;
 import com.group6.swp391.model.Diamond;
 import com.group6.swp391.repository.DiamondRepository;
 import com.group6.swp391.request.SearchAdvanceRequest;
+import org.antlr.v4.runtime.misc.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -93,34 +94,38 @@ public class DiamondServiceImp implements DiamondService {
             shape = searchAdvanceRequest.getShape();
         }
         boolean checkUpOrDown = false;
-        String string_price = searchAdvanceRequest.getPrice();
-        String[] str_price = string_price.split(" ");
-        List<Double> lists_price = new ArrayList<>();
-        for(int i =0; i< str_price.length; i++) {
-            if(str_price[i].toLowerCase().equals("trên")) {
-                checkUpOrDown = true;
-            }
-            char c = str_price[i].charAt(0);
-            if(c >= '0' && c <= '9') {
-                str_price[i] += "000000";
-                double d = Double.parseDouble(str_price[i]);
-                lists_price.add(d);
-            }
-        }
         double priceBegin = 0;
         double priceEnd = 0;
-        if(lists_price.size() == 1) {
-            if(checkUpOrDown) {
-                priceBegin = lists_price.get(0);
-                priceEnd = diamondRepository.getMaxTotalPrice();
-            } else {
-                priceBegin = 0;
-                priceEnd = lists_price.get(0);
+        String string_price = searchAdvanceRequest.getPrice();
+        if(string_price != null && StringUtils.hasText(string_price)) {
+            String[] str_price = string_price.split(" ");
+            List<Double> lists_price = new ArrayList<>();
+            for(int i =0; i< str_price.length; i++) {
+                if(str_price[i].toLowerCase().equals("trên")) {
+                    checkUpOrDown = true;
+                }
+                char c = str_price[i].charAt(0);
+                if(c >= '0' && c <= '9') {
+                    str_price[i] += "000000";
+                    double d = Double.parseDouble(str_price[i]);
+                    lists_price.add(d);
+                }
             }
-        } else if(lists_price.size() == 2) {
-            priceBegin = lists_price.get(0);
-            priceEnd = lists_price.get(1);
+
+            if(lists_price.size() == 1) {
+                if(checkUpOrDown) {
+                    priceBegin = lists_price.get(0);
+                    priceEnd = diamondRepository.getMaxTotalPrice();
+                } else {
+                    priceBegin = 0;
+                    priceEnd = lists_price.get(0);
+                }
+            } else if(lists_price.size() == 2) {
+                priceBegin = lists_price.get(0);
+                priceEnd = lists_price.get(1);
+            }
         }
+
 
         if(priceBegin != 0 && priceEnd != 0 && caratBegin != 0 && caratEnd != 0 && sizeBegin != 0 && sizeEnd != 0 && color != 0 && clarify != null && shape != null) {
             lists_diamond = diamondRepository.getDiamondBySearchAdvanced(priceEnd, priceBegin, caratEnd, caratBegin, sizeEnd, sizeBegin, color, clarify, shape);
