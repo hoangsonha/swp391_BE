@@ -10,6 +10,7 @@ import com.group6.swp391.response.PaymentResponse;
 import com.group6.swp391.service.OrderService;
 import com.group6.swp391.service.PayPalService;
 import com.group6.swp391.service.PaymentService;
+import com.group6.swp391.service.UserService;
 import com.paypal.api.payments.Links;
 import com.paypal.api.payments.Payment;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,6 +34,7 @@ public class PaymentController {
     @Autowired private PayPalService payPalService;
     @Autowired private OrderService orderService;
     @Autowired private PaymentService paymentService;
+    @Autowired private UserService userService;
 
 
     @PostMapping("/checkout")
@@ -42,7 +44,7 @@ public class PaymentController {
 
         try {
             Cart cart = (Cart) session.getAttribute("CART");
-            Order order = new Order(orderRequest.getAddressShipping(), orderRequest.getFullName(), orderRequest.getOrderDate(), null, orderRequest.getPhoneShipping(), orderRequest.getPrice(), orderRequest.getQuantity(), orderRequest.getStatus(), orderRequest.getUser());
+            Order order = new Order(orderRequest.getAddressShipping(), orderRequest.getFullName(), orderRequest.getOrderDate(), null, orderRequest.getPhoneShipping(), orderRequest.getPrice(), orderRequest.getQuantity(), orderRequest.getStatus(), userService.getUserByID(orderRequest.getUserID()));
             orderService.save(order);
             Payment payment = payPalService.createPayment(order, EnumPayPalPaymentMethod.paypal,
                     EnumPaypalPaymentIntent.sale, cancelUrl, successUrl, cart);

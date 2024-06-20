@@ -1,6 +1,5 @@
 package com.group6.swp391.request;
 
-import com.group6.swp391.model.User;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -20,7 +19,7 @@ public class OrderRequest {
     double price;
     String status;
     int quantity;
-    User user;
+    int userID;
     double usedPoint;
     List<OrderDetailRequest> orderDetail;
 }
