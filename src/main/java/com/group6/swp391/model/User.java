@@ -15,7 +15,6 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -79,7 +78,9 @@ public class User extends BaseEntity {
     }
 
 
-    public User(String firstName, String lastName, String email, String password, String phone, String address, String avata, String codeVerify, boolean enabled, boolean nonLooked, Role role, int quantityLoginFailed, Date timeLoginFailed, EnumGenderName gender, Date yearOfBirth) {
+    public User(String firstName, String lastName, String email, String password, String phone, String address,
+                String avata, String codeVerify, boolean enabled, boolean nonLooked, Role role, int quantityLoginFailed,
+                Date timeLoginFailed, EnumGenderName gender, Date yearOfBirth) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;

@@ -7,6 +7,7 @@ import com.group6.swp391.repository.SizeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -94,22 +95,6 @@ public class OrderServiceImp implements OrderService {
         }
     }
 
-//    @Override
-//    public Order saveOrder(Order order, List<OrderDetail> orderDetails) {
-//        try {
-//            Order savedOrder = orderRepository.save(order);
-//            for (OrderDetail detail : orderDetails) {
-//                detail.setOrder(savedOrder);
-//            }
-//            orderDetailRepository.saveAll(orderDetails);
-//            savedOrder.setOrderDetails(orderDetails);
-//            return savedOrder;
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return null;
-//        }
-//    }
-
     @Override
     public Order saveOrder(Order order, List<OrderDetail> orderDetails) {
         try {
@@ -130,13 +115,28 @@ public class OrderServiceImp implements OrderService {
     }
 
     @Override
-    public Order getNewestOrder() {
-        return orderRepository.findTopByOrderByOrderDateDesc();
+    public List<Order> getNewestOrder(String status) {
+        return orderRepository.findTopByOrderByOrderDateDesc(status);
     }
 
     @Override
     public List<Order> getOrdersByStatus(String status) {
         return orderRepository.findByStatus(status);
+    }
+
+    @Override
+    public Order updateStatus(int orderID, String status) {
+        try {
+            Order order = getOrderByOrderID(orderID);
+            if (order == null) {
+                throw new RuntimeException("Order not found with id: " + orderID);
+            }
+            order.setStatus(status);
+            return orderRepository.save(order);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }

@@ -26,10 +26,7 @@ public class CartController {
             if(cartRequest.getProductId() == null) {
                 return ResponseEntity.badRequest().body("Product is required");
             }
-            boolean cartItem = CartItemRepository.existsByUserIdAndProductCustomizeIdOrDiamondId(cartRequest.getUserId(), cartRequest.getProductId());
-            if(cartItem) {
-                return ResponseEntity.badRequest().body("Product already exists");
-            }
+
             cartServiceImp.addCart(cartRequest.getUserId(), cartRequest.getProductId());
             return ResponseEntity.ok().body("added cart successfully");
         } catch (Exception e) {

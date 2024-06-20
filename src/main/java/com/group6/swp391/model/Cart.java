@@ -13,7 +13,6 @@ import java.util.Set;
 @Setter
 @Getter
 @NoArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Cart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

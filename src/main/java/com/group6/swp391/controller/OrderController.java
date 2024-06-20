@@ -69,7 +69,7 @@ public class OrderController {
     @GetMapping("/newest_order")
     public ResponseEntity<?> getNewestOrder() {
         try {
-            Order newestOrder = orderService.getNewestOrder();
+            List<Order> newestOrder = orderService.getNewestOrder("pendding");
             if (newestOrder == null) {
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No order found");
             }

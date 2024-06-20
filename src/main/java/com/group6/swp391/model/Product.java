@@ -13,7 +13,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Product extends BaseEntity {
     @Id
     @Column(name = "product_id", nullable = false, length = 50)

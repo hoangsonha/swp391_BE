@@ -7,6 +7,7 @@ import com.group6.swp391.model.ProductCustomize;
 import com.group6.swp391.repository.CartItemRepository;
 import com.group6.swp391.repository.CartRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,6 +35,10 @@ public class  CartServiceImp implements CartService {
             cart.setUser(userServiceImp.getUserByID(userId));
         }
 
+        boolean cartItemExist = CartItemRepository.existsByUserIdAndProductCustomizeIdOrDiamondId(userId, productId);
+        if(cartItemExist) {
+            throw new RuntimeException("Product exist");
+        }
         CartItem cartItem = new CartItem();
         cartItem.setCart(cart);
         cartItem.setQuantity(1);

@@ -16,7 +16,6 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Diamond {
     @Id
     @Column(name = "diamond_id", nullable = false, columnDefinition = "NVARCHAR(100)")

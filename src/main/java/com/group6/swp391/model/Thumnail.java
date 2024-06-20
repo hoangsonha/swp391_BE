@@ -11,7 +11,6 @@ import lombok.*;
 @NoArgsConstructor
 @Setter
 @Getter
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Thumnail {
 
     @Id

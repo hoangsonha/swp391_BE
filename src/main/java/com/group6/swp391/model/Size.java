@@ -10,7 +10,6 @@ import lombok.*;
 @Getter
 @Setter
 @NoArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Size {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

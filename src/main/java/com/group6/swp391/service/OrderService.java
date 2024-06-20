@@ -2,8 +2,8 @@ package com.group6.swp391.service;
 
 import com.group6.swp391.model.Order;
 import com.group6.swp391.model.OrderDetail;
-import com.group6.swp391.model.Payment;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface OrderService {
@@ -22,7 +22,9 @@ public interface OrderService {
 
     Order saveOrder(Order order, List<OrderDetail> orderDetails);
 
-    Order getNewestOrder();
+    List<Order> getNewestOrder(String status);
 
     List<Order> getOrdersByStatus(String status);
+
+    Object updateStatus(int orderID, String status);
 }

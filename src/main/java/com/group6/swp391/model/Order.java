@@ -20,7 +20,6 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -62,6 +61,8 @@ public class Order {
     private double price;
 
     private String status;
+
+    private String reason;
 
     private boolean deleteStatus;
 

@@ -13,7 +13,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Points  extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
