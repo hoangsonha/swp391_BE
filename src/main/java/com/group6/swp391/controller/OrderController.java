@@ -38,6 +38,9 @@ public class OrderController {
     @Autowired
     private CartItemService cartItemService;
 
+    @Autowired
+    private OrderDetailService orderDetailService;
+
     @DeleteMapping("/delete_order/{id}")
     public ResponseEntity<?> deleteOrder(@PathVariable int id) {
         try {
@@ -110,6 +113,21 @@ public class OrderController {
             return ResponseEntity.ok(orders);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/order_details_by_order/{id}")
+    public ResponseEntity<?> getOrderDetailsByOrderID(@PathVariable int id) {
+        try {
+            List<OrderDetail> orderDetails = orderDetailService.getOrderDetailsByOrderID(id);
+            if (orderDetails.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                        .body("No order details found for order ID: " + id);
+            }
+            return ResponseEntity.ok(orderDetails);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error retrieving order details: " + e.getMessage());
         }
     }
 
