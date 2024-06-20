@@ -21,5 +21,6 @@ public class OrderRequest {
     int quantity;
     int userID;
     double usedPoint;
+    String reason;
     List<OrderDetailRequest> orderDetail;
 }

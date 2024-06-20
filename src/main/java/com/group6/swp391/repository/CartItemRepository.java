@@ -16,7 +16,7 @@ public interface CartItemRepository extends JpaRepository<CartItem, Integer> {
    @Query("SELECT CASE WHEN COUNT(cI) > 0 THEN true ELSE false END FROM CartItem cI JOIN Cart c ON  cI.cart.cartId = c.cartId WHERE c.user.userID = :userID AND (cI.productCustomize.prodcutCustomId = :itemID OR cI.diamondAdd.diamondID = :itemID)")
    boolean existsByUserIdAndProductCustomizeIdOrDiamondId(@Param("userID") int userId, @Param("itemID") String itemId);
 
-   List<CartItem> findByCartCartID(int cartID);
+   List<CartItem> findByCartCartId(int cartID);
 
    void deleteByCart(Cart cart);
 }

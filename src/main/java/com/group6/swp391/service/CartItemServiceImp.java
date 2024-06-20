@@ -17,7 +17,7 @@ public class CartItemServiceImp implements CartItemService {
 
     @Override
     public List<CartItem> getCartItemsByCartID(int cartID) {
-        return cartItemRepository.findByCartCartID(cartID);
+        return cartItemRepository.findByCartCartId(cartID);
     }
 
     @Override

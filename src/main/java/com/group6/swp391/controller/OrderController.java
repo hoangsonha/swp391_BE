@@ -141,6 +141,7 @@ public class OrderController {
             order.setPrice(orderRequest.getPrice());
             order.setQuantity(orderRequest.getQuantity());
             order.setStatus("Pending");
+            order.setReason(orderRequest.getReason());
             order.setUser(user);
 
             // Create Order details and calculate total price
