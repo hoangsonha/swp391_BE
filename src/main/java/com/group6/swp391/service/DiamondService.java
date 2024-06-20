@@ -18,7 +18,7 @@ public interface DiamondService {
 
     public void markDiamondAsDeleted(String diamondID);
 
-    public List<Diamond> searchAdvanced(SearchAdvanceRequest searchAdvanceRequest, String optionPrice);
+    public List<Diamond> searchAdvanced(SearchAdvanceRequest searchAdvanceRequest);
 
     List<Diamond> getByCondition(String shape, float dimensions);
 

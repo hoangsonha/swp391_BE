@@ -64,7 +64,7 @@ public class DiamondServiceImp implements DiamondService {
 
 
     @Override
-    public List<Diamond> searchAdvanced(SearchAdvanceRequest searchAdvanceRequest, String optionPrice) {
+    public List<Diamond> searchAdvanced(SearchAdvanceRequest searchAdvanceRequest) {
         List<Diamond> lists_diamond = new ArrayList<>();
 
         String string_carat = searchAdvanceRequest.getCarat();
@@ -208,8 +208,8 @@ public class DiamondServiceImp implements DiamondService {
             lists_diamond = diamondRepository.getDiamondBySearchAdvancedExcludeTotalPriceClarifyShapeColor(caratEnd, caratBegin, sizeEnd, sizeBegin);
         }
 
-        if(StringUtils.hasText(optionPrice)) {
-            if(optionPrice.toLowerCase().equals("giá từ thấp đến cao")) {
+        if(StringUtils.hasText(searchAdvanceRequest.getOptionPrice())) {
+            if(searchAdvanceRequest.getOptionPrice().toLowerCase().equals("giá từ thấp đến cao")) {
                 Collections.sort(lists_diamond, new Comparator<Diamond>() {
                     @Override
                     public int compare(Diamond d1, Diamond d2) {
@@ -219,7 +219,7 @@ public class DiamondServiceImp implements DiamondService {
                         return -1;
                     }
                 });
-            } else if(optionPrice.toLowerCase().equals("giá từ cao đến thấp")) {
+            } else if(searchAdvanceRequest.getOptionPrice().toLowerCase().equals("giá từ cao đến thấp")) {
                 Collections.sort(lists_diamond, new Comparator<Diamond>() {
                     @Override
                     public int compare(Diamond d1, Diamond d2) {

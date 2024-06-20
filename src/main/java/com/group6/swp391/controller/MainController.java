@@ -184,8 +184,8 @@ public class MainController {
     }
 
     @GetMapping("/search_advanced")
-    public ResponseEntity<ObjectResponse> getDiamondBySearchAdvanced(@RequestBody SearchAdvanceRequest searchAdvanceRequest, @Param("optionalPrice") String optionalPrice) {
-        List<Diamond> lists = diamondService.searchAdvanced(searchAdvanceRequest, optionalPrice);
+    public ResponseEntity<ObjectResponse> getDiamondBySearchAdvanced(@RequestBody SearchAdvanceRequest searchAdvanceRequest) {
+        List<Diamond> lists = diamondService.searchAdvanced(searchAdvanceRequest);
         return lists.size() > 0 ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Get all diamond by search advance successfully", lists))
                 : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Get all diamond by search advance failed", null));
     }
