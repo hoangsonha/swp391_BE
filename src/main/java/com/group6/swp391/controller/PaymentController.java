@@ -7,10 +7,7 @@ import com.group6.swp391.paypal.EnumPaypalPaymentIntent;
 import com.group6.swp391.repository.OrderRepository;
 import com.group6.swp391.request.OrderRequest;
 import com.group6.swp391.response.PaymentResponse;
-import com.group6.swp391.service.OrderService;
-import com.group6.swp391.service.PayPalService;
-import com.group6.swp391.service.PaymentService;
-import com.group6.swp391.service.UserService;
+import com.group6.swp391.service.*;
 import com.paypal.api.payments.Links;
 import com.paypal.api.payments.Payment;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -35,6 +33,7 @@ public class PaymentController {
     @Autowired private OrderService orderService;
     @Autowired private PaymentService paymentService;
     @Autowired private UserService userService;
+    @Autowired private VNPayService vnPayService;
 
 
     @PostMapping("/checkout")
@@ -104,4 +103,20 @@ public class PaymentController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PaymentResponse("Failed", "Payment failed", null, null));
     }
 
+
+    @GetMapping("/vnpay")
+    public String vnpay(HttpServletRequest req) throws UnsupportedEncodingException {
+        long amount = 100000*100;
+        String s = vnPayService.getVNPay(amount, req);
+        return s;
+    }
+
+    @GetMapping("/vnpaysuccess")
+    public String vnpaysuccess(HttpServletRequest req) {
+        String maloi = req.getParameter("vnp_ResponseCode");
+        if(maloi.equals("00")) {
+            return "payment successfully";
+        }
+        return "payment failed";
+    }
 }
