@@ -29,7 +29,14 @@ public class OrderController {
     @Autowired
     private ProductCustomizeService productCustomizeService;
 
-    @Autowired PointsServiceImp pointsServiceImp;
+    @Autowired
+    PointsServiceImp pointsServiceImp;
+
+    @Autowired
+    private CartService cartService;
+
+    @Autowired
+    private CartItemService cartItemService;
 
     @DeleteMapping("/delete_order/{id}")
     public ResponseEntity<?> deleteOrder(@PathVariable int id) {
@@ -114,6 +121,17 @@ public class OrderController {
                 return ResponseEntity.badRequest().body("User does not exist");
             }
 
+            // Retrieve the user's cart and cart items
+            Cart cart = cartService.getCart(user.getUserID());
+            if (cart == null) {
+                return ResponseEntity.badRequest().body("Cart does not exist");
+            }
+
+            List<CartItem> cartItems = cartItemService.getCartItemsByCartID(cart.getCartId());
+            if (cartItems == null) {
+                return ResponseEntity.badRequest().body("Cart is empty");
+            }
+
             // Create Order
             Order order = new Order();
             order.setAddressShipping(orderRequest.getAddressShipping());
@@ -122,7 +140,7 @@ public class OrderController {
             order.setPhoneShipping(orderRequest.getPhoneShipping());
             order.setPrice(orderRequest.getPrice());
             order.setQuantity(orderRequest.getQuantity());
-            order.setStatus(orderRequest.getStatus());
+            order.setStatus("Pending");
             order.setUser(user);
 
             // Create Order details and calculate total price
@@ -187,8 +205,12 @@ public class OrderController {
             // order.setPrice(totalPrice);
             order.setPrice(orderRequest.getPrice());
 
-            // Save Order
+            // Save the Order and order details
             Order savedOrder = orderService.saveOrder(order, orderDetails);
+
+            // Clear the cart item
+            cartItemService.deleteAllByCart(cart);
+
             if (savedOrder == null) {
                 return ResponseEntity.badRequest().body("Error saving order");
             }
