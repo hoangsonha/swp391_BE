@@ -87,4 +87,9 @@ public class FeedbackServiceImp implements FeedbackService {
             return null;
         }
     }
+
+    @Override
+    public List<Feedback> getNewestFeedbacks(int limit) {
+        return feedbackRepository.findTopByOrderByCreateAtDesc(limit);
+    }
 }

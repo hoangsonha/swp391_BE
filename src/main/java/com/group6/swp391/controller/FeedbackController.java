@@ -77,6 +77,19 @@ public class FeedbackController {
         }
     }
 
+    @GetMapping("/newest_feedbacks")
+    public ResponseEntity<?> getNewestFeedbacks(@RequestParam(defaultValue = "10") int limit) {
+        try {
+            List<Feedback> feedbacks = feedbackService.getNewestFeedbacks(limit);
+            if (feedbacks.isEmpty()) {
+                return ResponseEntity.badRequest().body("No feedbacks found");
+            }
+            return ResponseEntity.ok(feedbacks);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error retrieving newest feedbacks: " + e.getMessage());
+        }
+    }
+
     @PostMapping("/submit_feedback")
     public ResponseEntity<?> submitFeedback(@RequestBody FeedbackRequest feedbackRequest) {
         try {
