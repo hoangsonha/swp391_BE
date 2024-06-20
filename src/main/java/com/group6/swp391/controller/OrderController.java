@@ -140,15 +140,15 @@ public class OrderController {
             }
 
             // Retrieve the user's cart and cart items
-            Cart cart = cartService.getCart(user.getUserID());
-            if (cart == null) {
-                return ResponseEntity.badRequest().body("Cart does not exist");
-            }
-
-            List<CartItem> cartItems = cartItemService.getCartItemsByCartID(cart.getCartId());
-            if (cartItems == null) {
-                return ResponseEntity.badRequest().body("Cart is empty");
-            }
+//            Cart cart = cartService.getCart(user.getUserID());
+//            if (cart == null) {
+//                return ResponseEntity.badRequest().body("Cart does not exist");
+//            }
+//
+//            List<CartItem> cartItems = cartItemService.getCartItemsByCartID(cart.getCartId());
+//            if (cartItems == null) {
+//                return ResponseEntity.badRequest().body("Cart is empty");
+//            }
 
             // Create Order
             Order order = new Order();
@@ -228,7 +228,7 @@ public class OrderController {
             Order savedOrder = orderService.saveOrder(order, orderDetails);
 
             // Clear the cart item
-            cartItemService.deleteAllByCart(cart);
+            //cartItemService.deleteAllByCart(cart);
 
             if (savedOrder == null) {
                 return ResponseEntity.badRequest().body("Error saving order");
