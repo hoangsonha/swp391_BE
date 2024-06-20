@@ -211,7 +211,7 @@ public class DiamondServiceImp implements DiamondService {
             lists_diamond = diamondRepository.getDiamondBySearchAdvancedExcludeTotalPriceClarifyDimensionsColor(caratEnd, caratBegin, shape);
         } else if(priceBegin == 0 && priceEnd == 0 && caratBegin != 0 && caratEnd != 0 && sizeBegin != 0 && sizeEnd != 0 && color == 0 && clarify == null && shape == null) {
             lists_diamond = diamondRepository.getDiamondBySearchAdvancedExcludeTotalPriceClarifyShapeColor(caratEnd, caratBegin, sizeEnd, sizeBegin);
-        }
+        } else lists_diamond = diamondRepository.findAll();
 
         if(StringUtils.hasText(searchAdvanceRequest.getOptionPrice())) {
             if(searchAdvanceRequest.getOptionPrice().toLowerCase().equals("giá từ thấp đến cao")) {
