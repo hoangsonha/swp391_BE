@@ -56,6 +56,19 @@ public class OrderController {
         }
     }
 
+    @GetMapping("/{order_id}")
+    public ResponseEntity<?> getOrdersById(@PathVariable("order_id") int id) {
+        try {
+            Order orderExisting = orderService.getOrderByOrderID(id);
+            if(orderExisting == null) {
+                return ResponseEntity.badRequest().body("Order not found with ID: " + id);
+            }
+            return ResponseEntity.ok(orderExisting);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     @GetMapping("/orders_by_user/{id}")
     public ResponseEntity<?> getOrdersByUserID(@PathVariable int id) {
         try {
