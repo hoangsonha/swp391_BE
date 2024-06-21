@@ -1,7 +1,6 @@
 package com.group6.swp391.controller;
 
 import com.group6.swp391.model.*;
-import com.group6.swp391.request.CartRequest;
 import com.group6.swp391.request.OrderRequest;
 import com.group6.swp391.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,16 +26,10 @@ public class OrderController {
     private DiamondService diamondService;
 
     @Autowired
-    private ProductCustomizeService productCustomizeService;
-
-    @Autowired
     PointsServiceImp pointsServiceImp;
 
     @Autowired
     private CartService cartService;
-
-    @Autowired
-    private CartItemService cartItemService;
 
     @Autowired
     private OrderDetailService orderDetailService;
@@ -146,6 +139,10 @@ public class OrderController {
                 return ResponseEntity.badRequest().body("Cart is empty");
             }
 
+            user.setEmail(orderRequest.getEmail());
+            user.setGender(orderRequest.getGender());
+            userService.save(user);
+
             // Create a new order
             Order order = new Order();
             order.setUser(user);
@@ -153,6 +150,7 @@ public class OrderController {
             order.setFullName(orderRequest.getFullName());
             order.setPhoneShipping(orderRequest.getPhoneShipping());
             order.setOrderDate(orderRequest.getOrderDate());
+            order.setNote(orderRequest.getNote());
             order.setPrice(orderRequest.getPrice());
             order.setQuantity(orderRequest.getQuantity());
             order.setStatus("Pending");

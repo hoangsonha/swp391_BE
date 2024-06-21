@@ -2,7 +2,6 @@ package com.group6.swp391.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,7 +10,6 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Entity(name = "order")
@@ -66,9 +64,11 @@ public class Order {
 
     private boolean deleteStatus;
 
+    private String note;
+
     public Order(String addressShipping, String fullName, LocalDateTime orderDate,
                  List<Payment> payment, String phoneShipping, double price, int quantity,
-                 String status, User user) {
+                 String status, User user, String note) {
         this.addressShipping = addressShipping;
         this.fullName = fullName;
         this.orderDate = orderDate;
@@ -78,6 +78,6 @@ public class Order {
         this.quantity = quantity;
         this.status = status;
         this.user = user;
-
+        this.note = note;
     }
 }

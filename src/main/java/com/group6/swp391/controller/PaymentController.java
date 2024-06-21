@@ -4,7 +4,6 @@ import com.group6.swp391.cart.Cart;
 import com.group6.swp391.model.Order;
 import com.group6.swp391.paypal.EnumPayPalPaymentMethod;
 import com.group6.swp391.paypal.EnumPaypalPaymentIntent;
-import com.group6.swp391.repository.OrderRepository;
 import com.group6.swp391.request.OrderRequest;
 import com.group6.swp391.response.PaymentResponse;
 import com.group6.swp391.service.*;
@@ -43,7 +42,9 @@ public class PaymentController {
 
         try {
             Cart cart = (Cart) session.getAttribute("CART");
-            Order order = new Order(orderRequest.getAddressShipping(), orderRequest.getFullName(), orderRequest.getOrderDate(), null, orderRequest.getPhoneShipping(), orderRequest.getPrice(), orderRequest.getQuantity(), orderRequest.getStatus(), userService.getUserByID(orderRequest.getUserID()));
+            Order order = new Order(orderRequest.getAddressShipping(), orderRequest.getFullName(), orderRequest.getOrderDate(),
+                    null, orderRequest.getPhoneShipping(), orderRequest.getPrice(), orderRequest.getQuantity(),
+                    orderRequest.getStatus(), userService.getUserByID(orderRequest.getUserID()), orderRequest.getNote());
             orderService.save(order);
             Payment payment = payPalService.createPayment(order, EnumPayPalPaymentMethod.paypal,
                     EnumPaypalPaymentIntent.sale, cancelUrl, successUrl, cart);

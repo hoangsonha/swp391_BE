@@ -1,5 +1,6 @@
 package com.group6.swp391.request;
 
+import com.group6.swp391.enums.EnumGenderName;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -22,5 +23,8 @@ public class OrderRequest {
     int userID;
     double usedPoint;
     String reason;
+    String note;
+    String email;
+    EnumGenderName gender;
     List<OrderDetailRequest> orderDetail;
 }
