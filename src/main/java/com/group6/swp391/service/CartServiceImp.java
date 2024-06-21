@@ -79,4 +79,13 @@ public class  CartServiceImp implements CartService {
             }
         }
     }
+
+    @Override
+    public void clearCart(int userID) {
+        Cart cart = cartRepository.findByUserId(userID);
+        if (cart != null) {
+            cart.getItems().clear();
+            cartRepository.save(cart);
+        }
+    }
 }

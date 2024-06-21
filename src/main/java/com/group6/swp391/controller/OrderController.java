@@ -1,6 +1,7 @@
 package com.group6.swp391.controller;
 
 import com.group6.swp391.model.*;
+import com.group6.swp391.request.CartRequest;
 import com.group6.swp391.request.OrderRequest;
 import com.group6.swp391.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -130,6 +131,84 @@ public class OrderController {
         }
     }
 
+    @PostMapping("submit_order")
+    public ResponseEntity<?> submitOrder(@RequestBody OrderRequest orderRequest) {
+        try {
+            // Retrieve the user
+            User user = userService.getUserByID(orderRequest.getUserID());
+            if (user == null) {
+                return ResponseEntity.badRequest().body("User does not exist");
+            }
+
+            // Retrieve the user's cart
+            Cart cart = cartService.getCart(orderRequest.getUserID());
+            if (cart == null || cart.getItems().isEmpty()) {
+                return ResponseEntity.badRequest().body("Cart is empty");
+            }
+
+            // Create a new order
+            Order order = new Order();
+            order.setUser(user);
+            order.setAddressShipping(orderRequest.getAddressShipping());
+            order.setFullName(orderRequest.getFullName());
+            order.setPhoneShipping(orderRequest.getPhoneShipping());
+            order.setOrderDate(orderRequest.getOrderDate());
+            order.setPrice(orderRequest.getPrice());
+            order.setQuantity(orderRequest.getQuantity());
+            order.setStatus("Pending");
+            order.setReason(orderRequest.getReason());
+
+            List<OrderDetail> orderDetails = new ArrayList<>();
+
+            for (CartItem cartItem : cart.getItems()) {
+                OrderDetail orderDetail = new OrderDetail();
+                orderDetail.setOrder(order);
+                orderDetail.setQuantity(cartItem.getQuantity());
+                orderDetail.setPrice(cartItem.getTotalPrice());
+
+                if (cartItem.getDiamondAdd() != null) {
+                    Diamond diamond = cartItem.getDiamondAdd();
+                    if (!diamond.isStatus()) {
+                        return ResponseEntity.badRequest().body("Diamond is not available for order");
+                    }
+                    diamond.setStatus(false);
+                    diamondService.saveDiamond(diamond);
+                    orderDetail.setDiamond(diamond);
+                }
+
+                if (cartItem.getProductCustomize() != null) {
+                    ProductCustomize productCustomize = cartItem.getProductCustomize();
+                    Diamond diamondInProductCustomize = productCustomize.getDiamond();
+                    if (diamondInProductCustomize != null) {
+                        diamondInProductCustomize.setStatus(false);
+                        diamondService.saveDiamond(diamondInProductCustomize);
+                    }
+                    orderDetail.setProductCustomize(productCustomize);
+                }
+                orderDetails.add(orderDetail);
+            }
+
+            order.setPrice(orderRequest.getPrice());
+
+            // Save the order and order detail
+            Order savedOrder = orderService.saveOrder(order, orderDetails);
+            if (savedOrder == null) {
+                return ResponseEntity.badRequest().body("Error saving order");
+            }
+
+            // Create points for the order
+            pointsServiceImp.createPoints(savedOrder.getUser().getUserID(),
+                    savedOrder.getOrderID(), orderRequest.getUsedPoint());
+
+            // Clear the user's cart
+            cartService.clearCart(orderRequest.getUserID());
+
+            return ResponseEntity.ok("Create Order successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
+
 //    @PostMapping("/submit_order")
 //    public ResponseEntity<?> submitOrder(@RequestBody OrderRequest orderRequest) {
 //        try {
@@ -240,90 +319,90 @@ public class OrderController {
 //        }
 //    }
 
-    @PostMapping("/submit_order")
-    public ResponseEntity<?> submitOrder(@RequestBody OrderRequest orderRequest) {
-        try {
-            User user = userService.getUserByID(orderRequest.getUserID());
-            if (user == null) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User does not exist");
-            }
-
-            // Retrieving the user's cart and cart items
-            Cart cart = cartService.getCart(user.getUserID());
-            if (cart == null) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User cart does not exist");
-            }
-
-            List<CartItem> cartItems = cartItemService.getCartItemsByCartID(cart.getCartId());
-            if (cartItems.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Cart is empty");
-            }
-
-            // Create Order
-            Order order = new Order();
-            order.setAddressShipping(orderRequest.getAddressShipping());
-            order.setFullName(orderRequest.getFullName());
-            order.setOrderDate(orderRequest.getOrderDate());
-            order.setPhoneShipping(orderRequest.getPhoneShipping());
-            order.setPrice(orderRequest.getPrice());
-            order.setQuantity(orderRequest.getQuantity());
-            order.setStatus("Pending");
-            order.setReason(orderRequest.getReason());
-            order.setUser(user);
-
-            // Create Order details and calculate total price
-            List<OrderDetail> orderDetails = new ArrayList<>();
-
-            for (CartItem cartItem : cartItems) {
-                OrderDetail orderDetail = new OrderDetail();
-                orderDetail.setOrder(order);
-                orderDetail.setQuantity(cartItem.getQuantity());
-                orderDetail.setPrice(cartItem.getTotalPrice());
-
-                if (cartItem.getDiamondAdd() != null) {
-                    Diamond diamond = cartItem.getDiamondAdd();
-                    if (!diamond.isStatus()) {
-                        return ResponseEntity.badRequest().body("Diamond is not available for order");
-                    }
-                    // Update diamond status to false
-                    diamond.setStatus(false);
-                    diamondService.saveDiamond(diamond);
-                    orderDetail.setDiamond(diamond);
-                }
-
-                if (cartItem.getProductCustomize() != null) {
-                    ProductCustomize productCustomize = cartItem.getProductCustomize();
-                    orderDetail.setProductCustomize(productCustomize);
-                    if (productCustomize.getDiamond() != null) {
-                        Diamond diamond = productCustomize.getDiamond();
-                        if (!diamond.isStatus()) {
-                            return ResponseEntity.badRequest().body("Diamond is not available for order");
-                        }
-                        diamond.setStatus(false);
-                        diamondService.saveDiamond(diamond);
-                    }
-                }
-
-                orderDetails.add(orderDetail);
-            }
-
-            order.setPrice(orderRequest.getPrice());
-
-            // Save the order and order details
-            Order savedOrder = orderService.saveOrder(order, orderDetails);
-
-            // Clear the cart item
-            cartItemService.deleteAllByCart(cart);
-
-            if (savedOrder == null) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error saving order");
-            }
-            pointsServiceImp.createPoints(savedOrder.getUser().getUserID(), savedOrder.getOrderID(), orderRequest.getUsedPoint());
-
-            return ResponseEntity.ok("Create Order successfully");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error processing the order: " + e.getMessage());
-        }
-    }
+//    @PostMapping("/submit_order")
+//    public ResponseEntity<?> submitOrder(@RequestBody OrderRequest orderRequest) {
+//        try {
+//            User user = userService.getUserByID(orderRequest.getUserID());
+//            if (user == null) {
+//                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User does not exist");
+//            }
+//
+//            // Retrieving the user's cart and cart items
+//            Cart cart = cartService.getCart(user.getUserID());
+//            if (cart == null) {
+//                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User cart does not exist");
+//            }
+//
+//            List<CartItem> cartItems = cartItemService.getCartItemsByCartID(cart.getCartId());
+//            if (cartItems.isEmpty()) {
+//                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Cart is empty");
+//            }
+//
+//            // Create Order
+//            Order order = new Order();
+//            order.setAddressShipping(orderRequest.getAddressShipping());
+//            order.setFullName(orderRequest.getFullName());
+//            order.setOrderDate(orderRequest.getOrderDate());
+//            order.setPhoneShipping(orderRequest.getPhoneShipping());
+//            order.setPrice(orderRequest.getPrice());
+//            order.setQuantity(orderRequest.getQuantity());
+//            order.setStatus("Pending");
+//            order.setReason(orderRequest.getReason());
+//            order.setUser(user);
+//
+//            // Create Order details and calculate total price
+//            List<OrderDetail> orderDetails = new ArrayList<>();
+//
+//            for (CartItem cartItem : cartItems) {
+//                OrderDetail orderDetail = new OrderDetail();
+//                orderDetail.setOrder(order);
+//                orderDetail.setQuantity(cartItem.getQuantity());
+//                orderDetail.setPrice(cartItem.getTotalPrice());
+//
+//                if (cartItem.getDiamondAdd() != null) {
+//                    Diamond diamond = cartItem.getDiamondAdd();
+//                    if (!diamond.isStatus()) {
+//                        return ResponseEntity.badRequest().body("Diamond is not available for order");
+//                    }
+//                    // Update diamond status to false
+//                    diamond.setStatus(false);
+//                    diamondService.saveDiamond(diamond);
+//                    orderDetail.setDiamond(diamond);
+//                }
+//
+//                if (cartItem.getProductCustomize() != null) {
+//                    ProductCustomize productCustomize = cartItem.getProductCustomize();
+//                    orderDetail.setProductCustomize(productCustomize);
+//                    if (productCustomize.getDiamond() != null) {
+//                        Diamond diamond = productCustomize.getDiamond();
+//                        if (!diamond.isStatus()) {
+//                            return ResponseEntity.badRequest().body("Diamond is not available for order");
+//                        }
+//                        diamond.setStatus(false);
+//                        diamondService.saveDiamond(diamond);
+//                    }
+//                }
+//
+//                orderDetails.add(orderDetail);
+//            }
+//
+//            order.setPrice(orderRequest.getPrice());
+//
+//            // Save the order and order details
+//            Order savedOrder = orderService.saveOrder(order, orderDetails);
+//
+//            // Clear the cart item
+//            cartItemService.deleteAllByCart(cart);
+//
+//            if (savedOrder == null) {
+//                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error saving order");
+//            }
+//            pointsServiceImp.createPoints(savedOrder.getUser().getUserID(), savedOrder.getOrderID(), orderRequest.getUsedPoint());
+//
+//            return ResponseEntity.ok("Create Order successfully");
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error processing the order: " + e.getMessage());
+//        }
+//    }
 
 }
