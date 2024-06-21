@@ -68,15 +68,28 @@ public class DiamondServiceImp implements DiamondService {
     public List<Diamond> searchAdvanced(SearchAdvanceRequest searchAdvanceRequest) {
         List<Diamond> lists_diamond = new ArrayList<>();
 
+        float caratBegin = 0;
+        float caratEnd = 0;
         String string_carat = searchAdvanceRequest.getCarat();
-        String[] str_carat = string_carat.split(" - ");
-        float caratBegin = Float.parseFloat(str_carat[0]);
-        float caratEnd = Float.parseFloat(str_carat[1]);
+        if(string_carat != null && StringUtils.hasText(string_carat)) {
+            String[] str_carat = string_carat.split(" - ");
+            if(str_carat.length == 2) {
+                caratBegin = Float.parseFloat(str_carat[0]);
+                caratEnd = Float.parseFloat(str_carat[1]);
+            }
+        }
 
+        float sizeBegin = 0;
+        float sizeEnd = 0;
         String string_size = searchAdvanceRequest.getSize();
-        String[] str_size = string_size.split(" - ");
-        float sizeBegin = Float.parseFloat(str_size[0]);
-        float sizeEnd = Float.parseFloat(str_size[1]);
+        if(string_size != null && StringUtils.hasText(string_size)) {
+            String[] str_size = string_size.split(" - ");
+            if(str_size.length == 2) {
+                sizeBegin = Float.parseFloat(str_size[0]);
+                sizeEnd = Float.parseFloat(str_size[1]);
+            }
+        }
+
 
         boolean check_color = EnumColorName.checkExistColor(searchAdvanceRequest.getColor());
         char color = 0;
@@ -125,7 +138,6 @@ public class DiamondServiceImp implements DiamondService {
                 priceEnd = lists_price.get(1);
             }
         }
-
 
         if(priceBegin != 0 && priceEnd != 0 && caratBegin != 0 && caratEnd != 0 && sizeBegin != 0 && sizeEnd != 0 && color != 0 && clarify != null && shape != null) {
             lists_diamond = diamondRepository.getDiamondBySearchAdvanced(priceEnd, priceBegin, caratEnd, caratBegin, sizeEnd, sizeBegin, color, clarify, shape);
@@ -211,7 +223,32 @@ public class DiamondServiceImp implements DiamondService {
             lists_diamond = diamondRepository.getDiamondBySearchAdvancedExcludeTotalPriceClarifyDimensionsColor(caratEnd, caratBegin, shape);
         } else if(priceBegin == 0 && priceEnd == 0 && caratBegin != 0 && caratEnd != 0 && sizeBegin != 0 && sizeEnd != 0 && color == 0 && clarify == null && shape == null) {
             lists_diamond = diamondRepository.getDiamondBySearchAdvancedExcludeTotalPriceClarifyShapeColor(caratEnd, caratBegin, sizeEnd, sizeBegin);
+        } else if(priceBegin == 0 && priceEnd == 0 && caratBegin != 0 && caratEnd != 0 && sizeBegin != 0 && sizeEnd != 0 && color == 0 && clarify != null && shape == null) {
+            lists_diamond = diamondRepository.getDiamondBySearchAdvancedExcludeTotalPriceColorShape(caratEnd, caratBegin, sizeEnd, sizeBegin, clarify);
+        } else if(priceBegin != 0 && priceEnd != 0 && caratBegin == 0 && caratEnd == 0 && sizeBegin != 0 && sizeEnd != 0 && color == 0 && clarify == null && shape != null) {
+            lists_diamond = diamondRepository.getDiamondBySearchAdvancedExcludeCaratColorClarify(priceEnd, priceBegin, sizeEnd, sizeBegin, shape);
+        } else if(priceBegin != 0 && priceEnd != 0 && caratBegin == 0 && caratEnd == 0 && sizeBegin != 0 && sizeEnd != 0 && color == 0 && clarify != null && shape == null) {
+            lists_diamond = diamondRepository.getDiamondBySearchAdvancedExcludeCaratColorShape(priceEnd, priceBegin, sizeEnd, sizeBegin, clarify);
+        } else if(priceBegin != 0 && priceEnd != 0 && caratBegin == 0 && caratEnd == 0 && sizeBegin != 0 && sizeEnd != 0 && color != 0 && clarify == null && shape == null) {
+            lists_diamond = diamondRepository.getDiamondBySearchAdvancedExcludeCaratClarifyShape(priceEnd, priceBegin, sizeEnd, sizeBegin, color);
+        } else if(priceBegin != 0 && priceEnd != 0 && caratBegin != 0 && caratEnd != 0 && sizeBegin == 0 && sizeEnd == 0 && color != 0 && clarify == null && shape == null) {
+            lists_diamond = diamondRepository.getDiamondBySearchAdvancedExcludeSizeClarifyShape(priceEnd, priceBegin, caratEnd, caratBegin, color);
+        } else if(priceBegin == 0 && priceEnd == 0 && caratBegin == 0 && caratEnd == 0 && sizeBegin != 0 && sizeEnd != 0 && color == 0 && clarify == null && shape != null) {
+            lists_diamond = diamondRepository.getDiamondBySearchAdvancedExcludeTotalPriceClarifyCaratColor(sizeEnd, sizeBegin, shape);
+        } else if(priceBegin == 0 && priceEnd == 0 && caratBegin == 0 && caratEnd == 0 && sizeBegin == 0 && sizeEnd == 0 && color != 0 && clarify != null && shape == null) {
+            lists_diamond = diamondRepository.getDiamondBySearchAdvancedExcludeTotalPriceCaratSizeShape(color, clarify);
+        } else if(priceBegin != 0 && priceEnd != 0 && caratBegin == 0 && caratEnd == 0 && sizeBegin != 0 && sizeEnd != 0 && color == 0 && clarify == null && shape == null) {
+            lists_diamond = diamondRepository.getDiamondBySearchAdvancedExcludeCaratColorShapeClarify(priceEnd, priceBegin, sizeEnd, sizeBegin);
+        } else if(priceBegin != 0 && priceEnd != 0 && caratBegin == 0 && caratEnd == 0 && sizeBegin == 0 && sizeEnd == 0 && color != 0 && clarify == null && shape == null) {
+            lists_diamond = diamondRepository.getDiamondBySearchAdvancedExcludeCaratSizeShapeClarify(priceEnd, priceBegin, color);
+        } else if(priceBegin == 0 && priceEnd == 0 && caratBegin == 0 && caratEnd == 0 && sizeBegin != 0 && sizeEnd != 0 && color != 0 && clarify == null && shape == null) {
+            lists_diamond = diamondRepository.getDiamondBySearchAdvancedExcludeTotalPriceCaratShapeClarify(sizeEnd, sizeBegin, color);
+        } else if(priceBegin == 0 && priceEnd == 0 && caratBegin != 0 && caratEnd != 0 && sizeBegin == 0 && sizeEnd == 0 && color != 0 && clarify == null && shape == null) {
+            lists_diamond = diamondRepository.getDiamondBySearchAdvancedExcludeTotalPriceShapeShapeClarify(caratEnd, caratBegin, color);
+        } else if(priceBegin == 0 && priceEnd == 0 && caratBegin == 0 && caratEnd == 0 && sizeBegin == 0 && sizeEnd == 0 && color != 0 && clarify == null && shape != null) {
+            lists_diamond = diamondRepository.getDiamondBySearchAdvancedExcludeTotalPriceCaratSizeClarify(color, shape);
         } else lists_diamond = diamondRepository.findAll();
+
 
         if(StringUtils.hasText(searchAdvanceRequest.getOptionPrice())) {
             if(searchAdvanceRequest.getOptionPrice().toLowerCase().equals("giá từ thấp đến cao")) {
