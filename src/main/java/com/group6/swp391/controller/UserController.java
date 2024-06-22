@@ -70,7 +70,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Update account failed", null));
     }
 
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('STAFF') ")
     @GetMapping("/get/{id}")
     public ResponseEntity<ObjectResponse> getUser(@PathVariable("id") int id) {
         User user = userService.getUserByID(id);
