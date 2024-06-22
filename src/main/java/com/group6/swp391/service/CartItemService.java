@@ -9,6 +9,6 @@ public interface CartItemService {
 
     List<CartItem> getCartItemsByCartID(int cartID);
 
-    void deleteAllByCart(Cart cart);
+    void deleteByCart(int cart);
 
 }

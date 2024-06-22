@@ -2,6 +2,8 @@ package com.group6.swp391.controller;
 
 import com.group6.swp391.model.*;
 import com.group6.swp391.request.OrderRequest;
+import com.group6.swp391.response.NewOrderRespone;
+import com.group6.swp391.response.OrderRespone;
 import com.group6.swp391.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,6 +32,8 @@ public class OrderController {
 
     @Autowired
     private CartService cartService;
+
+    @Autowired CartItemService cartItemService;
 
     @Autowired
     private OrderDetailService orderDetailService;
@@ -85,11 +89,23 @@ public class OrderController {
     @GetMapping("/newest_order")
     public ResponseEntity<?> getNewestOrder() {
         try {
-            List<Order> newestOrder = orderService.getNewestOrder("pendding");
+            List<Order> newestOrder = orderService.getNewestOrder("Chờ xác nhận");
             if (newestOrder == null) {
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No order found");
             }
-            return ResponseEntity.ok(newestOrder);
+            List<NewOrderRespone> newOrders = new ArrayList<>();
+            List<OrderRespone> orderRespones = new ArrayList<>();
+            for (Order order : newestOrder) {
+                NewOrderRespone newOrderRespone = new NewOrderRespone();
+                newOrderRespone.setUserId(order.getUser().getUserID());
+                OrderRespone orderRespone = new OrderRespone();
+                orderRespone.setOrderId(order.getOrderID());
+                orderRespone.setOrderDetail(order.getOrderDetails().get(0));
+                orderRespones.add(orderRespone);
+                newOrderRespone.setOrders(orderRespones);
+                newOrders.add(newOrderRespone);
+            }
+            return ResponseEntity.ok().body(newOrders);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
@@ -124,56 +140,43 @@ public class OrderController {
         }
     }
 
-    @PostMapping("submit_order")
+    @PostMapping("/submit_order")
     public ResponseEntity<?> submitOrder(@RequestBody OrderRequest orderRequest) {
         try {
-            // Retrieve the user
-            User user = userService.getUserByID(orderRequest.getUserID());
-            if (user == null) {
-                return ResponseEntity.badRequest().body("User does not exist");
+            User existingUser = userService.getUserByID(orderRequest.getUserID());
+            if(existingUser == null) {
+                return ResponseEntity.badRequest().body("User not found");
             }
-
-            // Retrieve the user's cart
-            Cart cart = cartService.getCart(orderRequest.getUserID());
-            if (cart == null || cart.getItems().isEmpty()) {
-                return ResponseEntity.badRequest().body("Cart is empty");
+            Order newOrder = new Order();
+            newOrder.setUser(existingUser);
+            newOrder.setFullName(orderRequest.getFullName());
+            newOrder.setPhoneShipping(orderRequest.getPhoneShipping());
+            newOrder.setAddressShipping(orderRequest.getAddressShipping());
+            newOrder.setGender(orderRequest.getGender());
+            newOrder.setNote(orderRequest.getNote());
+            newOrder.setEmail(orderRequest.getEmail());
+            newOrder.setStatus("Chờ xác nhận");
+            newOrder.setPrice(orderRequest.getPrice());
+            newOrder.setQuantity(orderRequest.getQuantity());
+            Cart existingCart = cartService.getCart(existingUser.getUserID());
+            if(existingCart == null) {
+                return ResponseEntity.badRequest().body("Cart not found");
             }
-
-            user.setEmail(orderRequest.getEmail());
-            user.setGender(orderRequest.getGender());
-            userService.save(user);
-
-            // Create a new order
-            Order order = new Order();
-            order.setUser(user);
-            order.setAddressShipping(orderRequest.getAddressShipping());
-            order.setFullName(orderRequest.getFullName());
-            order.setPhoneShipping(orderRequest.getPhoneShipping());
-            order.setOrderDate(orderRequest.getOrderDate());
-            order.setNote(orderRequest.getNote());
-            order.setPrice(orderRequest.getPrice());
-            order.setQuantity(orderRequest.getQuantity());
-            order.setStatus("Pending");
-            order.setReason(orderRequest.getReason());
-
             List<OrderDetail> orderDetails = new ArrayList<>();
-
-            for (CartItem cartItem : cart.getItems()) {
+            for (CartItem cartItem : existingCart.getItems()) {
                 OrderDetail orderDetail = new OrderDetail();
-                orderDetail.setOrder(order);
+                orderDetail.setOrder(newOrder);
                 orderDetail.setQuantity(cartItem.getQuantity());
                 orderDetail.setPrice(cartItem.getTotalPrice());
-
-                if (cartItem.getDiamondAdd() != null) {
+                if(cartItem.getDiamondAdd() != null) {
                     Diamond diamond = cartItem.getDiamondAdd();
-                    if (!diamond.isStatus()) {
+                    if(!diamond.isStatus()) {
                         return ResponseEntity.badRequest().body("Diamond is not available for order");
                     }
                     diamond.setStatus(false);
                     diamondService.saveDiamond(diamond);
                     orderDetail.setDiamond(diamond);
                 }
-
                 if (cartItem.getProductCustomize() != null) {
                     ProductCustomize productCustomize = cartItem.getProductCustomize();
                     Diamond diamondInProductCustomize = productCustomize.getDiamond();
@@ -185,222 +188,16 @@ public class OrderController {
                 }
                 orderDetails.add(orderDetail);
             }
-
-            order.setPrice(orderRequest.getPrice());
-
-            // Save the order and order detail
-            Order savedOrder = orderService.saveOrder(order, orderDetails);
-            if (savedOrder == null) {
-                return ResponseEntity.badRequest().body("Error saving order");
+            orderService.saveOrder(newOrder, orderDetails);
+            cartService.clearCart(newOrder.getUser().getUserID());
+            if(orderRequest.getUsedPoint() > 0.0) {
+                pointsServiceImp.createPoints(newOrder.getUser().getUserID(), newOrder.getOrderID(), orderRequest.getUsedPoint());
             }
-
-            // Create points for the order
-            pointsServiceImp.createPoints(savedOrder.getUser().getUserID(),
-                    savedOrder.getOrderID(), orderRequest.getUsedPoint());
-
-            // Clear the user's cart
-            cartService.clearCart(orderRequest.getUserID());
-
-            return ResponseEntity.ok("Create Order successfully");
+            return ResponseEntity.ok().body("Create Order Successfull");
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-//    @PostMapping("/submit_order")
-//    public ResponseEntity<?> submitOrder(@RequestBody OrderRequest orderRequest) {
-//        try {
-//            User user = userService.getUserByID(orderRequest.getUserID());
-//            if (user == null) {
-//                return ResponseEntity.badRequest().body("User does not exist");
-//            }
-//
-//            // Retrieve the user's cart and cart items
-////            Cart cart = cartService.getCart(user.getUserID());
-////            if (cart == null) {
-////                return ResponseEntity.badRequest().body("Cart does not exist");
-////            }
-////
-////            List<CartItem> cartItems = cartItemService.getCartItemsByCartID(cart.getCartId());
-////            if (cartItems == null) {
-////                return ResponseEntity.badRequest().body("Cart is empty");
-////            }
-//
-//            // Create Order
-//            Order order = new Order();
-//            order.setAddressShipping(orderRequest.getAddressShipping());
-//            order.setFullName(orderRequest.getFullName());
-//            order.setOrderDate(orderRequest.getOrderDate());
-//            order.setPhoneShipping(orderRequest.getPhoneShipping());
-//            order.setPrice(orderRequest.getPrice());
-//            order.setQuantity(orderRequest.getQuantity());
-//            order.setStatus("Pending");
-//            order.setReason(orderRequest.getReason());
-//            order.setUser(user);
-//
-//            // Create Order details and calculate total price
-//            List<OrderDetail> orderDetails = new ArrayList<>();
-//            double totalPrice = 0.0;
-//
-//            for (OrderDetailRequest detailRequest : orderRequest.getOrderDetail()) {
-//                // Handle diamondID
-//                if (detailRequest.getDiamondID() != null) {
-//                    Diamond diamond = diamondService.getDiamondByDiamondID(detailRequest.getDiamondID());
-//                    if (diamond == null) {
-//                        return ResponseEntity.badRequest().body("Invalid diamond ID");
-//                    }
-//                    if (!diamond.isStatus()) {
-//                        return ResponseEntity.badRequest().body("Diamond is not available for order");
-//                    }
-//
-//                    OrderDetail diamondOrderDetail = new OrderDetail();
-//                    diamondOrderDetail.setOrder(order);
-//                    diamondOrderDetail.setQuantity(detailRequest.getQuantity());
-//                    diamondOrderDetail.setPrice(detailRequest.getPrice());
-//
-//                    // Update diamond status to false
-//                    diamond.setStatus(false);
-//                    // Save the updated diamond
-//                    diamondService.saveDiamond(diamond);
-//
-//                    diamondOrderDetail.setDiamond(diamond);
-//                    orderDetails.add(diamondOrderDetail);
-//
-//                    totalPrice += detailRequest.getPrice() * detailRequest.getQuantity();
-//                }
-//
-//                // Handle productCustomizeID
-//                if (detailRequest.getProductCustomizeID() != null) {
-//                    OrderDetail productCustomizeOrderDetail = new OrderDetail();
-//                    productCustomizeOrderDetail.setOrder(order);
-//                    productCustomizeOrderDetail.setQuantity(detailRequest.getQuantity());
-//                    productCustomizeOrderDetail.setPrice(detailRequest.getPrice());
-//
-//                    ProductCustomize productCustomize = productCustomizeService
-//                            .getProductCustomizeById(detailRequest.getProductCustomizeID());
-//                    if (productCustomize == null) {
-//                        return ResponseEntity.badRequest().body("Invalid product customize ID");
-//                    }
-//
-//                    // Update diamond status to false in ProductCustomize
-//                    Diamond diamondInProductCustomize = productCustomize.getDiamond();
-//                    if (diamondInProductCustomize != null) {
-//                        diamondInProductCustomize.setStatus(false);
-//                        diamondService.saveDiamond(diamondInProductCustomize);
-//                    }
-//
-//                    productCustomizeOrderDetail.setProductCustomize(productCustomize);
-//                    orderDetails.add(productCustomizeOrderDetail);
-//
-//                    totalPrice += detailRequest.getPrice() * detailRequest.getQuantity();
-//                }
-//            }
-//
-//            // Set the total price for the order
-//            // order.setPrice(totalPrice);
-//            order.setPrice(orderRequest.getPrice());
-//
-//            // Save the Order and order details
-//            Order savedOrder = orderService.saveOrder(order, orderDetails);
-//
-//            // Clear the cart item
-//            //cartItemService.deleteAllByCart(cart);
-//
-//            if (savedOrder == null) {
-//                return ResponseEntity.badRequest().body("Error saving order");
-//            }
-//            pointsServiceImp.createPoints(savedOrder.getUser().getUserID(), savedOrder.getOrderID(), orderRequest.getUsedPoint());
-//
-//            return ResponseEntity.ok("Create Order successfully");
-//        } catch (Exception e) {
-//            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
-//        }
-//    }
-
-//    @PostMapping("/submit_order")
-//    public ResponseEntity<?> submitOrder(@RequestBody OrderRequest orderRequest) {
-//        try {
-//            User user = userService.getUserByID(orderRequest.getUserID());
-//            if (user == null) {
-//                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User does not exist");
-//            }
-//
-//            // Retrieving the user's cart and cart items
-//            Cart cart = cartService.getCart(user.getUserID());
-//            if (cart == null) {
-//                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User cart does not exist");
-//            }
-//
-//            List<CartItem> cartItems = cartItemService.getCartItemsByCartID(cart.getCartId());
-//            if (cartItems.isEmpty()) {
-//                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Cart is empty");
-//            }
-//
-//            // Create Order
-//            Order order = new Order();
-//            order.setAddressShipping(orderRequest.getAddressShipping());
-//            order.setFullName(orderRequest.getFullName());
-//            order.setOrderDate(orderRequest.getOrderDate());
-//            order.setPhoneShipping(orderRequest.getPhoneShipping());
-//            order.setPrice(orderRequest.getPrice());
-//            order.setQuantity(orderRequest.getQuantity());
-//            order.setStatus("Pending");
-//            order.setReason(orderRequest.getReason());
-//            order.setUser(user);
-//
-//            // Create Order details and calculate total price
-//            List<OrderDetail> orderDetails = new ArrayList<>();
-//
-//            for (CartItem cartItem : cartItems) {
-//                OrderDetail orderDetail = new OrderDetail();
-//                orderDetail.setOrder(order);
-//                orderDetail.setQuantity(cartItem.getQuantity());
-//                orderDetail.setPrice(cartItem.getTotalPrice());
-//
-//                if (cartItem.getDiamondAdd() != null) {
-//                    Diamond diamond = cartItem.getDiamondAdd();
-//                    if (!diamond.isStatus()) {
-//                        return ResponseEntity.badRequest().body("Diamond is not available for order");
-//                    }
-//                    // Update diamond status to false
-//                    diamond.setStatus(false);
-//                    diamondService.saveDiamond(diamond);
-//                    orderDetail.setDiamond(diamond);
-//                }
-//
-//                if (cartItem.getProductCustomize() != null) {
-//                    ProductCustomize productCustomize = cartItem.getProductCustomize();
-//                    orderDetail.setProductCustomize(productCustomize);
-//                    if (productCustomize.getDiamond() != null) {
-//                        Diamond diamond = productCustomize.getDiamond();
-//                        if (!diamond.isStatus()) {
-//                            return ResponseEntity.badRequest().body("Diamond is not available for order");
-//                        }
-//                        diamond.setStatus(false);
-//                        diamondService.saveDiamond(diamond);
-//                    }
-//                }
-//
-//                orderDetails.add(orderDetail);
-//            }
-//
-//            order.setPrice(orderRequest.getPrice());
-//
-//            // Save the order and order details
-//            Order savedOrder = orderService.saveOrder(order, orderDetails);
-//
-//            // Clear the cart item
-//            cartItemService.deleteAllByCart(cart);
-//
-//            if (savedOrder == null) {
-//                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error saving order");
-//            }
-//            pointsServiceImp.createPoints(savedOrder.getUser().getUserID(), savedOrder.getOrderID(), orderRequest.getUsedPoint());
-//
-//            return ResponseEntity.ok("Create Order successfully");
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error processing the order: " + e.getMessage());
-//        }
-//    }
 
 }

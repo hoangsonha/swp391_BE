@@ -21,7 +21,11 @@ public class CartItemServiceImp implements CartItemService {
     }
 
     @Override
-    public void deleteAllByCart(Cart cart) {
-        cartItemRepository.deleteByCart(cart);
+    public void deleteByCart(int cart) {
+        List<CartItem> cartItem = cartItemRepository.findByCart(cart);
+        if(cartItem == null) {
+            throw new RuntimeException("CartItem not Found");
+        }
+        cartItemRepository.deleteAll(cartItem);
     }
 }

@@ -18,7 +18,7 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
 
     List<Order> findByUserUserID(int userID);
 
-    @Query("SELECT o FROM order o WHERE o.status =:status ORDER BY o.orderDate DESC")
+    @Query("SELECT o FROM order o WHERE o.status =:status ORDER BY o.orderDate DESC ")
     List<Order> findTopByOrderByOrderDateDesc(@Param("status") String status);
 
     List<Order> findByStatus(String status);

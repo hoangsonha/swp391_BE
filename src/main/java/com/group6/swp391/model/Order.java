@@ -2,6 +2,7 @@ package com.group6.swp391.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.group6.swp391.enums.EnumGenderName;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -65,6 +66,10 @@ public class Order {
     private boolean deleteStatus;
 
     private String note;
+
+    private String email;
+
+    private EnumGenderName gender;
 
     public Order(String addressShipping, String fullName, LocalDateTime orderDate,
                  List<Payment> payment, String phoneShipping, double price, int quantity,

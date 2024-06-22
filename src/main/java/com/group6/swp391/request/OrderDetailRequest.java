@@ -13,9 +13,8 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class OrderDetailRequest {
     int orderDetailID;
-    Order order;
-    String productCustomizeID;
-    String diamondID;
+    int orderId;
+    String ojectId;
     private int quantity;
     private double price;
 }
