@@ -95,16 +95,16 @@ public class OrderController {
             }
             List<NewOrderRespone> newOrders = new ArrayList<>();
             List<OrderRespone> orderRespones = new ArrayList<>();
+            NewOrderRespone newOrderRespone = new NewOrderRespone();
             for (Order order : newestOrder) {
-                NewOrderRespone newOrderRespone = new NewOrderRespone();
                 newOrderRespone.setUserId(order.getUser().getUserID());
                 OrderRespone orderRespone = new OrderRespone();
                 orderRespone.setOrderId(order.getOrderID());
                 orderRespone.setOrderDetail(order.getOrderDetails().get(0));
                 orderRespones.add(orderRespone);
                 newOrderRespone.setOrders(orderRespones);
-                newOrders.add(newOrderRespone);
             }
+            newOrders.add(newOrderRespone);
             return ResponseEntity.ok().body(newOrders);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());

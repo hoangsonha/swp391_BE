@@ -49,7 +49,6 @@ public class Order {
     private LocalDateTime orderDate;
 
     @OneToMany(mappedBy = "order")
-    @JsonIgnoreProperties("order")
     private List<OrderDetail> orderDetails = new ArrayList<>();
 
     @PrePersist
