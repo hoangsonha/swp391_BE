@@ -29,6 +29,9 @@ public class  CartServiceImp implements CartService {
 
     @Override
     public void addCart(int userId, String productId) {
+        if(isDiamondinCart(userId, productId)) {
+            throw new RuntimeException("diamond already existing in your cart");
+        }
         Cart cart = cartRepository.findByUserId(userId);
         if(cart == null) {
             cart = new Cart();
@@ -56,6 +59,17 @@ public class  CartServiceImp implements CartService {
         }
         cart.addItem(cartItem);
         cartRepository.save(cart);
+    }
+
+    public boolean isDiamondinCart(int userId, String productCustomizeId) {
+        String diamondId = extractDiamondId(productCustomizeId);
+        List<CartItem> carts = cartItemRepository.findCartByDupliCateDiamond(userId, diamondId);
+        return !carts.isEmpty();
+    }
+
+    private String extractDiamondId(String productCustomizeId) {
+        String[] parts = productCustomizeId.split("-");
+        return parts.length > 1 ? parts[1] : "";
     }
 
     @Override
