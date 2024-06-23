@@ -15,6 +15,11 @@ public class DeliveryController {
     @Autowired
     OrderService orderService;
 
+    @GetMapping("/pending-delivery")
+    public ResponseEntity<List<Order>> getPendingDeliveryOrders() {
+        List<Order> orders = orderService.getOrdersByStatus("Chờ giao hàng");
+        return ResponseEntity.ok(orders);
+    }
 
 
 
