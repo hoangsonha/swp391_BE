@@ -22,6 +22,8 @@ public class OrderRespone {
 
     private int quantity;
 
+    private String status;
+
     private LocalDateTime orderDate;
 
     @JsonIgnore

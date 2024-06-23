@@ -135,6 +135,7 @@ public class OrderController {
                 orderRespone.setOrderDate(order.getOrderDate());
                 orderRespone.setQuantity(order.getQuantity());
                 orderRespone.setPrice(order.getPrice());
+                orderRespone.setStatus(order.getStatus());
                 orderRespone.setOrderDetail(order.getOrderDetails().get(0));
                 orderRespones.add(orderRespone);
                 newOrderRespone.setOrders(orderRespones);
@@ -164,6 +165,7 @@ public class OrderController {
                 orderRespone.setOrderDate(order.getOrderDate());
                 orderRespone.setQuantity(order.getQuantity());
                 orderRespone.setPrice(order.getPrice());
+                orderRespone.setStatus(order.getStatus());
                 orderRespone.setOrderDetail(order.getOrderDetails().get(0));
                 orderRespones.add(orderRespone);
                 newOrderRespone.setOrders(orderRespones);
