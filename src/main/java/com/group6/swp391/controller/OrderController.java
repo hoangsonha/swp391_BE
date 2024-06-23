@@ -253,7 +253,7 @@ public class OrderController {
             orderService.saveOrder(newOrder, orderDetails);
             cartService.clearCart(newOrder.getUser().getUserID());
             if(orderRequest.getUsedPoint() > 0.0) {
-                pointsServiceImp.getUserPoints(newOrder.getUser().getUserID(), newOrder.getOrderID(), orderRequest.getUsedPoint());
+                pointsServiceImp.getUserPoints(orderRequest.getUserID(), newOrder.getOrderID(), orderRequest.getUsedPoint());
             }
             return ResponseEntity.ok().body("Create Order Successfull");
         } catch (Exception e) {

@@ -24,6 +24,7 @@ public class OrderServiceImp implements OrderService {
 
     @Autowired
     private DiamondServiceImp diamondServiceImp;
+    @Autowired PointsService pointsService;
 
     @Override
     public Order getOrderByOrderID(int orderID) {
@@ -133,7 +134,11 @@ public class OrderServiceImp implements OrderService {
             if (order == null) {
                 throw new RuntimeException("Order not found with id: " + orderID);
             }
+            if (status.equalsIgnoreCase("Chờ giao hàng")) {
+                pointsService.createPoints(order.getUser().getUserID(), orderID);
+            }
             order.setStatus(status);
+            order.setReason(reason);
             return orderRepository.save(order);
         } catch (Exception e) {
             e.printStackTrace();

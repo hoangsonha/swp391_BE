@@ -17,7 +17,6 @@ public class OrderRequest {
     String fullName;
     String phoneShipping;
     double price;
-    int quantity;
     int userID;
     double usedPoint;
     String note;

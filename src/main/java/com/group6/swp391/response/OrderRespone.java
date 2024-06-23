@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.group6.swp391.model.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Setter
 @Getter
 @Data
@@ -29,6 +31,9 @@ public class OrderRespone {
         return order != null ? order.getQuantity() : 0;
     }
 
+    public LocalDateTime getDate() {
+        return order != null ? order.getOrderDate() : null;
+    }
 
     @JsonIgnore
     private OrderDetail orderDetail;
@@ -40,6 +45,4 @@ public class OrderRespone {
     public ProductCustomize getProductCustomize() {
         return orderDetail != null ? orderDetail.getProductCustomize() : null;
     }
-
-
 }
