@@ -124,24 +124,23 @@ public class OrderController {
             if(orders == null) {
                 return ResponseEntity.badRequest().body("Order not found with ID: " + id);
             }
-            List<OrderUserRespone> orderUserResponeList = new ArrayList<>();
-            List<ListOrderUserResphone> orderUserResphoneList = new ArrayList<>();
-            OrderUserRespone orderUserRespone = new OrderUserRespone();
-            for(Order order : orders) {
-                orderUserRespone.setUserId(order.getUser().getUserID());
-                ListOrderUserResphone listOrderUserResphone = new ListOrderUserResphone();
-                listOrderUserResphone.setOrderId(order.getOrderID());
-                listOrderUserResphone.setQuantity(order.getQuantity());
-                listOrderUserResphone.setDiscount(order.getDiscount());
-                listOrderUserResphone.setPrice(order.getPrice());
-                listOrderUserResphone.setOrderDate(order.getOrderDate());
-                listOrderUserResphone.setStatus(order.getStatus());
-                listOrderUserResphone.setOrderDetail(order.getOrderDetails());
-                orderUserResphoneList.add(listOrderUserResphone);
-                orderUserRespone.setOrders(orderUserResphoneList);
+            List<NewOrderRespone> newOrders = new ArrayList<>();
+            List<OrderRespone> orderRespones = new ArrayList<>();
+            NewOrderRespone newOrderRespone = new NewOrderRespone();
+            for (Order order : orders) {
+                newOrderRespone.setUserId(order.getUser().getUserID());
+                OrderRespone orderRespone = new OrderRespone();
+                orderRespone.setOrderId(order.getOrderID());
+                orderRespone.setDiscount(order.getDiscount());
+                orderRespone.setOrderDate(order.getOrderDate());
+                orderRespone.setQuantity(order.getQuantity());
+                orderRespone.setPrice(order.getPrice());
+                orderRespone.setOrderDetail(order.getOrderDetails().get(0));
+                orderRespones.add(orderRespone);
+                newOrderRespone.setOrders(orderRespones);
             }
-            orderUserResponeList.add(orderUserRespone);
-            return ResponseEntity.ok(orderUserRespone);
+            newOrders.add(newOrderRespone);
+            return ResponseEntity.ok(newOrderRespone);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
