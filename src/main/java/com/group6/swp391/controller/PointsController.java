@@ -33,7 +33,7 @@ public class PointsController {
             if(userExisting == null && orderExisting == null) {
                 return ResponseEntity.status(400).body(null);
             }
-            pointsServiceImp.createPoints(userExisting.getUserID(), orderExisting.getOrderID(), pointRequest.getUsedPoint());
+            pointsServiceImp.createPoints(userExisting.getUserID(), orderExisting.getOrderID());
             return ResponseEntity.status(201).build();
         } catch (Exception e) {
             return ResponseEntity.status(500).body(null);

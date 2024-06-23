@@ -1,11 +1,15 @@
 package com.group6.swp391.controller;
 
 import com.group6.swp391.model.*;
+import com.group6.swp391.request.ConfirmOrderRequest;
 import com.group6.swp391.request.OrderRequest;
+import com.group6.swp391.response.ListOrderUserResphone;
 import com.group6.swp391.response.NewOrderRespone;
 import com.group6.swp391.response.OrderRespone;
+import com.group6.swp391.response.OrderUserRespone;
 import com.group6.swp391.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -39,20 +43,40 @@ public class OrderController {
     private OrderDetailService orderDetailService;
 
     @DeleteMapping("/delete_order/{id}")
-    public ResponseEntity<?> deleteOrder(@PathVariable int id) {
+    public ResponseEntity<?> deleteOrder(@PathVariable int id, @RequestBody ConfirmOrderRequest confirmOrderRequest) {
         try {
-            orderService.markOrderAsDeleted(id);
+            orderService.markOrderAsDeleted(id,confirmOrderRequest.getStatus(), confirmOrderRequest.getReason());
             return ResponseEntity.ok("Order deleted successfully with ID: " + id);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
     }
 
+    @PutMapping("/update_status/{order_id}")
+    public ResponseEntity<?> updateStatusOrder(@PathVariable("order_id") int id, @RequestBody ConfirmOrderRequest confirmOrderRequest) {
+        try {
+            Order orderExisting = orderService.getOrderByOrderID(id);
+            if (orderExisting == null) {
+                return ResponseEntity.badRequest().body("Order Not Existing");
+            }
+            orderExisting.setStatus(confirmOrderRequest.getStatus());
+            if(confirmOrderRequest.getReason() != null) {
+                orderExisting.setReason(confirmOrderRequest.getReason());
+            }
+            orderService.updateStatus(orderExisting.getOrderID(), orderExisting.getStatus(), orderExisting.getReason());
+            return ResponseEntity.ok().body("Update Successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    //wait check format JSON,..
     @GetMapping("/all_orders")
     public ResponseEntity<?> getAllOrders() {
         return ResponseEntity.ok(orderService.getAllOrder());
     }
 
+    //wait check format JSON,..
     @GetMapping("/orders_by_diamond/{id}")
     public ResponseEntity<?> getOrdersByDiamondID(@PathVariable String id) {
         try {
@@ -63,6 +87,7 @@ public class OrderController {
         }
     }
 
+    //wait check format JSON,..
     @GetMapping("/{order_id}")
     public ResponseEntity<?> getOrdersById(@PathVariable("order_id") int id) {
         try {
@@ -76,11 +101,47 @@ public class OrderController {
         }
     }
 
+    //wait check format JSON,..
+    @GetMapping("/order_details_by_order/{id}")
+    public ResponseEntity<?> getOrderDetailsByOrderID(@PathVariable int id) {
+        try {
+            List<OrderDetail> orderDetails = orderDetailService.getOrderDetailsByOrderID(id);
+            if (orderDetails.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                        .body("No order details found for order ID: " + id);
+            }
+            return ResponseEntity.ok(orderDetails);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error retrieving order details: " + e.getMessage());
+        }
+    }
+
     @GetMapping("/orders_by_user/{id}")
     public ResponseEntity<?> getOrdersByUserID(@PathVariable int id) {
         try {
             List<Order> orders = orderService.getOrderByUserID(id);
-            return ResponseEntity.ok(orders);
+            if(orders == null) {
+                return ResponseEntity.badRequest().body("Order not found with ID: " + id);
+            }
+            List<OrderUserRespone> orderUserResponeList = new ArrayList<>();
+            List<ListOrderUserResphone> orderUserResphoneList = new ArrayList<>();
+            OrderUserRespone orderUserRespone = new OrderUserRespone();
+            for(Order order : orders) {
+                orderUserRespone.setUserId(order.getUser().getUserID());
+                ListOrderUserResphone listOrderUserResphone = new ListOrderUserResphone();
+                listOrderUserResphone.setOrderId(order.getOrderID());
+                listOrderUserResphone.setQuantity(order.getQuantity());
+                listOrderUserResphone.setDiscount(order.getDiscount());
+                listOrderUserResphone.setPrice(order.getPrice());
+                listOrderUserResphone.setOrderDate(order.getOrderDate());
+                listOrderUserResphone.setStatus(order.getStatus());
+                listOrderUserResphone.setOrderDetail(order.getOrderDetails());
+                orderUserResphoneList.add(listOrderUserResphone);
+                orderUserRespone.setOrders(orderUserResphoneList);
+            }
+            orderUserResponeList.add(orderUserRespone);
+            return ResponseEntity.ok(orderUserRespone);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
@@ -119,24 +180,21 @@ public class OrderController {
                 return ResponseEntity.status(HttpStatus.NO_CONTENT)
                         .body("No orders found with status: " + status);
             }
-            return ResponseEntity.ok(orders);
+            List<NewOrderRespone> newOrders = new ArrayList<>();
+            List<OrderRespone> orderRespones = new ArrayList<>();
+            NewOrderRespone newOrderRespone = new NewOrderRespone();
+            for (Order order : orders) {
+                newOrderRespone.setUserId(order.getUser().getUserID());
+                OrderRespone orderRespone = new OrderRespone();
+                orderRespone.setOrderId(order.getOrderID());
+                orderRespone.setOrderDetail(order.getOrderDetails().get(0));
+                orderRespones.add(orderRespone);
+                newOrderRespone.setOrders(orderRespones);
+            }
+            newOrders.add(newOrderRespone);
+            return ResponseEntity.ok().body(newOrders);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
-        }
-    }
-
-    @GetMapping("/order_details_by_order/{id}")
-    public ResponseEntity<?> getOrderDetailsByOrderID(@PathVariable int id) {
-        try {
-            List<OrderDetail> orderDetails = orderDetailService.getOrderDetailsByOrderID(id);
-            if (orderDetails.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NO_CONTENT)
-                        .body("No order details found for order ID: " + id);
-            }
-            return ResponseEntity.ok(orderDetails);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error retrieving order details: " + e.getMessage());
         }
     }
 
@@ -157,7 +215,7 @@ public class OrderController {
             newOrder.setEmail(orderRequest.getEmail());
             newOrder.setStatus("Chờ xác nhận");
             newOrder.setPrice(orderRequest.getPrice());
-            newOrder.setQuantity(orderRequest.getQuantity());
+            newOrder.setDiscount(orderRequest.getDiscount());
             Cart existingCart = cartService.getCart(existingUser.getUserID());
             if(existingCart == null) {
                 return ResponseEntity.badRequest().body("Cart not found");
@@ -186,12 +244,16 @@ public class OrderController {
                     }
                     orderDetail.setProductCustomize(productCustomize);
                 }
+                newOrder.setQuantity(newOrder.getQuantity() + orderDetail.getQuantity());
                 orderDetails.add(orderDetail);
+            }
+            if (orderDetails.isEmpty() || orderDetails == null) {
+                return ResponseEntity.badRequest().body("Product in order details Empty");
             }
             orderService.saveOrder(newOrder, orderDetails);
             cartService.clearCart(newOrder.getUser().getUserID());
             if(orderRequest.getUsedPoint() > 0.0) {
-                pointsServiceImp.createPoints(newOrder.getUser().getUserID(), newOrder.getOrderID(), orderRequest.getUsedPoint());
+                pointsServiceImp.getUserPoints(newOrder.getUser().getUserID(), newOrder.getOrderID(), orderRequest.getUsedPoint());
             }
             return ResponseEntity.ok().body("Create Order Successfull");
         } catch (Exception e) {

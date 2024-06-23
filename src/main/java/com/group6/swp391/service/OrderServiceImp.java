@@ -41,11 +41,13 @@ public class OrderServiceImp implements OrderService {
     }
 
     @Override
-    public void markOrderAsDeleted(int orderID) {
+    public void markOrderAsDeleted(int orderID,String status,String reason) {
         try {
             Order order = getOrderByOrderID(orderID);
             if (order != null) {
                 order.setDeleteStatus(false);
+                order.setStatus(status);
+                order.setReason(reason);
                 orderRepository.save(order);
             } else {
                 throw new RuntimeException("Order not found with id: " + orderID);
@@ -125,7 +127,7 @@ public class OrderServiceImp implements OrderService {
     }
 
     @Override
-    public Order updateStatus(int orderID, String status) {
+    public Order updateStatus(int orderID, String status, String reason) {
         try {
             Order order = getOrderByOrderID(orderID);
             if (order == null) {

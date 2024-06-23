@@ -14,7 +14,7 @@ public interface OrderService {
 
     List<Order> getAllOrder();
 
-    void markOrderAsDeleted(int orderID);
+    void markOrderAsDeleted(int orderID,String status, String reason);
 
     List<Order> getOrderByDiamondID(String diamondID);
 
@@ -26,5 +26,5 @@ public interface OrderService {
 
     List<Order> getOrdersByStatus(String status);
 
-    Object updateStatus(int orderID, String status);
+    Object updateStatus(int orderID, String status, String reason);
 }

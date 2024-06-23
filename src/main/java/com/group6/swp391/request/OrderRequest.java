@@ -22,5 +22,6 @@ public class OrderRequest {
     double usedPoint;
     String note;
     String email;
+    double discount;
     EnumGenderName gender;
 }

@@ -1,9 +1,7 @@
 package com.group6.swp391.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.group6.swp391.model.Diamond;
-import com.group6.swp391.model.OrderDetail;
-import com.group6.swp391.model.ProductCustomize;
+import com.group6.swp391.model.*;
 import lombok.*;
 
 @Setter
@@ -13,17 +11,27 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderRespone {
-    private int orderId;
+
     @JsonIgnore
-    private OrderDetail orderDetail;
+    private Order order;
+
+    private int orderId;
+
+    public double getDiscount() {
+        return order != null ? order.getDiscount() : 0.0;
+    }
+
+    public double getPrice() {
+        return order != null ? order.getPrice() : 0.0;
+    }
 
     public int getQuantity() {
-        return orderDetail != null ? orderDetail.getQuantity() : 0;
-    }
-    public double getPrice() {
-        return orderDetail != null ? orderDetail.getPrice() : 0.0;
+        return order != null ? order.getQuantity() : 0;
     }
 
+
+    @JsonIgnore
+    private OrderDetail orderDetail;
 
     public Diamond getDiamond() {
         return orderDetail != null ? orderDetail.getDiamond() : null;

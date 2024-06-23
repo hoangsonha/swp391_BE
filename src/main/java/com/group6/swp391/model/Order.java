@@ -68,6 +68,9 @@ public class Order {
 
     private String email;
 
+    private double discount;
+
+    @Column(name= "gender")
     private EnumGenderName gender;
 
     public Order(String addressShipping, String fullName, LocalDateTime orderDate,
