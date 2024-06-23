@@ -14,26 +14,15 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class OrderRespone {
 
-    @JsonIgnore
-    private Order order;
-
     private int orderId;
 
-    public double getDiscount() {
-        return order != null ? order.getDiscount() : 0.0;
-    }
+    private double discount;
 
-    public double getPrice() {
-        return order != null ? order.getPrice() : 0.0;
-    }
+    private double price;
 
-    public int getQuantity() {
-        return order != null ? order.getQuantity() : 0;
-    }
+    private int quantity;
 
-    public LocalDateTime getDate() {
-        return order != null ? order.getOrderDate() : null;
-    }
+    private LocalDateTime orderDate;
 
     @JsonIgnore
     private OrderDetail orderDetail;

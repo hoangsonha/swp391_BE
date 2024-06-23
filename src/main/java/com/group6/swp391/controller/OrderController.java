@@ -161,6 +161,10 @@ public class OrderController {
                 newOrderRespone.setUserId(order.getUser().getUserID());
                 OrderRespone orderRespone = new OrderRespone();
                 orderRespone.setOrderId(order.getOrderID());
+                orderRespone.setDiscount(order.getDiscount());
+                orderRespone.setOrderDate(order.getOrderDate());
+                orderRespone.setQuantity(order.getQuantity());
+                orderRespone.setPrice(order.getPrice());
                 orderRespone.setOrderDetail(order.getOrderDetails().get(0));
                 orderRespones.add(orderRespone);
                 newOrderRespone.setOrders(orderRespones);
