@@ -3,13 +3,10 @@ package com.group6.swp391.controller;
 import com.group6.swp391.model.*;
 import com.group6.swp391.request.ConfirmOrderRequest;
 import com.group6.swp391.request.OrderRequest;
-import com.group6.swp391.response.ListOrderUserResphone;
 import com.group6.swp391.response.NewOrderRespone;
 import com.group6.swp391.response.OrderRespone;
-import com.group6.swp391.response.OrderUserRespone;
 import com.group6.swp391.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -69,6 +66,27 @@ public class OrderController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    //version2 user when order result get status "Failed"
+
+//    @PutMapping("/update_status/{order_id}")
+//    public ResponseEntity<?> updateStatusOrder(@PathVariable("order_id") int id, @RequestBody ConfirmOrderRequest confirmOrderRequest) {
+//        try {
+//            Order orderExisting = orderService.getOrderByOrderID(id);
+//            if (orderExisting == null) {
+//                return ResponseEntity.badRequest().body("Order Not Existing");
+//            }
+//            if(confirmOrderRequest.getStatus().equalsIgnoreCase("Đã giao hàng")) {
+//                orderExisting.setStatus(confirmOrderRequest.getStatus());
+//            } else if(confirmOrderRequest.getStatus().equalsIgnoreCase("Đã hủy")) {
+//                orderExisting.setStatus(confirmOrderRequest.getStatus());
+//                orderExisting.setReason(confirmOrderRequest.getReason());
+//                List<OrderDetail> orderDetails = orderDetailService.getOrderDetailsByOrderID(orderExisting.getOrderID())
+//            }
+//        } catch (Exception e) {
+//            return ResponseEntity.badRequest().body(e.getMessage());
+//        }
+//    }
 
     //wait check format JSON,..
     @GetMapping("/all_orders")
@@ -156,8 +174,8 @@ public class OrderController {
             }
             List<NewOrderRespone> newOrders = new ArrayList<>();
             List<OrderRespone> orderRespones = new ArrayList<>();
-            NewOrderRespone newOrderRespone = new NewOrderRespone();
             for (Order order : newestOrder) {
+                NewOrderRespone newOrderRespone = new NewOrderRespone();
                 newOrderRespone.setUserId(order.getUser().getUserID());
                 OrderRespone orderRespone = new OrderRespone();
                 orderRespone.setOrderId(order.getOrderID());
@@ -169,8 +187,8 @@ public class OrderController {
                 orderRespone.setOrderDetail(order.getOrderDetails().get(0));
                 orderRespones.add(orderRespone);
                 newOrderRespone.setOrders(orderRespones);
+                newOrders.add(newOrderRespone);
             }
-            newOrders.add(newOrderRespone);
             return ResponseEntity.ok().body(newOrders);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
@@ -265,6 +283,4 @@ public class OrderController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
-
 }

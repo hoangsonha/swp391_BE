@@ -119,4 +119,17 @@ public class ProductCustomizeController {
             return ResponseEntity.badRequest().body(null);
         }
     }
+
+//    public ResponseEntity<?> detachedProductCustomize(@PathVariable("productcustmoize_id") String id) {
+//        try {
+//            ProductCustomize productCustomize = productCustomizeServiceImp.getProductCustomizeById(id);
+//            if(productCustomize == null) {
+//                return ResponseEntity.badRequest().body("Productcustomize does not exist");
+//            }
+//            productCustomizeServiceImp.deleteProductCustomize(id);
+//            productServiceImp.updateProduct();
+//        } catch (Exception e) {
+//            return ResponseEntity.badRequest().body(e.getMessage());
+//        }
+//    }
 }
