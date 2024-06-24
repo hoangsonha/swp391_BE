@@ -54,4 +54,8 @@ public interface UserService {
 
     public boolean setNewPassword(String emailOrPhone, String newPassword);
 
+    public boolean sendNotificationEmail() throws MessagingException, UnsupportedEncodingException;
+
+    public boolean sendNotificationEmailHappyBirthDay() throws MessagingException, UnsupportedEncodingException;
+
 }

@@ -47,6 +47,9 @@ public class User extends BaseEntity {
     @Column(name= "year_of_birth")
     private Date yearOfBirth;
 
+    @Column(name = "offline_at")
+    private Date offlineAt;
+
     private int quantityLoginFailed;
 
     @DateTimeFormat(pattern = "YYYY-MM-DD hh:mm:ss")

@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-
 import java.io.UnsupportedEncodingException;
 import java.util.*;
 
@@ -40,6 +39,10 @@ public class UserServiceImp implements UserService {
     @Autowired private RoleService roleService;
     @Autowired private JavaMailSender javaMailSender;
     @Autowired private RestTemplate restTemplate;
+
+
+    // CRUD
+
 
     @Override
     public List<User> findAll(String role) {
@@ -64,6 +67,50 @@ public class UserServiceImp implements UserService {
     public void save(User user) {
         userRepository.save(user);
     }
+
+    @Override
+    public boolean lockedUser(int id) {
+        User user = userRepository.getUserByUserID(id);
+        if(user!=null && user.isNonLocked()) {
+            userRepository.locked(id);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean unLockedUser(int id) {
+        User user = userRepository.getUserByUserID(id);
+        if(user!=null && !user.isNonLocked()) {
+            userRepository.unLocked(id);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean deleteUser(int id) {
+        User user = userRepository.getUserByUserID(id);
+        if (user != null) {
+            userRepository.deleteById(id);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public User getUserByID(int userID) {
+        return userRepository.getUserByUserID(userID);
+    }
+
+    @Override
+    public User getUserByEmail(String email) {
+        return userRepository.getUserByEmail(email);
+    }
+
+
+    // active account
+
 
     @Override
     public boolean sendVerificationEmail(User user, String siteUrl) throws MessagingException, UnsupportedEncodingException {
@@ -143,6 +190,40 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
+    public boolean verifyAccount(String code) {
+        User user = userRepository.getUserByCodeVerify(code);
+        if(user == null || user.isEnabled() || !user.isNonLocked()) {
+            return false;
+        }
+        userRepository.enabled(user.getUserID());
+        return true;
+    }
+
+
+    // function recaptcha
+
+
+    @Override
+    public boolean verifyRecaptcha(String gRecaptchaResponse) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+        map.add("secret", recaptchaSecretKey); // Thay chỗ này sẽ ra error
+        map.add("response", gRecaptchaResponse);
+
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
+
+        RecaptchaResponse response = restTemplate.postForObject(recaptchaUrl, request, RecaptchaResponse.class);
+        // gửi object tới url này rồi trả về đối tượng .class
+        return response.isSuccess();
+    }
+
+
+    // function set password
+
+
+    @Override
     public boolean sendResetPasswordEmail(OTPRequest otpRequest, String siteUrl) throws MessagingException, UnsupportedEncodingException {
         String phoneOrEmail = otpRequest.getEmailOrPhone();
         User user = null;
@@ -214,86 +295,17 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public boolean verifyAccount(String code) {
-        User user = userRepository.getUserByCodeVerify(code);
-        if(user == null || user.isEnabled() || !user.isNonLocked()) {
-            return false;
+    public boolean setNewPassword(String emailOrPhone, String newPassword) {
+        boolean check = false;
+        char c = emailOrPhone.toLowerCase().charAt(0);
+        if(c >= 'a' && c <= 'z') {
+            userRepository.setPasswordByEmail(newPassword, emailOrPhone);
+            check = true;
+        } else if(c >= '0' && c <= '9') {
+            userRepository.setPasswordByPhone(newPassword, emailOrPhone);
+            check = true;
         }
-        userRepository.enabled(user.getUserID());
-        return true;
-    }
-
-    @Override
-    public User getUserByID(int userID) {
-        return userRepository.getUserByUserID(userID);
-    }
-
-    @Override
-    public User getUserByEmail(String email) {
-        return userRepository.getUserByEmail(email);
-    }
-
-    @Override
-    public boolean lockedUser(int id) {
-        User user = userRepository.getUserByUserID(id);
-        if(user!=null && user.isNonLocked()) {
-            userRepository.locked(id);
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean unLockedUser(int id) {
-        User user = userRepository.getUserByUserID(id);
-        if(user!=null && !user.isNonLocked()) {
-            userRepository.unLocked(id);
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean deleteUser(int id) {
-        User user = userRepository.getUserByUserID(id);
-        if (user != null) {
-            userRepository.deleteById(id);
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean verifyRecaptcha(String gRecaptchaResponse) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
-        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        map.add("secret", recaptchaSecretKey); // Thay chỗ này sẽ ra error
-        map.add("response", gRecaptchaResponse);
-
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
-
-        RecaptchaResponse response = restTemplate.postForObject(recaptchaUrl, request, RecaptchaResponse.class);
-        // gửi object tới url này rồi trả về đối tượng .class
-        return response.isSuccess();
-    }
-
-    @Override
-    public boolean sendSMS(OTPRequest otpRequest) {
-        try {
-            String phoneOrEmail = otpRequest.getEmailOrPhone();
-            int type = 2;
-            String otp = generatedNumber();
-            String content = "Dear Customer, Absolutely do not provide this authentication Code to anyone. Enter OTP code" + otp + " to reset the password";
-            String sender = "07eda63bd942bf35";
-            SpeedSMSAPI api = new SpeedSMSAPI("Your token");
-            String result = api.sendSMS(phoneOrEmail, content, type, sender);
-            otpMap.put(phoneOrEmail, otp);
-            return true;
-            } catch (Exception e) {
-                return false;
-            }
+        return check;
     }
 
     public String generatedNumber() {
@@ -329,6 +341,27 @@ public class UserServiceImp implements UserService {
         }
         return true;
     }
+
+    @Override
+    public boolean sendSMS(OTPRequest otpRequest) {
+        try {
+            String phoneOrEmail = otpRequest.getEmailOrPhone();
+            int type = 2;
+            String otp = generatedNumber();
+            String content = "Dear Customer, Absolutely do not provide this authentication Code to anyone. Enter OTP code" + otp + " to reset the password";
+            String sender = "07eda63bd942bf35";
+            SpeedSMSAPI api = new SpeedSMSAPI("Your token");
+            String result = api.sendSMS(phoneOrEmail, content, type, sender);
+            otpMap.put(phoneOrEmail, otp);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+
+    // function login failed
+
 
     @Override
     public void lockedUserByEmail(String email) {
@@ -434,18 +467,221 @@ public class UserServiceImp implements UserService {
         return check;
     }
 
+
+    // function automation send email (System handler)
+
+
     @Override
-    public boolean setNewPassword(String emailOrPhone, String newPassword) {
+    public boolean sendNotificationEmail() throws MessagingException, UnsupportedEncodingException {
         boolean check = false;
-        char c = emailOrPhone.toLowerCase().charAt(0);
-        if(c >= 'a' && c <= 'z') {
-            userRepository.setPasswordByEmail(newPassword, emailOrPhone);
-            check = true;
-        } else if(c >= '0' && c <= '9') {
-            userRepository.setPasswordByPhone(newPassword, emailOrPhone);
+        List<User> lists = userRepository.findAll();
+        for(User user : lists) {
+            if(user.getOfflineAt() != null) {
+                long dayOff = calculateSecondIn5Minute(user);
+                int monthOff = (int)(dayOff / 2_592_000);
+                int yearInDB = getPartDate(user.getOfflineAt(), Calendar.YEAR);
+                int monthInDB = getPartDate(user.getOfflineAt(), Calendar.MONTH);
+                int dayInDB = getPartDate(user.getOfflineAt(), Calendar.DATE);
+                monthInDB += 1;
+                int yearInNow = getPartDate(new Date(), Calendar.YEAR);
+                int monthInNow = getPartDate(new Date(), Calendar.MONTH);
+                int dayInNow = getPartDate(new Date(), Calendar.DATE);
+                monthInNow += 1;
+
+                if(dayInNow == dayInDB) {
+                    if(yearInNow == yearInDB) {
+                        if((monthInNow - monthInDB) == 1) {
+                            check = mailOffline(user, monthOff);
+                        }
+                    } else {
+                        if(monthInNow == 1 && monthInDB == 12) {
+                            check = mailOffline(user, monthOff);
+                        }
+                    }
+                }
+            }
+            }
+        return check;
+    }
+
+    @Override
+    public boolean sendNotificationEmailHappyBirthDay() throws MessagingException, UnsupportedEncodingException {
+        boolean check = false;
+        List<User> lists = userRepository.findAll();
+        for(User user : lists) {
+            if(user.getYearOfBirth() != null) {
+                boolean happy = checkBirthDay(user);
+                if(happy) {
+                    check = emailHappyBirth(user);
+                }
+            }
+        }
+        return check;
+    }
+
+    public boolean mailOffline(User user, int monthOff) throws MessagingException, UnsupportedEncodingException {
+        if(user.getEmail() == null) {
+            return false;
+        }
+        String verifyURL = "feedback";
+        String mai = "<body \n" +
+                "    style=\"font-family: Arial, sans-serif;\n" +
+                "            background-color: #f4f4f4;\n" +
+                "            margin: 0;\n" +
+                "            padding: 0;\n" +
+                "            -webkit-text-size-adjust: none;\n" +
+                "            -ms-text-size-adjust: none;\">\n" +
+                "    <div class=\"email-container\"\n" +
+                "         style=\"max-width: 600px;\n" +
+                "                margin: auto;\n" +
+                "                background-color: #ffffff;\n" +
+                "                padding: 20px;\n" +
+                "                border-radius: 8px;\n" +
+                "                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);\">\n" +
+                "        <div class=\"header\"\n" +
+                "             style=\"text-align: center;\n" +
+                "                    padding-bottom: 20px;\">\n" +
+                "            <img src=\"https://firebasestorage.googleapis.com/v0/b/diamond-6401b.appspot.com/o/Logo.png?alt=media&token=13f983ed-b3e1-4bbe-83b2-a47edf62c6a6\"\n" +
+                "                alt=\"Logo\" style=\"max-width: 300px;\">\n" +
+                "        </div>\n" +
+                "        <div class=\"content\"\n" +
+                "              style=\"text-align: center;\n" +
+                "                    color: #333333;\">\n" +
+                "            <h1\n" +
+                "            style=\"font-size: 24px;\n" +
+                "                margin: 0;\n" +
+                "                padding: 0;\"\n" +
+                "            >Bạn đã không đăng nhập \"" + monthOff + "\" tháng!</h1>\n" +
+                "            <p\n" +
+                "            style=\"font-size: 16px;\n" +
+                "                    line-height: 1.5;\">Welcome to Group 6 Diamond.</p>\n" +
+                "            <p\n" +
+                "            style=\"font-size: 16px;\n" +
+                "                line-height: 1.5;\">Nếu có vấn đề gì không hài lòng hãy phản hồi cho chúng tôi.</p>\n" +
+                "            <a href=\"" + verifyURL + "\" class=\"btn\"\n" +
+                "               style=\"display: inline-block;\n" +
+                "               margin-top: 20px;\n" +
+                "               padding: 15px 25px;\n" +
+                "               font-size: 16px;\n" +
+                "               color: #ffffff;\n" +
+                "               background-color: #f52d56;\n" +
+                "               border-radius: 5px;\n" +
+                "               text-decoration: none;\">Góp ý</a>\n" +
+                "        </div>\n" +
+                "        <div class=\"footer\"\n" +
+                "             style=\"text-align: center;\n" +
+                "             font-size: 14px;\n" +
+                "             color: #777777;\n" +
+                "             margin-top: 20px;\">\n" +
+                "            <p>Copyright &copy; 2019, YOUWORK.TODAY INC</p>\n" +
+                "            <h2>Thank you, have a good day .</h2></br>Group6 Team\n" +
+                "        </div>\n" +
+                "    </div>\n" +
+                "</body>";
+
+        String title = "Chăm sóc khách hàng";
+        String senderName = "Auto notification";
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
+        helper.setFrom("hoangsonhadiggory@gmail.com", senderName);
+        helper.setTo(user.getEmail());
+        helper.setSubject(title);
+        helper.setText(mai, true);
+
+        javaMailSender.send(mimeMessage);
+        return true;
+    }
+
+    public boolean emailHappyBirth(User user) throws MessagingException, UnsupportedEncodingException {
+        if(user.getEmail() == null) {
+            return false;
+        }
+        String mai = "<body \n" +
+                "    style=\"font-family: Arial, sans-serif;\n" +
+                "            background-color: #f4f4f4;\n" +
+                "            margin: 0;\n" +
+                "            padding: 0;\n" +
+                "            -webkit-text-size-adjust: none;\n" +
+                "            -ms-text-size-adjust: none;\">\n" +
+                "    <div class=\"email-container\"\n" +
+                "         style=\"max-width: 600px;\n" +
+                "                margin: auto;\n" +
+                "                background-color: #ffffff;\n" +
+                "                padding: 20px;\n" +
+                "                border-radius: 8px;\n" +
+                "                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);\">\n" +
+                "        <div class=\"header\"\n" +
+                "             style=\"text-align: center;\n" +
+                "                    padding-bottom: 20px;\">\n" +
+                "            <img src=\"https://firebasestorage.googleapis.com/v0/b/diamond-6401b.appspot.com/o/Logo.png?alt=media&token=13f983ed-b3e1-4bbe-83b2-a47edf62c6a6\"\n" +
+                "                alt=\"Logo\" style=\"max-width: 300px;\">\n" +
+                "        </div>\n" +
+                "        <div class=\"content\"\n" +
+                "              style=\"text-align: center;\n" +
+                "                    color: #333333;\">\n" +
+                "            <h1\n" +
+                "            style=\"font-size: 24px;\n" +
+                "                margin: 0;\n" +
+                "                padding: 0;\"\n" +
+                "            >Chúc mừng sinh nhật</h1>\n" +
+                "            <p\n" +
+                "            style=\"font-size: 16px;\n" +
+                "                    line-height: 1.5;\">Welcome to Group 6 Diamond.</p>\n" +
+                "            <p\n" +
+                "            style=\"font-size: 16px;\n" +
+                "                line-height: 1.5;\">Diamond shop xin cảm ơn quý khách đã ủng hộ shop trong thời gian vừa qua và Happy Birth Day</p>\n" +
+                "        </div>\n" +
+                "        <div class=\"footer\"\n" +
+                "             style=\"text-align: center;\n" +
+                "             font-size: 14px;\n" +
+                "             color: #777777;\n" +
+                "             margin-top: 20px;\">\n" +
+                "            <p>Copyright &copy; 2019, YOUWORK.TODAY INC</p>\n" +
+                "            <h2>Thank you, have a good day .</h2></br>Group6 Team\n" +
+                "        </div>\n" +
+                "    </div>\n" +
+                "</body>";
+
+        String title = "Happy Birth Day";
+        String senderName = "Auto notification";
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
+        helper.setFrom("hoangsonhadiggory@gmail.com", senderName);
+        helper.setTo(user.getEmail());
+        helper.setSubject(title);
+        helper.setText(mai, true);
+
+        javaMailSender.send(mimeMessage);
+        return true;
+    }
+
+    public boolean checkBirthDay(User user) {
+        boolean check = false;
+        int yearInDB = getPartDate(user.getYearOfBirth(), Calendar.YEAR);
+        int monthInDB = getPartDate(user.getYearOfBirth(), Calendar.MONTH);
+        int dayInDB = getPartDate(user.getYearOfBirth(), Calendar.DATE);
+        monthInDB += 1;
+        int yearInNow = getPartDate(new Date(), Calendar.YEAR);
+        int monthInNow = getPartDate(new Date(), Calendar.MONTH);
+        int dayInNow = getPartDate(new Date(), Calendar.DATE);
+        monthInNow += 1;
+        if(dayInNow == dayInDB && monthInNow == monthInDB && ((yearInNow - yearInDB) >= 1)) {
             check = true;
         }
         return check;
     }
+
+
+    //1. chạy vào MainSchedule class để start Scheduler bởi @PostConstruct, mỗi Scheduler sẽ có Trigger và JobDetail,
+    //   có thể tạo ra nhiều Scheduler, trong đây là 1 Scheduler với TriggerInfo và String cron để set time
+    //2. chạy đến service để run job bởi @PostConstruct, gọi tới CommonUtils để get ìnformation of Trigger và JobDetail, sau
+    //   đó trả về TriggerInfo và tên class để run và gọi hàm thực thi Scheduler ở MainSchedule class
+    //3. ở hàm thực thi Scheduler ở MainSchedule class sẽ lấy ra Trigger và JobDetail dựa theo tên class và TriggerInfo
+    //   mà đc trả về trước đó từ class JobRun
+    //  trong hàm getJobDetail sẽ map class vào JobData với tên là class và value là TriggerInfo đc truyền vào
+    //  trong hàm getTrigger sẽ thiết lập các thuộc tính của TriggerInfo đc truyền vào
+    //4. chạy vào Job class mà implement interface Job
+
+    // package job là tạo ra các jobs
 
 }
