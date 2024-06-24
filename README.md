@@ -1,10 +1,10 @@
 [![Build and deploy JAR app to Azure Web App - diamondshopgroup6](https://github.com/hoangsonha/swp391_BE/actions/workflows/main_diamondshopgroup6.yml/badge.svg)](https://github.com/hoangsonha/swp391_BE/actions/workflows/main_diamondshopgroup6.yml)
 
 
-![Spring Boot 2.0](https://img.shields.io/badge/Spring%20Boot-2.0-brightgreen.svg)
-![Mysql 5.6](https://img.shields.io/badge/Mysql-5.6-blue.svg)
-![JDK 1.8](https://img.shields.io/badge/JDK-1.8-brightgreen.svg)
-![Maven](https://img.shields.io/badge/Maven-3.5.0-yellowgreen.svg)
+![Spring Boot 3.2.5](https://img.shields.io/badge/Spring%20Boot-3.2.5-brightgreen.svg)
+![Mysql 8.0](https://img.shields.io/badge/Mysql-8.0-blue.svg)
+![JDK 20](https://img.shields.io/badge/JDK-20-brightgreen.svg)
+![Maven](https://img.shields.io/badge/Maven-4.0.0-yellowgreen.svg)
 ![license](https://img.shields.io/crates/l/rustc-serialize/0.3.24.svg)
 
 
