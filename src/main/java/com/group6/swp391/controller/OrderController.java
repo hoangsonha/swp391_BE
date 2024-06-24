@@ -173,10 +173,10 @@ public class OrderController {
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No order found");
             }
             List<NewOrderRespone> newOrders = new ArrayList<>();
-            List<OrderRespone> orderRespones = new ArrayList<>();
             for (Order order : newestOrder) {
                 NewOrderRespone newOrderRespone = new NewOrderRespone();
                 newOrderRespone.setUserId(order.getUser().getUserID());
+                List<OrderRespone> orderRespones = new ArrayList<>();
                 OrderRespone orderRespone = new OrderRespone();
                 orderRespone.setOrderId(order.getOrderID());
                 orderRespone.setDiscount(order.getDiscount());
