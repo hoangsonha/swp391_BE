@@ -53,4 +53,8 @@ public class WarrantyCard {
     @OneToOne
     @JoinColumn(name = "diamond_id", unique = true)
     private Diamond diamond;
+
+    @ManyToOne
+    @JoinColumn(name = "order_id")
+    private Order order;
 }

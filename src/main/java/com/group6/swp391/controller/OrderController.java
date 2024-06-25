@@ -101,6 +101,7 @@ public class OrderController {
                         newWarrantyCard.setDiamond(diamond);
                     }
                 }
+                newWarrantyCard.setOrder(orderExisting);
                 Calendar calendar = Calendar.getInstance();
                 calendar.add(Calendar.YEAR,2);
                 newWarrantyCard.setExpirationDate(calendar.getTime());

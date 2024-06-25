@@ -1,6 +1,8 @@
 package com.group6.swp391.controller;
 
 import com.group6.swp391.model.*;
+import com.group6.swp391.response.WarrantyCardDetailRespone;
+import com.group6.swp391.response.WarrantyCardRespone;
 import com.group6.swp391.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,48 +25,6 @@ public class WarrantyCardController {
     @Autowired
     UserServiceImp userServiceImp;
 
-//    @PostMapping("/create_warrantyCard")
-//    public ResponseEntity<?> createWarrantyCard(@RequestBody WarrantyCardRequest warrantyCardRequest) {
-//        try {
-//            User user = userServiceImp.getUserByID(warrantyCardRequest.getUserId());
-//            if (user == null) {
-//                return ResponseEntity.badRequest().body("User does not exist!");
-//            }
-//            if (warrantyCardRequest.getExpirationDate() == null) {
-//                return ResponseEntity.badRequest().body("Expiration Date is required!");
-//            }
-//            List<String> idList = warrantyCardRequest.getObjectId();
-//            List<String> errors = new ArrayList<>();
-//            for (String itemId : idList) {
-//                WarrantyCard warrantyCard = new WarrantyCard();
-//                warrantyCard.setUser(user);
-//                warrantyCard.setExpirationDate(warrantyCardRequest.getExpirationDate());
-//                if (itemId.startsWith("P") || itemId.startsWith("p")) {
-//                    ProductCustomize productCustomize = productCustomizeServiceImp.getProductCustomizeById(itemId);
-//                    if (productCustomize == null) {
-//                        errors.add("ProductCustomize with ID " + itemId + " does not exist.");
-//                    } else {
-//                        warrantyCard.setProductCustomize(productCustomize);
-//                        warrantyCardServiceImp.createNew(warrantyCard);
-//                    }
-//                } else {
-//                    Diamond diamond = diamondServiceImp.getDiamondByDiamondID(itemId);
-//                    if (diamond == null) {
-//                        errors.add("Diamond with ID " + itemId + " does not exist.");
-//                    } else {
-//                        warrantyCard.setDiamond(diamond);
-//                        warrantyCardServiceImp.createNew(warrantyCard);
-//                    }
-//                }
-//            }
-//            if (!errors.isEmpty()) {
-//                return ResponseEntity.badRequest().body(String.join(", ", errors));
-//            }
-//            return ResponseEntity.ok().body("Warranty cards created successfully!");
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error creating warranty cards: " + e.getMessage());
-//        }
-//    }
 
     @GetMapping("/all_warrantyCard")
     public ResponseEntity<List<WarrantyCard>> getAll() {
@@ -81,27 +41,56 @@ public class WarrantyCardController {
 
     @GetMapping("/warrantyCard_id/{warrantyCard_id}")
     public ResponseEntity<?> getById(@PathVariable("warrantyCard_id") int id) {
-        WarrantyCard warrantyCard = null;
         try {
-            warrantyCard = warrantyCardServiceImp.getById(id);
-            if(warrantyCard == null) {
-                return ResponseEntity.badRequest().body("Warranty Card not found");
+            WarrantyCard wc = warrantyCardServiceImp.getById(id);
+            if (wc == null) {
+                return ResponseEntity.badRequest().body("Warranty card id " + id + " not found");
             }
-            return ResponseEntity.ok(warrantyCard);
+            WarrantyCardDetailRespone wcd = new WarrantyCardDetailRespone();
+            wcd.setUserId(wc.getUserId());
+            wcd.setFullName(wc.getOrder().getFullName());
+            wcd.setEmail(wc.getOrder().getEmail());
+            wcd.setAddress(wc.getOrder().getAddressShipping());
+            wcd.setPhone(wc.getOrder().getPhoneShipping());
+            wcd.setOrderId(wc.getOrder().getOrderID());
+            wcd.setPurchaseDate(wc.getPurchaseDate());
+            wcd.setExpirationDate(wc.getExpirationDate());
+            if(wc.getProductCustomize() != null) {
+                wcd.setObjectId(wc.getProductCustomize().getProdcutCustomId());
+                wcd.setObjectType("ProductCustomize");
+                wcd.setPrice(wc.getProductCustomize().getTotalPrice());
+            } else if(wc.getDiamond() != null) {
+                wcd.setObjectId(wc.getDiamond().getDiamondID());
+                wcd.setObjectType("Diamond");
+                wcd.setPrice(wc.getDiamond().getTotalPrice());
+            }
+            return ResponseEntity.ok(wcd);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
     @GetMapping("/user/{user_id}")
-    public ResponseEntity<List<WarrantyCard>> getByUserId(@PathVariable("user_id") int id) {
-        List<WarrantyCard> warrantyCards = null;
+    public ResponseEntity<?> getByUserId(@PathVariable("user_id") int id) {
         try {
-            warrantyCards = warrantyCardServiceImp.getByUser(id);
-            if(warrantyCards == null) {
-                return ResponseEntity.badRequest().body(null);
+            List<WarrantyCardRespone> warrantyCardRespones = new ArrayList<>();
+            List<WarrantyCard> warrantyCards = warrantyCardServiceImp.getByUser(id);
+            if(warrantyCards == null || warrantyCards.isEmpty()) {
+                return ResponseEntity.ok().body("Not warranty card");
             }
-            return ResponseEntity.ok(warrantyCards);
+            for(WarrantyCard warrantyCard : warrantyCards) {
+                WarrantyCardRespone warrantyCardRespone = new WarrantyCardRespone();
+                warrantyCardRespone.setWarrantyCardID(warrantyCard.getWarrantyCardID());
+                if(warrantyCard.getProductCustomize() != null) {
+                    warrantyCardRespone.setObjectId(warrantyCard.getProductCustomize().getProdcutCustomId());
+                } else if(warrantyCard.getDiamond() != null) {
+                    warrantyCardRespone.setObjectId(warrantyCard.getDiamond().getDiamondID());
+                }
+                warrantyCardRespone.setPurchaseDate(warrantyCard.getPurchaseDate());
+                warrantyCardRespone.setExpirationDate(warrantyCard.getExpirationDate());
+                warrantyCardRespones.add(warrantyCardRespone);
+            }
+            return ResponseEntity.ok(warrantyCardRespones);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
