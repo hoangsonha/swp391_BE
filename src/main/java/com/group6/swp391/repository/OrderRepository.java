@@ -22,4 +22,7 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
     List<Order> findTopByOrderByOrderDateDesc(@Param("status") String status);
 
     List<Order> findByStatus(String status);
+
+    @Query("SELECT o FROM order o WHERE o.user.userID =:userId AND o.status =:status")
+    List<Order> findByUserAndStatus(@Param("userId") int userId, @Param("status") String status);
 }

@@ -128,6 +128,11 @@ public class OrderServiceImp implements OrderService {
     }
 
     @Override
+    public List<Order> getStatusByUser(int userId, String status) {
+        return orderRepository.findByUserAndStatus(userId, status);
+    }
+
+    @Override
     public Order updateStatus(int orderID, String status, String reason) {
         try {
             Order order = getOrderByOrderID(orderID);

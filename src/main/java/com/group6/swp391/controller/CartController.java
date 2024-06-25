@@ -4,6 +4,7 @@ import com.group6.swp391.model.Cart;
 import com.group6.swp391.model.CartItem;
 import com.group6.swp391.repository.CartItemRepository;
 import com.group6.swp391.request.CartRequest;
+import com.group6.swp391.response.CartResponse;
 import com.group6.swp391.service.CartServiceImp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -61,6 +62,20 @@ public class CartController {
             return ResponseEntity.ok().body("Item removed from cart successfully!");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/{user_id}")
+    public ResponseEntity<Integer> getCart(@PathVariable("user_id") int id) {
+        try {
+            Cart exsitingCart = cartServiceImp.getCart(id);
+            if (exsitingCart == null) {
+                return ResponseEntity.badRequest().body(0);
+            }
+            int count = exsitingCart.getItems().size();
+            return ResponseEntity.ok(count);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(0);
         }
     }
 }

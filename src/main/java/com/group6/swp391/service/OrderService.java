@@ -26,5 +26,7 @@ public interface OrderService {
 
     List<Order> getOrdersByStatus(String status);
 
+    List<Order> getStatusByUser(int userId, String status);
+
     Object updateStatus(int orderID, String status, String reason);
 }

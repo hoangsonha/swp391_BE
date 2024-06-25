@@ -49,6 +49,21 @@ public class OrderController {
         }
     }
 
+    @GetMapping("/orderpending/{user_id}")
+    public ResponseEntity<Integer> countOrderPending(@PathVariable("user_id") int id) {
+        try {
+            User userExisting = userService.getUserByID(id);
+            if(userExisting == null) {
+                return ResponseEntity.badRequest().body(0);
+            }
+            List<Order> orders = orderService.getStatusByUser(userExisting.getUserID(), "Chờ xác nhận");
+            int count = orders.size();
+            return ResponseEntity.ok().body(count);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(0);
+        }
+    }
+
     @PutMapping("/update_status/{order_id}")
     public ResponseEntity<?> updateStatusOrder(@PathVariable("order_id") int id, @RequestBody ConfirmOrderRequest confirmOrderRequest) {
         try {
@@ -66,27 +81,6 @@ public class OrderController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
-    //version2 user when order result get status "Failed"
-
-//    @PutMapping("/update_status/{order_id}")
-//    public ResponseEntity<?> updateStatusOrder(@PathVariable("order_id") int id, @RequestBody ConfirmOrderRequest confirmOrderRequest) {
-//        try {
-//            Order orderExisting = orderService.getOrderByOrderID(id);
-//            if (orderExisting == null) {
-//                return ResponseEntity.badRequest().body("Order Not Existing");
-//            }
-//            if(confirmOrderRequest.getStatus().equalsIgnoreCase("Đã giao hàng")) {
-//                orderExisting.setStatus(confirmOrderRequest.getStatus());
-//            } else if(confirmOrderRequest.getStatus().equalsIgnoreCase("Đã hủy")) {
-//                orderExisting.setStatus(confirmOrderRequest.getStatus());
-//                orderExisting.setReason(confirmOrderRequest.getReason());
-//                List<OrderDetail> orderDetails = orderDetailService.getOrderDetailsByOrderID(orderExisting.getOrderID())
-//            }
-//        } catch (Exception e) {
-//            return ResponseEntity.badRequest().body(e.getMessage());
-//        }
-//    }
 
     //wait check format JSON,..
     @GetMapping("/all_orders")

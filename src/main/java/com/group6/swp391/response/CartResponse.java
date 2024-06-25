@@ -1,5 +1,6 @@
 package com.group6.swp391.response;
 
+import com.group6.swp391.model.CartItem;
 import com.group6.swp391.model.Diamond;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,10 +14,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CartResponse {
-    private String status;
-    private String message;
-    private Object cart;
-    private List<Diamond> diamond;
-    private int totalQuantity;
-    private double totalPrice;
+    private int cartId;
+    private int userId;
+    private int quantity;
+    private List<CartItem> cartItems;
 }
