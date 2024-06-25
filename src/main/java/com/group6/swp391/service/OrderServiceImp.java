@@ -1,13 +1,13 @@
 package com.group6.swp391.service;
 
 import com.group6.swp391.model.*;
+import com.group6.swp391.repository.DiamondRepository;
 import com.group6.swp391.repository.OrderDetailRepository;
 import com.group6.swp391.repository.OrderRepository;
 import com.group6.swp391.repository.SizeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,12 +19,15 @@ public class OrderServiceImp implements OrderService {
 
     @Autowired
     private OrderDetailRepository orderDetailRepository;
+
     @Autowired
     private SizeRepository sizeRepository;
 
     @Autowired
     private DiamondServiceImp diamondServiceImp;
     @Autowired PointsService pointsService;
+    @Autowired
+    private DiamondRepository diamondRepository;
 
     @Override
     public Order getOrderByOrderID(int orderID) {
@@ -149,6 +152,53 @@ public class OrderServiceImp implements OrderService {
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    public Order updateStatus(int orderId, String status) {
+        try {
+            Order order = orderRepository.findById(orderId).orElse(null);
+            if (order == null) {
+                throw new RuntimeException("Order does not exist");
+            }
+
+            if (status.equals("Đã hủy")) {
+                for (OrderDetail detail : order.getOrderDetails()) {
+                    Diamond diamond = detail.getDiamond();
+                    if (diamond != null) {
+                        diamond.setStatus(true);
+                        diamondRepository.save(diamond);
+                    }
+                    if (detail.getProductCustomize() != null) {
+                        incrementSizeQuantity(detail.getProductCustomize(), detail.getQuantity());
+                    }
+                }
+            }
+
+            order.setStatus(status);
+            return orderRepository.save(order);
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private void incrementSizeQuantity(ProductCustomize productCustomize, int quantity) {
+        try {
+            Product product = productCustomize.getProduct();
+            int sizeValue = productCustomize.getSize();
+
+            Size size = sizeRepository.findByProductAndSizeValue(product, sizeValue);
+            if (size == null){
+                throw new RuntimeException("Size not found for product: "
+                + product.getProductID() + ", size: " + sizeValue);
+            }
+
+            size.setQuantity(size.getQuantity() + quantity);
+            sizeRepository.save(size);
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+        }
     }
 
 }

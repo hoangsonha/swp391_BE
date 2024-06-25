@@ -3,7 +3,6 @@ package com.group6.swp391.service;
 import com.group6.swp391.model.Order;
 import com.group6.swp391.model.OrderDetail;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 public interface OrderService {
@@ -29,4 +28,6 @@ public interface OrderService {
     List<Order> getStatusByUser(int userId, String status);
 
     Object updateStatus(int orderID, String status, String reason);
+
+    Order updateStatus(int orderID, String status);
 }
