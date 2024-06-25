@@ -1,5 +1,8 @@
 package com.group6.swp391.service;
 
+import com.group6.swp391.model.Diamond;
+import com.group6.swp391.model.ProductCustomize;
+import com.group6.swp391.model.User;
 import com.group6.swp391.model.WarrantyCard;
 import com.group6.swp391.repository.WarrantyCardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +16,9 @@ import java.util.List;
 public class WarrantyCardServiceImp implements WarrantyCardService {
 
     @Autowired private WarrantyCardRepository warrantyCardRepository;
+    @Autowired UserService userService;
+    @Autowired ProductCustomizeService productCustomizeService;
+    @Autowired DiamondService diamondService;
 
 
     @Override
@@ -29,6 +35,7 @@ public class WarrantyCardServiceImp implements WarrantyCardService {
     public WarrantyCard createNew(WarrantyCard warrantyCard) {
         return warrantyCardRepository.save(warrantyCard);
     }
+
 
     @Override
     public void deleteWarrantyCard(int id) {

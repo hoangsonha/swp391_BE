@@ -12,32 +12,22 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/swp391/api/orders")
 public class OrderController {
-
-    @Autowired
-    private OrderService orderService;
-
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private DiamondService diamondService;
-
-    @Autowired
-    PointsServiceImp pointsServiceImp;
-
-    @Autowired
-    private CartService cartService;
-
+    @Autowired OrderService orderService;
+    @Autowired UserService userService;
+    @Autowired DiamondService diamondService;
+    @Autowired CartService cartService;
     @Autowired CartItemService cartItemService;
-
-    @Autowired
-    private OrderDetailService orderDetailService;
+    @Autowired OrderDetailService orderDetailService;
+    @Autowired PointsService pointsService;
+    @Autowired WarrantyCardService warrantyCardService;
+    @Autowired ProductCustomizeService productCustomizeService;
 
     @DeleteMapping("/delete_order/{id}")
     public ResponseEntity<?> deleteOrder(@PathVariable int id, @RequestBody ConfirmOrderRequest confirmOrderRequest) {
@@ -71,9 +61,39 @@ public class OrderController {
             if (orderExisting == null) {
                 return ResponseEntity.badRequest().body("Order Not Existing");
             }
-            orderExisting.setStatus(confirmOrderRequest.getStatus());
-            if(confirmOrderRequest.getReason() != null) {
+                if(confirmOrderRequest.getStatus().equalsIgnoreCase("Chờ giao hàng")) {
+                orderExisting.setStatus(confirmOrderRequest.getStatus());
+                orderExisting.setReason(null);
+                pointsService.createPoints(orderExisting.getUser().getUserID(), orderExisting.getOrderID());
+            } else if(confirmOrderRequest.getStatus().equalsIgnoreCase("Đã giao")) {
+                orderExisting.setStatus(confirmOrderRequest.getStatus());
+                orderExisting.setReason(null);
+                WarrantyCard newWarrantyCard = new WarrantyCard();
+                User existingUser = userService.getUserByID(orderExisting.getUser().getUserID());
+                if(existingUser == null) {
+                    return ResponseEntity.badRequest().body("User Not Null");
+                }
+                newWarrantyCard.setUser(existingUser);
+                List<OrderDetail> orderDetails = orderExisting.getOrderDetails();
+                for(OrderDetail orderDetail : orderDetails) {
+                    ProductCustomize productCustomize = orderDetail.getProductCustomize();
+                    Diamond diamond = orderDetail.getDiamond();
+                    if(orderDetail.getProductCustomize() != null) {
+                        newWarrantyCard.setProductCustomize(productCustomize);
+                    } else if(orderDetail.getDiamond() != null) {
+                        newWarrantyCard.setDiamond(diamond);
+                    }
+                }
+                Calendar calendar = Calendar.getInstance();
+                calendar.add(Calendar.YEAR,2);
+                newWarrantyCard.setExpirationDate(calendar.getTime());
+                warrantyCardService.createNew(newWarrantyCard);
+            } else if (confirmOrderRequest.getStatus().equalsIgnoreCase("Đã hủy")) {
+                orderExisting.setStatus(confirmOrderRequest.getStatus());
                 orderExisting.setReason(confirmOrderRequest.getReason());
+            } else {
+                orderExisting.setStatus(confirmOrderRequest.getStatus());
+                orderExisting.setReason(null);
             }
             orderService.updateStatus(orderExisting.getOrderID(), orderExisting.getStatus(), orderExisting.getReason());
             return ResponseEntity.ok().body("Update Successfully");
@@ -270,7 +290,7 @@ public class OrderController {
             orderService.saveOrder(newOrder, orderDetails);
             cartService.clearCart(newOrder.getUser().getUserID());
             if(orderRequest.getUsedPoint() > 0.0) {
-                pointsServiceImp.getUserPoints(orderRequest.getUserID(), newOrder.getOrderID(), orderRequest.getUsedPoint());
+                pointsService.getUserPoints(orderRequest.getUserID(), newOrder.getOrderID(), orderRequest.getUsedPoint());
             }
             return ResponseEntity.ok().body("Create Order Successfull");
         } catch (Exception e) {

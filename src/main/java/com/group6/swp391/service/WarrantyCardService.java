@@ -2,6 +2,7 @@ package com.group6.swp391.service;
 
 import com.group6.swp391.model.WarrantyCard;
 
+import java.util.Date;
 import java.util.List;
 
 public interface WarrantyCardService {
