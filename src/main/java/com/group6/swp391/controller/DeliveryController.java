@@ -12,8 +12,7 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 public class DeliveryController {
 
-    @Autowired
-    OrderService orderService;
+    @Autowired OrderService orderService;
 
     @GetMapping("/pending_delivery")
     public ResponseEntity<List<Order>> getPendingDeliveryOrders() {
@@ -30,5 +29,4 @@ public class DeliveryController {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
     }
-
 }

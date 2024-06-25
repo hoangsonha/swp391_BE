@@ -39,18 +39,35 @@ public class OrderController {
         }
     }
 
-    @GetMapping("/orderpending/{user_id}")
-    public ResponseEntity<Integer> countOrderPending(@PathVariable("user_id") int id) {
+    @GetMapping("/orderpending")
+    public ResponseEntity<Integer> countOrderPending() {
         try {
-            User userExisting = userService.getUserByID(id);
-            if(userExisting == null) {
-                return ResponseEntity.badRequest().body(0);
+            List<Order> orders = orderService.getNewestOrder("Chờ xác nhận");
+            if(orders == null || orders.isEmpty()) {
+                return ResponseEntity.ok().body(0);
             }
-            List<Order> orders = orderService.getStatusByUser(userExisting.getUserID(), "Chờ xác nhận");
             int count = orders.size();
             return ResponseEntity.ok().body(count);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(0);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(0);
+        }
+    }
+
+    @GetMapping("/orderWaitPay/{user_id}")
+    public ResponseEntity<Integer> countOrderWaitPay(@PathVariable("user_id") int id) {
+        try {
+            User userExisting = userService.getUserByID(id);
+            if(userExisting == null) {
+                return ResponseEntity.badRequest().body(null);
+            }
+            List<Order> orders = orderService.getStatusByUser(userExisting.getUserID(), "Chờ thanh toán");
+            if(orders == null || orders.isEmpty()) {
+                return ResponseEntity.ok().body(0);
+            }
+            int count = orders.size();
+            return ResponseEntity.ok().body(count);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(0);
         }
     }
 
