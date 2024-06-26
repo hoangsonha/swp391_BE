@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,14 +47,14 @@ public class Order {
     private List<Payment> payments = new ArrayList<>();
 
     @Column(name = "order_date", nullable = false)
-    private LocalDateTime orderDate;
+    private LocalDate orderDate;
 
     @OneToMany(mappedBy = "order")
     private List<OrderDetail> orderDetails = new ArrayList<>();
 
     @PrePersist
     protected void onCreate() {
-        orderDate = LocalDateTime.now();
+        orderDate = LocalDate.now();
     }
 
     private double price;
@@ -73,7 +74,7 @@ public class Order {
     @Column(name= "gender")
     private EnumGenderName gender;
 
-    public Order(String addressShipping, String fullName, LocalDateTime orderDate,
+    public Order(String addressShipping, String fullName, LocalDate orderDate,
                  List<Payment> payment, String phoneShipping, double price, int quantity,
                  String status, User user, String note) {
         this.addressShipping = addressShipping;
