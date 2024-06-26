@@ -3,6 +3,9 @@ package com.group6.swp391.service;
 import com.group6.swp391.model.Order;
 import com.group6.swp391.model.OrderDetail;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 public interface OrderService {
@@ -33,5 +36,7 @@ public interface OrderService {
 
     Order updateOrderStatus(int orderID, String status);
 
-    double getByMonth(int month, int year);
+    Double getTotalRevenueInMonth(LocalDate startDate, LocalDate endDate);
+    Double getTotalRevenueInDay(LocalDate date);
+    List<Order> getStatusInMonth(LocalDate startDate, LocalDate endDate, String Status);
 }

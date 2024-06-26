@@ -62,6 +62,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/swp391/api/warrantycards/**").permitAll()
                         .requestMatchers("/swp391/api/swp391/api/points/**").permitAll()
                         .requestMatchers("/swp391/api/orders/**").permitAll()
+                        .requestMatchers("/swp391/api/dashboards/**").permitAll()
                         .requestMatchers("/public/**").permitAll()
                         .requestMatchers("/v3/**").permitAll()
                         .requestMatchers("/swagger-ui/**").permitAll()

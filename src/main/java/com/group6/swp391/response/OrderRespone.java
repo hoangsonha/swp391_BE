@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.group6.swp391.model.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Setter
@@ -24,7 +25,7 @@ public class OrderRespone {
 
     private String status;
 
-    private LocalDateTime orderDate;
+    private LocalDate orderDate;
 
     @JsonIgnore
     private OrderDetail orderDetail;

@@ -8,7 +8,10 @@ import com.group6.swp391.repository.SizeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -190,6 +193,22 @@ public class OrderServiceImp implements OrderService {
         return null;
     }
 
+    @Override
+    public Double getTotalRevenueInMonth(LocalDate startDate, LocalDate endDate) {
+        return orderRepository.findTotalRevenueInMonth(startDate, endDate);
+    }
+
+    @Override
+    public Double getTotalRevenueInDay(LocalDate date) {
+        return orderRepository.findTotalRevenueInDay(date);
+    }
+
+    @Override
+    public List<Order> getStatusInMonth(LocalDate startDate, LocalDate endDate, String status) {
+        return orderRepository.findStatusInMonth(startDate, endDate, status);
+    }
+
+
     public void incrementSizeQuantity(ProductCustomize productCustomize, int quantity) {
         try {
             Product product = productCustomize.getProduct();
@@ -208,9 +227,9 @@ public class OrderServiceImp implements OrderService {
     }
 
 
-    //Phần code phục vụ dashboard
-    @Override
-    public double getByMonth(int month, int year) {
-        return 0;
-    }
+//    //Phần code phục vụ dashboard
+//    @Override
+//    public double getByMonth(int month, int year) {
+//        return 0;
+//    }
 }
