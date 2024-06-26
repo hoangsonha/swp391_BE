@@ -87,27 +87,29 @@ public class OrderController {
             } else if(confirmOrderRequest.getStatus().equalsIgnoreCase("Đã giao")) {
                 orderExisting.setStatus(confirmOrderRequest.getStatus());
                 orderExisting.setReason(null);
-                WarrantyCard newWarrantyCard = new WarrantyCard();
-                User existingUser = userService.getUserByID(orderExisting.getUser().getUserID());
-                if(existingUser == null) {
-                    return ResponseEntity.badRequest().body("User Not Null");
-                }
-                newWarrantyCard.setUser(existingUser);
+
                 List<OrderDetail> orderDetails = orderExisting.getOrderDetails();
                 for(OrderDetail orderDetail : orderDetails) {
+                    WarrantyCard newWarrantyCard = new WarrantyCard();
+                    User existingUser = userService.getUserByID(orderExisting.getUser().getUserID());
+                    if(existingUser == null) {
+                        return ResponseEntity.badRequest().body("User Not Null");
+                    }
+                    newWarrantyCard.setUser(existingUser);
+                    newWarrantyCard.setOrder(orderExisting);
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.add(Calendar.YEAR,2);
+                    newWarrantyCard.setExpirationDate(calendar.getTime());
                     ProductCustomize productCustomize = orderDetail.getProductCustomize();
                     Diamond diamond = orderDetail.getDiamond();
                     if(orderDetail.getProductCustomize() != null) {
                         newWarrantyCard.setProductCustomize(productCustomize);
+                        warrantyCardService.createNew(newWarrantyCard);
                     } else if(orderDetail.getDiamond() != null) {
                         newWarrantyCard.setDiamond(diamond);
+                        warrantyCardService.createNew(newWarrantyCard);
                     }
                 }
-                newWarrantyCard.setOrder(orderExisting);
-                Calendar calendar = Calendar.getInstance();
-                calendar.add(Calendar.YEAR,2);
-                newWarrantyCard.setExpirationDate(calendar.getTime());
-                warrantyCardService.createNew(newWarrantyCard);
             } else if (confirmOrderRequest.getStatus().equalsIgnoreCase("Đã hủy") || confirmOrderRequest.getStatus().equalsIgnoreCase("Hoàn Trả")) {
                 orderExisting.setStatus(confirmOrderRequest.getStatus());
                 orderExisting.setReason(confirmOrderRequest.getReason());
