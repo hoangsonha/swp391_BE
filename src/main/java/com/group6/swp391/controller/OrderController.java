@@ -26,6 +26,10 @@ public class OrderController {
     @Autowired PointsService pointsService;
     @Autowired WarrantyCardService warrantyCardService;
     @Autowired ProductCustomizeService productCustomizeService;
+    @Autowired
+    private ProductCustomizeServiceImp productCustomizeServiceImp;
+    @Autowired
+    private OrderServiceImp orderServiceImp;
 
     @DeleteMapping("/delete_order/{id}")
     public ResponseEntity<?> deleteOrder(@PathVariable int id, @RequestBody ConfirmOrderRequest confirmOrderRequest) {
@@ -76,7 +80,7 @@ public class OrderController {
             if (orderExisting == null) {
                 return ResponseEntity.badRequest().body("Order Not Existing");
             }
-                if(confirmOrderRequest.getStatus().equalsIgnoreCase("Chờ giao hàng")) {
+            if(confirmOrderRequest.getStatus().equalsIgnoreCase("Chờ giao hàng")) {
                 orderExisting.setStatus(confirmOrderRequest.getStatus());
                 orderExisting.setReason(null);
                 pointsService.createPoints(orderExisting.getUser().getUserID(), orderExisting.getOrderID());
@@ -104,9 +108,16 @@ public class OrderController {
                 calendar.add(Calendar.YEAR,2);
                 newWarrantyCard.setExpirationDate(calendar.getTime());
                 warrantyCardService.createNew(newWarrantyCard);
-            } else if (confirmOrderRequest.getStatus().equalsIgnoreCase("Đã hủy")) {
+            } else if (confirmOrderRequest.getStatus().equalsIgnoreCase("Đã hủy") || confirmOrderRequest.getStatus().equalsIgnoreCase("Hoàn Trả")) {
                 orderExisting.setStatus(confirmOrderRequest.getStatus());
                 orderExisting.setReason(confirmOrderRequest.getReason());
+                for(OrderDetail orderDetail: orderExisting.getOrderDetails()) {
+                    if(orderDetail.getProductCustomize() != null) {
+                        orderServiceImp.incrementSizeQuantity(orderDetail.getProductCustomize(), orderDetail.getQuantity());
+                    } else if(orderDetail.getDiamond() != null) {
+                        diamondService.updateStatus(orderDetail.getDiamond().getDiamondID());
+                    }
+                }
             } else {
                 orderExisting.setStatus(confirmOrderRequest.getStatus());
                 orderExisting.setReason(null);
@@ -231,7 +242,6 @@ public class OrderController {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
     }
-
 
     @GetMapping("/orders_by_status/{status}")
     public ResponseEntity<?> getOrdersByStatus(@PathVariable String status) {

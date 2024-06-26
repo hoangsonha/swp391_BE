@@ -26,4 +26,6 @@ public interface DiamondService {
 
     Diamond saveDiamond(Diamond diamond);
 
+    void updateStatus(String diamondId);
+
 }

@@ -183,7 +183,7 @@ public class OrderServiceImp implements OrderService {
         return null;
     }
 
-    private void incrementSizeQuantity(ProductCustomize productCustomize, int quantity) {
+    public void incrementSizeQuantity(ProductCustomize productCustomize, int quantity) {
         try {
             Product product = productCustomize.getProduct();
             int sizeValue = productCustomize.getSize();
@@ -193,7 +193,6 @@ public class OrderServiceImp implements OrderService {
                 throw new RuntimeException("Size not found for product: "
                 + product.getProductID() + ", size: " + sizeValue);
             }
-
             size.setQuantity(size.getQuantity() + quantity);
             sizeRepository.save(size);
         } catch (RuntimeException e) {
@@ -201,4 +200,10 @@ public class OrderServiceImp implements OrderService {
         }
     }
 
+
+    //Phần code phục vụ dashboard
+    @Override
+    public double getByMonth(int month, int year) {
+        return 0;
+    }
 }

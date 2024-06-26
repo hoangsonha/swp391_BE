@@ -12,6 +12,11 @@ import java.util.List;
 public class ProductCustomizeServiceImp implements ProductCustomizeService {
     @Autowired
     ProductCustomizeRepository productCustomizeRepository;
+    @Autowired
+    private ProductServiceImp productServiceImp;
+    @Autowired
+    private DiamondServiceImp diamondServiceImp;
+
     @Override
     public ProductCustomize createProductCustomize(ProductCustomize productCustomize) {
         return productCustomizeRepository.save(productCustomize);
@@ -52,4 +57,5 @@ public class ProductCustomizeServiceImp implements ProductCustomizeService {
     public List<ProductCustomize> getAllProductCustomize() {
         return productCustomizeRepository.findAll();
     }
+
 }

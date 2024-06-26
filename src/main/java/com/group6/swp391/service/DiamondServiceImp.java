@@ -302,5 +302,19 @@ public class DiamondServiceImp implements DiamondService {
         return diamondRepository.save(diamond);
     }
 
+    @Override
+    public void updateStatus(String diamondId) {
+        try {
+            Diamond diamondExisting = diamondRepository.getDiamondByDiamondID(diamondId);
+            if(diamondExisting == null) {
+                throw new RuntimeException("Diamond " + diamondId + " not found");
+            }
+            diamondExisting.setStatus(true);
+            diamondRepository.save(diamondExisting);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
 }
