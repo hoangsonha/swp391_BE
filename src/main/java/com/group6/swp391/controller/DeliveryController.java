@@ -1,11 +1,18 @@
 package com.group6.swp391.controller;
 
 import com.group6.swp391.model.Order;
+import com.group6.swp391.response.NewOrderRespone;
+import com.group6.swp391.response.OrderRespone;
 import com.group6.swp391.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/swp391/api/delivery")
@@ -37,6 +44,43 @@ public class DeliveryController {
         try {
             Order order = orderService.updateOrderStatus(orderID, status, reason);
             return ResponseEntity.ok(order);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/newest_order")
+    public ResponseEntity<?> getNewestOrder() {
+        try {
+            List<Order> newestOrders = orderService.getNewestOrder("Chờ giao hàng");
+            if (newestOrders == null || newestOrders.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No order found");
+            }
+
+            Map<Integer, List<OrderRespone>> userOrdersMap = new HashMap<>();
+
+            for (Order order : newestOrders) {
+                int userId = order.getUser().getUserID();
+                OrderRespone orderRespone = new OrderRespone();
+                orderRespone.setOrderId(order.getOrderID());
+                orderRespone.setDiscount(order.getDiscount());
+                orderRespone.setOrderDate(order.getOrderDate());
+                orderRespone.setQuantity(order.getQuantity());
+                orderRespone.setPrice(order.getPrice());
+                orderRespone.setStatus(order.getStatus());
+                orderRespone.setOrderDetail(order.getOrderDetails().get(0));
+                userOrdersMap.computeIfAbsent(userId, k -> new ArrayList<>()).add(orderRespone);
+            }
+
+            List<NewOrderRespone> newOrders = new ArrayList<>();
+            for (Map.Entry<Integer, List<OrderRespone>> entry : userOrdersMap.entrySet()) {
+                NewOrderRespone newOrderRespone = new NewOrderRespone();
+                newOrderRespone.setUserId(entry.getKey());
+                newOrderRespone.setOrders(entry.getValue());
+                newOrders.add(newOrderRespone);
+            }
+
+            return ResponseEntity.ok().body(newOrders);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
