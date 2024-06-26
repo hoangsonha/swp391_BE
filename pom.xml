@@ -86,7 +86,6 @@
             <version>1.14.0</version>
         </dependency>
 
-
         <!-- https://mvnrepository.com/artifact/com.google.api-client/google-api-client -->
         <dependency>
             <groupId>com.google.api-client</groupId>

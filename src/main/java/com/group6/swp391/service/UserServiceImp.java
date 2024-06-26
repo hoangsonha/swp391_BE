@@ -346,11 +346,11 @@ public class UserServiceImp implements UserService {
     public boolean sendSMS(OTPRequest otpRequest) {
         try {
             String phoneOrEmail = otpRequest.getEmailOrPhone();
-            int type = 2;
+            int type = 5;
             String otp = generatedNumber();
             String content = "Dear Customer, Absolutely do not provide this authentication Code to anyone. Enter OTP code" + otp + " to reset the password";
             String sender = "07eda63bd942bf35";
-            SpeedSMSAPI api = new SpeedSMSAPI("Your token");
+            SpeedSMSAPI api = new SpeedSMSAPI("BeAfmVJjdj9CrAhg7oU49zqMpC9pV83r");
             String result = api.sendSMS(phoneOrEmail, content, type, sender);
             otpMap.put(phoneOrEmail, otp);
             return true;

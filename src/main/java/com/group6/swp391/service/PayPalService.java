@@ -1,16 +1,15 @@
 package com.group6.swp391.service;
 
 import com.group6.swp391.cart.Cart;
-import com.group6.swp391.model.Diamond;
+import com.group6.swp391.model.*;
 import com.group6.swp391.model.Order;
-import com.group6.swp391.model.Product;
-import com.group6.swp391.model.User;
 import com.group6.swp391.paypal.EnumPayPalPaymentMethod;
 import com.group6.swp391.paypal.EnumPaypalPaymentIntent;
 
 
 import com.group6.swp391.repository.UserRepository;
 import com.paypal.api.payments.*;
+import com.paypal.api.payments.Payment;
 import com.paypal.base.rest.APIContext;
 import com.paypal.base.rest.PayPalRESTException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +28,7 @@ public class PayPalService {
                                  EnumPayPalPaymentMethod method,
                                  EnumPaypalPaymentIntent intent,
                                  String cancelURL,
-                                 String successURL, Cart cart) throws PayPalRESTException {
+                                 String successURL) throws PayPalRESTException {
         Amount amount = new Amount();
         double priceToUSD = priceToUSD(order.getPrice());
         amount.setCurrency("USD");
@@ -70,40 +69,40 @@ public class PayPalService {
         payer.setPayerInfo(payerInfo);
         payer.setStatus("VERIFIED");
 
-        ItemList itemList = new ItemList();
-        List<Item> items = new ArrayList<>();
+//        ItemList itemList = new ItemList();
+//        List<Item> items = new ArrayList<>();
 
-        if(cart != null) {
-            List<Object> lists = cart.getTotalGoodsInCart();
-            if(lists != null) {
-                for(Object good : lists) {
-                    if(good instanceof Product) {
-                        Product product = (Product) good;
-                        Item item = new Item();
-                        item.setCurrency("USD");
-                        item.setName(product.getProductName());
-                        double priceProduct = priceToUSD(product.getTotalPrice());
-                        item.setPrice((String.format("%.2f", priceProduct)));
-                        item.setTax("0.00");
-                        item.setQuantity("1");
-                        items.add(item);
-                    } else if(good instanceof Diamond) {
-                        Diamond diamond = (Diamond) good;
-                        Item item = new Item();
-                        item.setCurrency("USD");
-                        item.setName(diamond.getDiamondName());
-                        double priceDiamond = priceToUSD(diamond.getTotalPrice());
-                        item.setPrice((String.format("%.2f", priceDiamond)));
-                        item.setTax("0.00");
-                        item.setQuantity("1");
-                        items.add(item);
-                    }
-                }
-            }
-        }
+//        if(cart != null) {
+//            List<Object> lists = cart.getTotalGoodsInCart();
+//            if(lists != null) {
+//                for(Object good : lists) {
+//                    if(good instanceof Product) {
+//                        Product product = (Product) good;
+//                        Item item = new Item();
+//                        item.setCurrency("USD");
+//                        item.setName(product.getProductName());
+//                        double priceProduct = priceToUSD(product.getTotalPrice());
+//                        item.setPrice((String.format("%.2f", priceProduct)));
+//                        item.setTax("0.00");
+//                        item.setQuantity("1");
+//                        items.add(item);
+//                    } else if(good instanceof Diamond) {
+//                        Diamond diamond = (Diamond) good;
+//                        Item item = new Item();
+//                        item.setCurrency("USD");
+//                        item.setName(diamond.getDiamondName());
+//                        double priceDiamond = priceToUSD(diamond.getTotalPrice());
+//                        item.setPrice((String.format("%.2f", priceDiamond)));
+//                        item.setTax("0.00");
+//                        item.setQuantity("1");
+//                        items.add(item);
+//                    }
+//                }
+//            }
+//        }
 
-        itemList.setItems(items);
-        transaction.setItemList(itemList);
+//        itemList.setItems(items);
+//        transaction.setItemList(itemList);
 
         List<Transaction> transactions = new ArrayList<>();
         transactions.add(transaction);
