@@ -11,9 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
+import java.util.*;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -200,15 +198,15 @@ public class OrderController {
     @GetMapping("/newest_order")
     public ResponseEntity<?> getNewestOrder() {
         try {
-            List<Order> newestOrder = orderService.getNewestOrder("Chờ xác nhận");
-            if (newestOrder == null) {
+            List<Order> newestOrders = orderService.getNewestOrder("Chờ xác nhận");
+            if (newestOrders == null || newestOrders.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No order found");
             }
-            List<NewOrderRespone> newOrders = new ArrayList<>();
-            for (Order order : newestOrder) {
-                NewOrderRespone newOrderRespone = new NewOrderRespone();
-                newOrderRespone.setUserId(order.getUser().getUserID());
-                List<OrderRespone> orderRespones = new ArrayList<>();
+
+            Map<Integer, List<OrderRespone>> userOrdersMap = new HashMap<>();
+
+            for (Order order : newestOrders) {
+                int userId = order.getUser().getUserID();
                 OrderRespone orderRespone = new OrderRespone();
                 orderRespone.setOrderId(order.getOrderID());
                 orderRespone.setDiscount(order.getDiscount());
@@ -217,36 +215,55 @@ public class OrderController {
                 orderRespone.setPrice(order.getPrice());
                 orderRespone.setStatus(order.getStatus());
                 orderRespone.setOrderDetail(order.getOrderDetails().get(0));
-                orderRespones.add(orderRespone);
-                newOrderRespone.setOrders(orderRespones);
+                userOrdersMap.computeIfAbsent(userId, k -> new ArrayList<>()).add(orderRespone);
+            }
+
+            List<NewOrderRespone> newOrders = new ArrayList<>();
+            for (Map.Entry<Integer, List<OrderRespone>> entry : userOrdersMap.entrySet()) {
+                NewOrderRespone newOrderRespone = new NewOrderRespone();
+                newOrderRespone.setUserId(entry.getKey());
+                newOrderRespone.setOrders(entry.getValue());
                 newOrders.add(newOrderRespone);
             }
+
             return ResponseEntity.ok().body(newOrders);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
     }
 
+
     @GetMapping("/orders_by_status/{status}")
     public ResponseEntity<?> getOrdersByStatus(@PathVariable String status) {
         try {
-            List<Order> orders = orderService.getOrdersByStatus(status);
-            if (orders.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NO_CONTENT)
-                        .body("No orders found with status: " + status);
+            List<Order> newestOrders = orderService.getOrdersByStatus(status);
+            if (newestOrders == null || newestOrders.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No order found");
             }
-            List<NewOrderRespone> newOrders = new ArrayList<>();
-            List<OrderRespone> orderRespones = new ArrayList<>();
-            NewOrderRespone newOrderRespone = new NewOrderRespone();
-            for (Order order : orders) {
-                newOrderRespone.setUserId(order.getUser().getUserID());
+
+            Map<Integer, List<OrderRespone>> userOrdersMap = new HashMap<>();
+
+            for (Order order : newestOrders) {
+                int userId = order.getUser().getUserID();
                 OrderRespone orderRespone = new OrderRespone();
                 orderRespone.setOrderId(order.getOrderID());
+                orderRespone.setDiscount(order.getDiscount());
+                orderRespone.setOrderDate(order.getOrderDate());
+                orderRespone.setQuantity(order.getQuantity());
+                orderRespone.setPrice(order.getPrice());
+                orderRespone.setStatus(order.getStatus());
                 orderRespone.setOrderDetail(order.getOrderDetails().get(0));
-                orderRespones.add(orderRespone);
-                newOrderRespone.setOrders(orderRespones);
+                userOrdersMap.computeIfAbsent(userId, k -> new ArrayList<>()).add(orderRespone);
             }
-            newOrders.add(newOrderRespone);
+
+            List<NewOrderRespone> newOrders = new ArrayList<>();
+            for (Map.Entry<Integer, List<OrderRespone>> entry : userOrdersMap.entrySet()) {
+                NewOrderRespone newOrderRespone = new NewOrderRespone();
+                newOrderRespone.setUserId(entry.getKey());
+                newOrderRespone.setOrders(entry.getValue());
+                newOrders.add(newOrderRespone);
+            }
+
             return ResponseEntity.ok().body(newOrders);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
