@@ -13,9 +13,10 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PaymentRequest {
-    Order order;
-    Date paymentDate;
-    double paymentAmount;
-    double totalAmount;
-    double remainingAmount;
+//    Order order;
+//    Date paymentDate;
+//    double paymentAmount;
+//    double totalAmount;
+//    double remainingAmount;
+    private String orderId;
 }

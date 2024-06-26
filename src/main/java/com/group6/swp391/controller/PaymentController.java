@@ -5,6 +5,7 @@ import com.group6.swp391.model.Order;
 import com.group6.swp391.paypal.EnumPayPalPaymentMethod;
 import com.group6.swp391.paypal.EnumPaypalPaymentIntent;
 import com.group6.swp391.request.OrderRequest;
+import com.group6.swp391.request.PaymentRequest;
 import com.group6.swp391.response.PaymentResponse;
 import com.group6.swp391.service.*;
 import com.paypal.api.payments.Links;
@@ -36,12 +37,12 @@ public class PaymentController {
 
 
     @PostMapping("/checkout")
-    public ResponseEntity<PaymentResponse> pay(HttpServletRequest request, @RequestBody OrderRequest orderRequest, HttpSession session) {
+    public ResponseEntity<PaymentResponse> pay(HttpServletRequest request, @RequestBody PaymentRequest orderRequest, HttpSession session) {
         String cancelUrl = request.getRequestURL().toString().replace(request.getServletPath(), "") + "/pay/cancel";
         String successUrl = request.getRequestURL().toString().replace(request.getServletPath(), "") + "/pay/information";
 
         try {
-            Order order = orderService.getOrderByOrderID(Integer.parseInt(orderRequest.getOrderID()));
+            Order order = orderService.getOrderByOrderID(Integer.parseInt(orderRequest.getOrderId()));
             if(order != null) {
 //                Cart cart = (Cart) session.getAttribute("CART");
 //                Order order = new Order(orderRequest.getAddressShipping(), orderRequest.getFullName(), orderRequest.getOrderDate(),

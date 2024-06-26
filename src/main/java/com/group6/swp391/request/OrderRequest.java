@@ -13,5 +13,14 @@ import java.util.List;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class OrderRequest {
-    String orderID;
+    String addressShipping;
+    String fullName;
+    String phoneShipping;
+    double price;
+    int userID;
+    double usedPoint;
+    String note;
+    String email;
+    double discount;
+    EnumGenderName gender;
 }
