@@ -29,7 +29,9 @@ public interface OrderService {
 
     Object updateStatus(int orderID, String status, String reason);
 
-    Order updateStatus(int orderID, String status);
+    Order updateOrderStatus(int orderID, String status, String reason);
+
+    Order updateOrderStatus(int orderID, String status);
 
     double getByMonth(int month, int year);
 }

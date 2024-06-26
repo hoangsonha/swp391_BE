@@ -155,9 +155,14 @@ public class OrderServiceImp implements OrderService {
     }
 
     @Override
-    public Order updateStatus(int orderId, String status) {
+    public Order updateOrderStatus(int orderID, String status) {
+        return updateOrderStatus(orderID, status, null);
+    }
+
+    @Override
+    public Order updateOrderStatus(int orderID, String status, String reason) {
         try {
-            Order order = orderRepository.findById(orderId).orElse(null);
+            Order order = orderRepository.findById(orderID).orElse(null);
             if (order == null) {
                 throw new RuntimeException("Order does not exist");
             }
@@ -174,7 +179,9 @@ public class OrderServiceImp implements OrderService {
                     }
                 }
             }
-
+            if (reason != null) {
+                order.setReason(reason);
+            }
             order.setStatus(status);
             return orderRepository.save(order);
         } catch (RuntimeException e) {

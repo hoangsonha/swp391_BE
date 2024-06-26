@@ -20,10 +20,22 @@ public class DeliveryController {
         return ResponseEntity.ok(orders);
     }
 
-    @PutMapping("/update_order_status")
-    public ResponseEntity<?> updateOrderStatus(@RequestParam int orderID, @RequestParam String status) {
+    @PutMapping("start_delivery")
+    public ResponseEntity<?> startDelivery(@RequestParam int orderID) {
         try {
-            Order order = orderService.updateStatus(orderID, status);
+            Order order = orderService.updateOrderStatus(orderID, "Đang giao hàng");
+            return ResponseEntity.ok(order);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
+
+    @PutMapping("/update_order_status")
+    public ResponseEntity<?> updateOrderStatus(@RequestParam int orderID,
+                                               @RequestParam String status,
+                                               @RequestParam(required = false) String reason) {
+        try {
+            Order order = orderService.updateOrderStatus(orderID, status, reason);
             return ResponseEntity.ok(order);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
