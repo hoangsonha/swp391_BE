@@ -19,4 +19,5 @@ public class PaymentRequest {
 //    double totalAmount;
 //    double remainingAmount;
     private String orderId;
+    private String paymentMethod;
 }
