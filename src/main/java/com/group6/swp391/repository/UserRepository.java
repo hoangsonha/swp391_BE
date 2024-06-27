@@ -4,9 +4,11 @@ import com.group6.swp391.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Repository
@@ -52,4 +54,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     public void setTimeLoginFailed(Date date, String email);
     
     public User getUserByPhone(String phone);
+
+    @Query("SELECT COUNT(u) FROM user u WHERE u.createAt BETWEEN :startDate AND :endDate")
+    Long countNewUsersByDateRange(@Param("startDate") LocalDate startDate,
+                                  @Param("endDate") LocalDate endDate);
 }
