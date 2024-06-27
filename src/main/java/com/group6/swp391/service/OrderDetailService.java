@@ -7,6 +7,4 @@ import java.util.List;
 
 public interface OrderDetailService {
     List<OrderDetail> getOrderDetailsByOrderID(int orderID);
-    Double getTotalDiamondRevenueInMonth(LocalDate startDate, LocalDate endDate);
-    Double getTotalProductcustomizeRevenueInMonth(LocalDate startDate, LocalDate endDate);
 }

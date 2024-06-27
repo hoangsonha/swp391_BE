@@ -25,7 +25,7 @@ public class OrderRespone {
 
     private String status;
 
-    private LocalDate orderDate;
+    private LocalDateTime orderDate;
 
     @JsonIgnore
     private OrderDetail orderDetail;

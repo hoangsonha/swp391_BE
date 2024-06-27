@@ -20,14 +20,4 @@ public class OrderDetailServiceImp implements OrderDetailService {
     public List<OrderDetail> getOrderDetailsByOrderID(int orderID) {
         return orderDetailRepository.findByOrderOrderID(orderID);
     }
-
-    @Override
-    public Double getTotalDiamondRevenueInMonth(LocalDate startDate, LocalDate endDate) {
-        return orderDetailRepository.findTotalDiamondRevenueInMonth(startDate, endDate);
-    }
-
-    @Override
-    public Double getTotalProductcustomizeRevenueInMonth(LocalDate startDate, LocalDate endDate) {
-        return orderDetailRepository.findTotalProductCustomizeRevenueInMonth(startDate, endDate);
-    }
 }

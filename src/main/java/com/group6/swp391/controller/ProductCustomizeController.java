@@ -6,6 +6,7 @@ import com.group6.swp391.model.ProductCustomize;
 import com.group6.swp391.repository.DiamondRepository;
 import com.group6.swp391.request.CustomizeRequest;
 import com.group6.swp391.service.*;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

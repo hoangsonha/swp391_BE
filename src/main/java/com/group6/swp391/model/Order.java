@@ -12,6 +12,7 @@ import lombok.Setter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Entity(name = "order")
@@ -47,14 +48,14 @@ public class Order {
     private List<Payment> payments = new ArrayList<>();
 
     @Column(name = "order_date", nullable = false)
-    private LocalDate orderDate;
+    private LocalDateTime orderDate;
 
     @OneToMany(mappedBy = "order")
     private List<OrderDetail> orderDetails = new ArrayList<>();
 
     @PrePersist
     protected void onCreate() {
-        orderDate = LocalDate.now();
+        orderDate = LocalDateTime.now();
     }
 
     private double price;
@@ -74,7 +75,7 @@ public class Order {
     @Column(name= "gender")
     private EnumGenderName gender;
 
-    public Order(String addressShipping, String fullName, LocalDate orderDate,
+    public Order(String addressShipping, String fullName, LocalDateTime orderDate,
                  List<Payment> payment, String phoneShipping, double price, int quantity,
                  String status, User user, String note) {
         this.addressShipping = addressShipping;

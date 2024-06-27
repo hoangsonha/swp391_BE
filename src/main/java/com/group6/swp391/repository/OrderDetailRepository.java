@@ -15,17 +15,20 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, Intege
 
     List<OrderDetail> findByOrderOrderID(int orderID);
 
+
     @Query("SELECT SUM(od.price * od.quantity) " +
             "FROM OrderDetail od " +
             "WHERE od.diamond IS NOT NULL " +
-            "AND od.order.orderDate BETWEEN :startDate AND :endDate " +
+            "AND MONTH(od.order.orderDate) = :month " +
+            "AND YEAR(od.order.orderDate) = :year " +
             "AND od.order.status = 'Đã giao'")
-    Double findTotalDiamondRevenueInMonth(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+    Double findTotalDiamondRevenueInMonth(@Param("month") int month, @Param("year") int year);
 
     @Query("SELECT SUM(od.price * od.quantity) " +
             "FROM OrderDetail od " +
             "WHERE od.productCustomize IS NOT NULL " +
-            "AND od.order.orderDate BETWEEN :startDate AND :endDate " +
+            "AND MONTH(od.order.orderDate) = :month " +
+            "AND YEAR(od.order.orderDate) = :year " +
             "AND od.order.status = 'Đã giao'")
-    Double findTotalProductCustomizeRevenueInMonth(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+    Double findTotalProductCustomizeRevenueInMonth(@Param("month") int month, @Param("year") int year);
 }

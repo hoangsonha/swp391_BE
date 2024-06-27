@@ -193,22 +193,6 @@ public class OrderServiceImp implements OrderService {
         return null;
     }
 
-    @Override
-    public Double getTotalRevenueInMonth(LocalDate startDate, LocalDate endDate) {
-        return orderRepository.findTotalRevenueInMonth(startDate, endDate);
-    }
-
-    @Override
-    public Double getTotalRevenueInDay(LocalDate date) {
-        return orderRepository.findTotalRevenueInDay(date);
-    }
-
-    @Override
-    public List<Order> getStatusInMonth(LocalDate startDate, LocalDate endDate, String status) {
-        return orderRepository.findStatusInMonth(startDate, endDate, status);
-    }
-
-
     public void incrementSizeQuantity(ProductCustomize productCustomize, int quantity) {
         try {
             Product product = productCustomize.getProduct();

@@ -36,7 +36,4 @@ public interface OrderService {
 
     Order updateOrderStatus(int orderID, String status);
 
-    Double getTotalRevenueInMonth(LocalDate startDate, LocalDate endDate);
-    Double getTotalRevenueInDay(LocalDate date);
-    List<Order> getStatusInMonth(LocalDate startDate, LocalDate endDate, String Status);
 }
