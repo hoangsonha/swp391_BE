@@ -22,6 +22,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import java.io.UnsupportedEncodingException;
+import java.time.LocalDate;
 import java.util.*;
 
 @Service
@@ -683,5 +684,10 @@ public class UserServiceImp implements UserService {
     //4. chạy vào Job class mà implement interface Job
 
     // package job là tạo ra các jobs
+
+    @Override
+    public Long getNewUserCount(LocalDate startDate, LocalDate endDate) {
+        return userRepository.countNewUsersByDateRange(startDate, endDate);
+    }
 
 }

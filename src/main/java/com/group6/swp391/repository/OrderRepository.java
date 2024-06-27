@@ -1,15 +1,12 @@
 package com.group6.swp391.repository;
 
 import com.group6.swp391.model.Order;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -35,4 +32,11 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
 
     @Query("SELECT o FROM order o WHERE o.orderDate BETWEEN :startDate AND :endDate AND o.status =:status")
     List<Order> findStatusInMonth(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate, @Param("status") String status);
+
+    @Query("SELECT o FROM order o WHERE o.orderDate BETWEEN :startDate AND :endDate")
+    List<Order> findOrdersByDateRange(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+
+    @Query("SELECT COUNT(o) FROM order o WHERE o.orderDate BETWEEN :startDate AND :endDate")
+    Long countOrdersByDateRange(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+
 }

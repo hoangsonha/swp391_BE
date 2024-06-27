@@ -4,8 +4,6 @@ import com.group6.swp391.model.Order;
 import com.group6.swp391.model.OrderDetail;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 public interface OrderService {
@@ -16,7 +14,7 @@ public interface OrderService {
 
     List<Order> getAllOrder();
 
-    void markOrderAsDeleted(int orderID,String status, String reason);
+    void markOrderAsDeleted(int orderID, String status, String reason);
 
     List<Order> getOrderByDiamondID(String diamondID);
 
@@ -37,6 +35,14 @@ public interface OrderService {
     Order updateOrderStatus(int orderID, String status);
 
     Double getTotalRevenueInMonth(LocalDate startDate, LocalDate endDate);
+
     Double getTotalRevenueInDay(LocalDate date);
+
     List<Order> getStatusInMonth(LocalDate startDate, LocalDate endDate, String Status);
+
+    Double getAverageOrderValue(LocalDate startDate, LocalDate endDate);
+
+    Long getOrderCount(LocalDate startDate, LocalDate localDate);
+
+
 }

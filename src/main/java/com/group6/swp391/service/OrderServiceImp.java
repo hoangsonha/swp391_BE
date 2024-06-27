@@ -9,9 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -208,6 +206,20 @@ public class OrderServiceImp implements OrderService {
         return orderRepository.findStatusInMonth(startDate, endDate, status);
     }
 
+    @Override
+    public Double getAverageOrderValue(LocalDate startDate, LocalDate endDate) {
+        List<Order> orders = orderRepository.findOrdersByDateRange(startDate, endDate);
+        if (orders == null || orders.isEmpty()) {
+            return 0.0;
+        }
+        double totalRevenue = orders.stream().mapToDouble(Order::getPrice).sum();
+        return totalRevenue / orders.size();
+    }
+
+    @Override
+    public Long getOrderCount(LocalDate startDate, LocalDate endDate) {
+        return orderRepository.countOrdersByDateRange(startDate, endDate);
+    }
 
     public void incrementSizeQuantity(ProductCustomize productCustomize, int quantity) {
         try {

@@ -7,6 +7,7 @@ import com.group6.swp391.request.OTPValidationRequest;
 import jakarta.mail.MessagingException;
 
 import java.io.UnsupportedEncodingException;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -57,5 +58,7 @@ public interface UserService {
     public boolean sendNotificationEmail() throws MessagingException, UnsupportedEncodingException;
 
     public boolean sendNotificationEmailHappyBirthDay() throws MessagingException, UnsupportedEncodingException;
+
+    public Long getNewUserCount(LocalDate startDate, LocalDate endDate);
 
 }

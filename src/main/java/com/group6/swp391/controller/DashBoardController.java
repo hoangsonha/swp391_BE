@@ -3,6 +3,7 @@ package com.group6.swp391.controller;
 import com.group6.swp391.model.Order;
 import com.group6.swp391.service.OrderDetailService;
 import com.group6.swp391.service.OrderService;
+import com.group6.swp391.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -16,9 +17,15 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 @RequestMapping("/swp391/api/dashboards")
 public class DashBoardController {
-    @Autowired OrderService orderService;
+
+    @Autowired
+    OrderService orderService;
+
     @Autowired
     OrderDetailService orderDetailService;
+
+    @Autowired
+    UserService userService;
 
     // tong doanh thu tren thang.
     @GetMapping("/total_revenue")
@@ -113,6 +120,43 @@ public class DashBoardController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(0);
         }
     }
+
+    @GetMapping("/average_order_value")
+    public ResponseEntity<?> getAverageOrderValue(
+            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+        try {
+            Double averageOrderValue = orderService.getAverageOrderValue(startDate, endDate);
+            return ResponseEntity.ok().body(averageOrderValue);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/order_count")
+    public ResponseEntity<?> getOrderCount(
+            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+        try {
+            Long orderCount = orderService.getOrderCount(startDate, endDate);
+            return ResponseEntity.ok().body(orderCount);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/new_customers")
+    public ResponseEntity<?> getNewCustomers(
+            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+        try {
+            Long newUserCount = userService.getNewUserCount(startDate, endDate);
+            return ResponseEntity.ok().body(newUserCount);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
+
 
 
 }
