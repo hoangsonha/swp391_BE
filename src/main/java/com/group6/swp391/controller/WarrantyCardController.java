@@ -124,4 +124,17 @@ public class WarrantyCardController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @GetMapping("/product/{product_id}")
+    public ResponseEntity<?> getByProductId(@PathVariable("product_id") String id) {
+        try {
+            List<WarrantyCard> warrantyCards = warrantyCardServiceImp.findByProductID(id);
+            if (warrantyCards == null || warrantyCards.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
+            return ResponseEntity.ok(warrantyCards);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+        }
+    }
 }

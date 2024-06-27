@@ -1,8 +1,5 @@
 package com.group6.swp391.service;
 
-import com.group6.swp391.model.Diamond;
-import com.group6.swp391.model.ProductCustomize;
-import com.group6.swp391.model.User;
 import com.group6.swp391.model.WarrantyCard;
 import com.group6.swp391.repository.WarrantyCardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,5 +55,10 @@ public class WarrantyCardServiceImp implements WarrantyCardService {
     @Override
     public List<WarrantyCard> getAll() {
         return warrantyCardRepository.findAll();
+    }
+
+    @Override
+    public List<WarrantyCard> findByProductID(String productID) {
+        return warrantyCardRepository.findByProductCustomize_ProdcutCustomIdOrDiamond_DiamondID(productID, productID);
     }
 }

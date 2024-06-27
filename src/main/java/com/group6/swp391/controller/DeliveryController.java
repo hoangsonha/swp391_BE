@@ -27,7 +27,7 @@ public class DeliveryController {
         return ResponseEntity.ok(orders);
     }
 
-    @PutMapping("start_delivery")
+    @PutMapping("/start_delivery")
     public ResponseEntity<?> startDelivery(@RequestParam int orderID) {
         try {
             Order order = orderService.updateOrderStatus(orderID, "Đang giao hàng");
