@@ -15,7 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -30,37 +29,35 @@ public class PaymentController {
     @Autowired private PayPalService payPalService;
     @Autowired private OrderService orderService;
     @Autowired private PaymentService paymentService;
-    @Autowired private UserService userService;
     @Autowired private VNPayService vnPayService;
 
     @PostMapping("/checkout")
-    public ResponseEntity<PaymentResponse> pay(@RequestBody PaymentRequest paymentRequest, HttpSession session, HttpServletResponse response) {
+    public String pay(@RequestBody PaymentRequest paymentRequest, HttpSession session, HttpServletRequest request) {
         try {
             session.setAttribute("orderID", paymentRequest.getOrderId());
             if(paymentRequest.getPaymentMethod().equals("paypal")) {
-                response.sendRedirect("/paypal");
-                return ResponseEntity.status(HttpStatus.OK).body(new PaymentResponse("Success", "Redirect payment page success", null, null));
+                String href = request.getRequestURL().toString().replace(request.getServletPath(), "") + "/payment/paypal";
+                return "redirect:" + href;
+
             } else if(paymentRequest.getPaymentMethod().equals("vnpay")) {
-                response.sendRedirect("/vnpay");
-                return ResponseEntity.status(HttpStatus.OK).body(new PaymentResponse("Success", "Redirect payment page success", null, null));
+                String href = request.getRequestURL().toString().replace(request.getServletPath(), "") + "/payment/vnpay";
+                return "redirect:" + href;
             }
         } catch(Exception e) {
             log.error(e.getMessage());
         }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PaymentResponse("Failed", "Redirect payment page failed", null, null));
+        return "Checkout failed";
     }
 
     @PostMapping("/paypal")
     public String payByPayPal(HttpServletRequest request, HttpSession session) {
-        String cancelUrl = request.getRequestURL().toString().replace(request.getServletPath(), "") + "/paypal/cancel";
-        String successUrl = request.getRequestURL().toString().replace(request.getServletPath(), "") + "/paypal/information";
+        String cancelUrl = request.getRequestURL().toString().replace(request.getServletPath(), "") + "/payment/paypal/cancel";
+        String successUrl = request.getRequestURL().toString().replace(request.getServletPath(), "") + "/payment/paypal/success";
         try {
             Order order = orderService.getOrderByOrderID(Integer.parseInt((String) session.getAttribute("orderID")));
-            session.setAttribute("orderID", null);
             if(order != null) {
                 Payment payment = payPalService.createPayment(order, EnumPayPalPaymentMethod.paypal,
                         EnumPaypalPaymentIntent.sale, cancelUrl, successUrl);
-                session.setAttribute("payment", payment);
                 for(Links links : payment.getLinks()) {
                     if(links.getRel().equals("approval_url")) {
                         return "redirect:" + links.getHref();
@@ -70,7 +67,7 @@ public class PaymentController {
         } catch(Exception e) {
             log.error(e.getMessage());
         }
-        return null;
+        return "Payment failed";
     }
 
     @PostMapping("/paypal/cancel")
@@ -78,37 +75,36 @@ public class PaymentController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PaymentResponse("Failed", "Payment page failed", null, null));
     }
 
-    @PostMapping("/paypal/information")
-    public ResponseEntity<PaymentResponse> payByPayPalInformation(HttpSession session, Model model, @RequestParam("paymentId") String paymentID, @RequestParam("PayerID") String payerID, HttpServletResponse response) {
-        try {
-            Payment payment = (Payment) session.getAttribute("payment");
-            model.addAttribute("paymentId", paymentID);
-            model.addAttribute("PayerId", payerID);
-            response.sendRedirect("/paypal/success");
-            return ResponseEntity.status(HttpStatus.OK).body(new PaymentResponse("Success", "Payment page information successfully", payment, "/pay/success"));
-        } catch(Exception e) {
-            log.error("ERROR at payment : {}", e.toString());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PaymentResponse("Failed", "Payment information failed", null, null));
-        }
-    }
+//    @GetMapping("/paypal/information")
+//    public String payByPayPalInformation(HttpSession session, Model model, @RequestParam("paymentId") String paymentID, @RequestParam("PayerID") String payerID, HttpServletRequest request) {
+//        try {
+//            Payment payment = (Payment) session.getAttribute("payment");
+//            model.addAttribute("paymentId", paymentID);
+//            model.addAttribute("PayerId", payerID);
+//            String href = request.getRequestURL().toString().replace(request.getServletPath(), "") + "/payment/paypal/success";
+//           return "redirect:" + href;
+//        } catch(Exception e) {
+//            log.error("ERROR at payment : {}", e.toString());
+//
+//        }
+//        return "Payment failed";
+//    }
 
     @PostMapping("/paypal/success")
     public ResponseEntity<PaymentResponse> paySuccess(HttpSession session, @RequestParam("paymentId") String paymentID, @RequestParam("PayerID") String payerID) {
-        Payment payment_order = (Payment) session.getAttribute("payment");
-        int orderID = Integer.parseInt(payment_order.getId());
+        int orderID = Integer.parseInt((String) session.getAttribute("orderID"));
         Order order = orderService.getOrderByOrderID(orderID);
-
         try {
             Payment payment = payPalService.executePayment(paymentID, payerID);
             if(payment.getState().equals("approved")) {
                 double paymentAmount = Double.parseDouble(payment.getTransactions().get(0).getAmount().getTotal());
                 SimpleDateFormat spm = new SimpleDateFormat("yyyy-MM-dd");
                 Date date = spm.parse(payment.getCreateTime());
-                com.group6.swp391.model.Payment payment1 = new com.group6.swp391.model.Payment(paymentAmount, order, date, (order.getPrice() - paymentAmount) , order.getPrice());
+                com.group6.swp391.model.Payment payment1 = new com.group6.swp391.model.Payment(paymentAmount, order, date, ((order.getPrice() / 25000) - paymentAmount) , order.getPrice());
                 paymentService.save(payment1);
-
-                // if customer pay all price successfully, in here add order detail
-
+                order.setStatus("Chờ giao hàng");
+                orderService.save(order);
+                session.setAttribute("orderID", null);
                 return ResponseEntity.status(HttpStatus.OK).body(new PaymentResponse("Success", "Payment successfully", payment, null));
             }
         } catch (Exception e) {
@@ -121,16 +117,17 @@ public class PaymentController {
     @GetMapping("/vnpay")
     public void vnpay(HttpServletRequest req, HttpSession session, HttpServletResponse response) throws IOException {
         Order order = orderService.getOrderByOrderID(Integer.parseInt((String) session.getAttribute("orderID")));
-        session.setAttribute("orderID", null);
         long amount = (long) (order.getPrice()*100);
-        String s = vnPayService.getVNPay(amount, req);
+        long haveToPay = (amount / 25000);
+        String s = vnPayService.getVNPay(haveToPay, req);
         response.sendRedirect(s);
     }
 
     @GetMapping("/vnpaysuccess")
-    public ResponseEntity<PaymentResponse> vnpaysuccess(HttpServletRequest req) {
+    public ResponseEntity<PaymentResponse> vnpaysuccess(HttpServletRequest req, HttpSession session) {
         String maloi = req.getParameter("vnp_ResponseCode");
         if(maloi.equals("00")) {
+            session.setAttribute("orderID", null);
             return ResponseEntity.status(HttpStatus.OK).body(new PaymentResponse("Success", "Payment successfully", null, null));
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PaymentResponse("Failed", "Payment failed", null, null));
