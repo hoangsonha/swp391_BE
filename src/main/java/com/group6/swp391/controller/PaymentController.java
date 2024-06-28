@@ -37,10 +37,12 @@ public class PaymentController {
     public ResponseEntity<PaymentResponse> pay(@RequestBody PaymentRequest paymentRequest, HttpSession session, HttpServletResponse response) {
         try {
             session.setAttribute("orderID", paymentRequest.getOrderId());
-            if(paymentRequest.equals("paypal")) {
+            if(paymentRequest.getPaymentMethod().equals("paypal")) {
                 response.sendRedirect("/paypal");
-            } else if(paymentRequest.equals("vnpay")) {
+                return ResponseEntity.status(HttpStatus.OK).body(new PaymentResponse("Success", "Redirect payment page success", null, null));
+            } else if(paymentRequest.getPaymentMethod().equals("vnpay")) {
                 response.sendRedirect("/vnpay");
+                return ResponseEntity.status(HttpStatus.OK).body(new PaymentResponse("Success", "Redirect payment page success", null, null));
             }
         } catch(Exception e) {
             log.error(e.getMessage());

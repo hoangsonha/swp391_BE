@@ -57,7 +57,7 @@ public class PayPalService {
         payerInfo.setFirstName(user.getFirstName());
         payerInfo.setLastName(user.getLastName());
         payerInfo.setCountryCode("VN");
-        payerInfo.setPhone(user.getPhone());
+//        payerInfo.setPhone(user.getPhone());
         payerInfo.setPayerId(String.valueOf(user.getUserID()));
 
         ShippingAddress shippingAddress = new ShippingAddress();
