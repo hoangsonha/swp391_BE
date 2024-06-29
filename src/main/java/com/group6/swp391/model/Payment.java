@@ -23,13 +23,19 @@ public class Payment {
     private Date paymentDate;
     private double paymentAmount; //50%
     private double totalAmount;
-    private double remainingAmount; 
+    private double remainingAmount;
+    private String transactionId;
+    private String methodPayment;
+    private String status;
 
-    public Payment(double paymentAmount, Order order, Date paymentDate, double remainingAmount, double totalAmount) {
+    public Payment(double paymentAmount, Order order, Date paymentDate, double remainingAmount, double totalAmount, String transactionId, String methodPayment, String status) {
         this.paymentAmount = paymentAmount;
         this.order = order;
         this.paymentDate = paymentDate;
         this.remainingAmount = remainingAmount;
         this.totalAmount = totalAmount;
+        this.transactionId = transactionId;
+        this.methodPayment = methodPayment;
+        this.status = status;
     }
 }

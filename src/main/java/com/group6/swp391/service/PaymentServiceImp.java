@@ -1,5 +1,6 @@
 package com.group6.swp391.service;
 
+import com.group6.swp391.model.Order;
 import com.group6.swp391.model.Payment;
 import com.group6.swp391.repository.PaymentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +20,13 @@ public class PaymentServiceImp implements PaymentService {
     }
 
     @Override
-    public Payment createPayment(Payment payment) {
-        return paymentRepository.save(payment);
+    public List<Payment> findAll() {
+        return paymentRepository.findAll();
     }
 
     @Override
-    public void createPayments(List<Payment> payments) {
-        paymentRepository.saveAll(payments);
+    public Payment findByOrder(Order order) {
+        return paymentRepository.findPaymentByOrder(order);
     }
+
 }

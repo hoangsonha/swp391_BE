@@ -10,6 +10,7 @@ import com.paypal.api.payments.Payment;
 import com.paypal.base.rest.APIContext;
 import com.paypal.base.rest.PayPalRESTException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
@@ -124,9 +125,53 @@ public class PayPalService {
         PaymentExecution paymentExecution = new PaymentExecution();
         paymentExecution.setPayerId(payerID);
         return payment.execute(apiContext, paymentExecution);
+
     }
 
     public double priceToUSD(double price) {
         return (price / 25450);
     }
+
+    public boolean cancelPayment(String transactionId, double amount, String currency) {
+        try {
+            Amount refundAmount = new Amount();
+            refundAmount.setCurrency(currency);
+            refundAmount.setTotal(String.valueOf(amount));
+
+            Refund refund = new Refund();
+            refund.setAmount(refundAmount);
+
+            // Thực hiện hoàn tiền
+            Sale sale = new Sale();
+            sale.setId(transactionId);
+
+            refund = sale.refund(apiContext, refund);
+
+            if ("completed".equalsIgnoreCase(refund.getState())) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (PayPalRESTException e) {
+            return false;
+        }
+    }
+
+//    public void cancelPayment(String saleID) throws PayPalRESTException {
+//        String transactionId = saleID;
+//
+//        double amount = 10000.00;
+//        String currency = "USD";
+//        RefundRequest refundRequest = new RefundRequest();
+//        Amount refundAmount = new Amount();
+//        refundAmount.setCurrency(currency);
+//        refundAmount.setTotal(String.valueOf(amount));
+//        refundRequest.setAmount(refundAmount);
+//        Sale sale = new Sale();
+//        sale.setId(transactionId);
+//        Refund refund = sale.refund(apiContext, refundRequest);
+//
+//        System.out.println("Trạng thái hoàn tiền: " + refund.getState());
+//    }
+
 }

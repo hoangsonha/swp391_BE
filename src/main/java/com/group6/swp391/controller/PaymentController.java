@@ -3,11 +3,14 @@ package com.group6.swp391.controller;
 import com.group6.swp391.model.Order;
 import com.group6.swp391.paypal.EnumPayPalPaymentMethod;
 import com.group6.swp391.paypal.EnumPaypalPaymentIntent;
+import com.group6.swp391.request.CancelPaymentRequest;
 import com.group6.swp391.request.PaymentRequest;
 import com.group6.swp391.response.PaymentResponse;
 import com.group6.swp391.service.*;
+import com.paypal.api.payments.Amount;
 import com.paypal.api.payments.Links;
 import com.paypal.api.payments.Payment;
+import com.paypal.base.rest.PayPalRESTException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -21,6 +24,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -101,8 +105,9 @@ public class PaymentController {
                     double paymentAmount = Double.parseDouble(payment.getTransactions().get(0).getAmount().getTotal());
                     SimpleDateFormat spm = new SimpleDateFormat("yyyy-MM-dd");
                     Date date = spm.parse(payment.getCreateTime());
+                    String transactionID = payment.getTransactions().get(0).getRelatedResources().get(0).getSale().getId();
                     double remain = (order.getPrice() - (paymentAmount * 25455));
-                    com.group6.swp391.model.Payment payment1 = new com.group6.swp391.model.Payment((paymentAmount * 25455), order, date, remain, order.getPrice());
+                    com.group6.swp391.model.Payment payment1 = new com.group6.swp391.model.Payment((paymentAmount * 25455), order, date, remain, order.getPrice(), transactionID, "Paypal", "Thanh toán thành công");
                     paymentService.save(payment1);
                     order.setStatus("Chờ giao hàng");
                     orderService.save(order);
@@ -146,7 +151,7 @@ public class PaymentController {
                 SimpleDateFormat spm = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
                 Date date = spm.parse(dateParse);
                 double remain = (order.getPrice() - (Double.parseDouble(amount) * 25000));
-                com.group6.swp391.model.Payment payment1 = new com.group6.swp391.model.Payment((Double.parseDouble(amount) * 25000), order, date, remain, order.getPrice());
+                com.group6.swp391.model.Payment payment1 = new com.group6.swp391.model.Payment((Double.parseDouble(amount) * 25000), order, date, remain, order.getPrice(), null, "VNPay", "Thanh toán thành công");
                 paymentService.save(payment1);
                 order.setStatus("Chờ giao hàng");
                 orderService.save(order);
@@ -154,5 +159,38 @@ public class PaymentController {
             }
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PaymentResponse("Failed", "Payment failed", null, null));
+    }
+
+
+    @PostMapping("/paypal/refund")
+    public ResponseEntity<PaymentResponse> refundWithPaypal(@RequestBody CancelPaymentRequest cancelPaymentRequest) throws PayPalRESTException {
+        try {
+            Order order = orderService.getOrderByOrderID(Integer.parseInt(cancelPaymentRequest.getOrderID()));
+            if (order != null) {
+                com.group6.swp391.model.Payment payment = paymentService.findByOrder(order);
+                double amount = 0;
+                if(payment.getMethodPayment().toLowerCase().equals("paypal")) {
+                    amount += payment.getPaymentAmount();
+                }
+                String saleID = payment.getTransactionId();
+                if(saleID != null) {
+                    double value = (amount / 25500);
+                    String result = String.format("%.2f",value);
+                    double amount_at = Double.parseDouble(result);
+                    boolean check = payPalService.cancelPayment(saleID, amount_at, "USD");
+                    if(check) {
+                        order.setStatus("Đã hoàn tiền");
+                        orderService.save(order);
+                        payment.setStatus("Đã hoàn tiền");
+                        paymentService.save(payment);
+                        return ResponseEntity.status(HttpStatus.OK).body(new PaymentResponse("Success", "Refund successfully", null, null));
+                    }
+                }
+            }
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PaymentResponse("Failed", "Refund failed", null, null));
+        } catch (Exception e) {
+            log.error("ERROR: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PaymentResponse("Failed", "Refund failed", null, null));
+        }
     }
 }
