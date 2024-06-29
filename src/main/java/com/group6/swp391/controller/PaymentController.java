@@ -166,10 +166,10 @@ public class PaymentController {
     public ResponseEntity<PaymentResponse> refundWithPaypal(@RequestBody CancelPaymentRequest cancelPaymentRequest) throws PayPalRESTException {
         try {
             Order order = orderService.getOrderByOrderID(Integer.parseInt(cancelPaymentRequest.getOrderID()));
-            if (order != null) {
+            if (order != null && order.getStatus().toLowerCase().equals("chờ giao hàng")) {
                 com.group6.swp391.model.Payment payment = paymentService.findByOrder(order);
                 double amount = 0;
-                if(payment.getMethodPayment().toLowerCase().equals("paypal")) {
+                if(payment.getMethodPayment().toLowerCase().equals("paypal") && payment.getStatus().toLowerCase().equals("thanh toán thành công")) {
                     amount += payment.getPaymentAmount();
                 }
                 String saleID = payment.getTransactionId();
