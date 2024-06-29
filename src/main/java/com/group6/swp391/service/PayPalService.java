@@ -1,12 +1,9 @@
 package com.group6.swp391.service;
 
-import com.group6.swp391.cart.Cart;
 import com.group6.swp391.model.*;
 import com.group6.swp391.model.Order;
 import com.group6.swp391.paypal.EnumPayPalPaymentMethod;
 import com.group6.swp391.paypal.EnumPaypalPaymentIntent;
-
-
 import com.group6.swp391.repository.UserRepository;
 import com.paypal.api.payments.*;
 import com.paypal.api.payments.Payment;
@@ -14,8 +11,6 @@ import com.paypal.base.rest.APIContext;
 import com.paypal.base.rest.PayPalRESTException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 

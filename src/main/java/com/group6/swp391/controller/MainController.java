@@ -84,8 +84,6 @@ public class MainController {
         } catch(Exception e) {
             log.error("Can not verify account");
         }
-//        return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Verify account successfully", null))
-//                :ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Verify account failed ", null));
     }
 
     @PostMapping("/login")

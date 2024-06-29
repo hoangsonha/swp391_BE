@@ -13,10 +13,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -32,15 +34,14 @@ public class PaymentController {
     @Autowired private VNPayService vnPayService;
 
     @PostMapping("/checkout")
-    public String pay(@RequestBody PaymentRequest paymentRequest, HttpSession session, HttpServletRequest request) {
+    public String pay(@RequestBody PaymentRequest paymentRequest, HttpServletRequest request) {
         try {
-            session.setAttribute("orderID", paymentRequest.getOrderId());
             if(paymentRequest.getPaymentMethod().equals("paypal")) {
-                String href = request.getRequestURL().toString().replace(request.getServletPath(), "") + "/payment/paypal";
+                String href = request.getRequestURL().toString().replace(request.getServletPath(), "") + "/payment/paypal?orderID=" + paymentRequest.getOrderId();
                 return "redirect:" + href;
 
             } else if(paymentRequest.getPaymentMethod().equals("vnpay")) {
-                String href = request.getRequestURL().toString().replace(request.getServletPath(), "") + "/payment/vnpay";
+                String href = request.getRequestURL().toString().replace(request.getServletPath(), "") + "/payment/vnpay?orderID=" + paymentRequest.getOrderId();
                 return "redirect:" + href;
             }
         } catch(Exception e) {
@@ -50,12 +51,12 @@ public class PaymentController {
     }
 
     @PostMapping("/paypal")
-    public String payByPayPal(HttpServletRequest request, HttpSession session) {
-        String cancelUrl = request.getRequestURL().toString().replace(request.getServletPath(), "") + "/payment/paypal/cancel";
-        String successUrl = request.getRequestURL().toString().replace(request.getServletPath(), "") + "/payment/paypal/success";
+    public String payByPayPal(@Param("orderID") String orderID ,HttpServletRequest request) {
+        String cancelUrl = request.getRequestURL().toString().replace(request.getServletPath(), "") + "/payment/paypal/cancel?orderID=" + orderID;
+        String successUrl = request.getRequestURL().toString().replace(request.getServletPath(), "") + "/payment/paypal/success?orderID=" + orderID;
         try {
-            Order order = orderService.getOrderByOrderID(Integer.parseInt((String) session.getAttribute("orderID")));
-            if(order != null) {
+            Order order = orderService.getOrderByOrderID(Integer.parseInt(orderID));
+            if(order != null && order.getStatus().toLowerCase().equals("chờ thanh toán")) {
                 Payment payment = payPalService.createPayment(order, EnumPayPalPaymentMethod.paypal,
                         EnumPaypalPaymentIntent.sale, cancelUrl, successUrl);
                 for(Links links : payment.getLinks()) {
@@ -70,7 +71,7 @@ public class PaymentController {
         return "Payment failed";
     }
 
-    @PostMapping("/paypal/cancel")
+    @GetMapping("/paypal/cancel")
     public ResponseEntity<PaymentResponse> payByPayPalCancel() {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PaymentResponse("Failed", "Payment page failed", null, null));
     }
@@ -90,22 +91,23 @@ public class PaymentController {
 //        return "Payment failed";
 //    }
 
-    @PostMapping("/paypal/success")
-    public ResponseEntity<PaymentResponse> paySuccess(HttpSession session, @RequestParam("paymentId") String paymentID, @RequestParam("PayerID") String payerID) {
-        int orderID = Integer.parseInt((String) session.getAttribute("orderID"));
-        Order order = orderService.getOrderByOrderID(orderID);
+    @GetMapping("/paypal/success")
+    public ResponseEntity<PaymentResponse> paySuccess(@Param("orderID") String orderID, @RequestParam("paymentId") String paymentID, @RequestParam("PayerID") String payerID) {
+        Order order = orderService.getOrderByOrderID(Integer.parseInt(orderID));
         try {
-            Payment payment = payPalService.executePayment(paymentID, payerID);
-            if(payment.getState().equals("approved")) {
-                double paymentAmount = Double.parseDouble(payment.getTransactions().get(0).getAmount().getTotal());
-                SimpleDateFormat spm = new SimpleDateFormat("yyyy-MM-dd");
-                Date date = spm.parse(payment.getCreateTime());
-                com.group6.swp391.model.Payment payment1 = new com.group6.swp391.model.Payment(paymentAmount, order, date, ((order.getPrice() / 25000) - paymentAmount) , order.getPrice());
-                paymentService.save(payment1);
-                order.setStatus("Chờ giao hàng");
-                orderService.save(order);
-                session.setAttribute("orderID", null);
-                return ResponseEntity.status(HttpStatus.OK).body(new PaymentResponse("Success", "Payment successfully", payment, null));
+            if(order.getStatus().toLowerCase().equals("chờ thanh toán")) {
+                Payment payment = payPalService.executePayment(paymentID, payerID);
+                if(payment.getState().equals("approved")) {
+                    double paymentAmount = Double.parseDouble(payment.getTransactions().get(0).getAmount().getTotal());
+                    SimpleDateFormat spm = new SimpleDateFormat("yyyy-MM-dd");
+                    Date date = spm.parse(payment.getCreateTime());
+                    double remain = (order.getPrice() - (paymentAmount * 25455));
+                    com.group6.swp391.model.Payment payment1 = new com.group6.swp391.model.Payment((paymentAmount * 25455), order, date, remain, order.getPrice());
+                    paymentService.save(payment1);
+                    order.setStatus("Chờ giao hàng");
+                    orderService.save(order);
+                    return ResponseEntity.status(HttpStatus.OK).body(new PaymentResponse("Success", "Payment successfully", null, null));
+                }
             }
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -115,20 +117,41 @@ public class PaymentController {
 
 
     @GetMapping("/vnpay")
-    public void vnpay(HttpServletRequest req, HttpSession session, HttpServletResponse response) throws IOException {
-        Order order = orderService.getOrderByOrderID(Integer.parseInt((String) session.getAttribute("orderID")));
+    public void vnpay(@Param("orderID") String orderID, HttpServletRequest req, HttpServletResponse response) throws IOException {
+        Order order = orderService.getOrderByOrderID(Integer.parseInt(orderID));
         long amount = (long) (order.getPrice()*100);
         long haveToPay = (amount / 25000);
-        String s = vnPayService.getVNPay(haveToPay, req);
-        response.sendRedirect(s);
+        if(order.getStatus().toLowerCase().equals("chờ thanh toán")) {
+            String s = vnPayService.getVNPay(haveToPay, req, orderID);
+            response.sendRedirect(s);
+        }
     }
 
     @GetMapping("/vnpaysuccess")
-    public ResponseEntity<PaymentResponse> vnpaysuccess(HttpServletRequest req, HttpSession session) {
-        String maloi = req.getParameter("vnp_ResponseCode");
-        if(maloi.equals("00")) {
-            session.setAttribute("orderID", null);
-            return ResponseEntity.status(HttpStatus.OK).body(new PaymentResponse("Success", "Payment successfully", null, null));
+    public ResponseEntity<PaymentResponse> vnpaysuccess(HttpServletRequest req, HttpSession session) throws ParseException {
+        String maloi = req.getParameter("vnp_ResponseCode"); // lay qua url
+        String orderID = req.getParameter("vnp_TxnRef");
+        String dateAt = req.getParameter("vnp_PayDate");
+        String nam = dateAt.substring(0, 4);
+        String thang = dateAt.substring(4, 6);
+        String ngay = dateAt.substring(6, 8);
+        String gio = dateAt.substring(8, 10);
+        String phut = dateAt.substring(10, 12);
+        String giay = dateAt.substring(12, 14);
+        String dateParse = nam + "-" + thang + "-" + ngay + " " + gio + ":" + phut + ":" + giay;
+        String amount = req.getParameter("vnp_Amount").substring(0, 5);
+        Order order = orderService.getOrderByOrderID(Integer.parseInt(orderID));
+        if(order.getStatus().toLowerCase().equals("chờ thanh toán")) {
+            if(maloi.equals("00")) {
+                SimpleDateFormat spm = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+                Date date = spm.parse(dateParse);
+                double remain = (order.getPrice() - (Double.parseDouble(amount) * 25000));
+                com.group6.swp391.model.Payment payment1 = new com.group6.swp391.model.Payment((Double.parseDouble(amount) * 25000), order, date, remain, order.getPrice());
+                paymentService.save(payment1);
+                order.setStatus("Chờ giao hàng");
+                orderService.save(order);
+                return ResponseEntity.status(HttpStatus.OK).body(new PaymentResponse("Success", "Payment successfully", null, null));
+            }
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PaymentResponse("Failed", "Payment failed", null, null));
     }

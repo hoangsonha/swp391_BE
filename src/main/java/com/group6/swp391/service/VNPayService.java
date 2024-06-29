@@ -14,14 +14,14 @@ import java.util.*;
 @Service
 public class VNPayService {
 
-    public String getVNPay(long total, HttpServletRequest req) throws UnsupportedEncodingException {
+    public String getVNPay(long total, HttpServletRequest req, String orderID) throws UnsupportedEncodingException {
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
         String orderType = "other";
         long amount = total;
         String bankCode = "NCB";
 
-        String vnp_TxnRef = VNPay.getRandomNumber(8);
+//        String vnp_TxnRef = VNPay.getRandomNumber(8);
 
         String vnp_IpAddr = VNPay.getIpAddress(req);
         // 127.0.0.1
@@ -36,8 +36,8 @@ public class VNPayService {
 
         vnp_Params.put("vnp_BankCode", bankCode);
 
-        vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
-        vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang:" + vnp_TxnRef);
+        vnp_Params.put("vnp_TxnRef", orderID);
+        vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang:" + orderID);
         vnp_Params.put("vnp_OrderType", orderType);
 
         vnp_Params.put("vnp_Locale", "vn");
