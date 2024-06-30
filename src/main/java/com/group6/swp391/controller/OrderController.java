@@ -4,6 +4,7 @@ import com.group6.swp391.model.*;
 import com.group6.swp391.request.ConfirmOrderRequest;
 import com.group6.swp391.request.OrderRequest;
 import com.group6.swp391.response.NewOrderRespone;
+import com.group6.swp391.response.OrderDetailRespone;
 import com.group6.swp391.response.OrderRespone;
 import com.group6.swp391.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -156,7 +157,24 @@ public class OrderController {
             if(orderExisting == null) {
                 return ResponseEntity.badRequest().body("Order not found with ID: " + id);
             }
-            return ResponseEntity.ok(orderExisting);
+            OrderDetailRespone orderDetailRespone = new OrderDetailRespone();
+            orderDetailRespone.setOrderId(orderExisting.getOrderID());
+            orderDetailRespone.setFullName(orderExisting.getFullName());
+            orderDetailRespone.setEmail(orderExisting.getEmail());
+            orderDetailRespone.setQuantity(orderExisting.getQuantity());
+            orderDetailRespone.setPrice(orderExisting.getPrice());
+            orderDetailRespone.setGender(orderExisting.getGender());
+            orderDetailRespone.setPhoneShipping(orderExisting.getPhoneShipping());
+            orderDetailRespone.setAddressShipping(orderExisting.getAddressShipping());
+            orderDetailRespone.setPayments(orderExisting.getPayments());
+            orderDetailRespone.setOrderDate(orderExisting.getOrderDate());
+            orderDetailRespone.setOrderDetails(orderExisting.getOrderDetails());
+            orderDetailRespone.setStatus(orderExisting.getStatus());
+            orderDetailRespone.setReason(orderExisting.getReason());
+            orderDetailRespone.setDeleteStatus(orderExisting.isDeleteStatus());
+            orderDetailRespone.setNote(orderExisting.getNote());
+            orderDetailRespone.setDiscount(orderExisting.getDiscount());
+            return ResponseEntity.ok(orderDetailRespone);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

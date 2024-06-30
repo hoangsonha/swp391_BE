@@ -85,4 +85,15 @@ public class DeliveryController {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
     }
+
+    @GetMapping("/pending_delivery_count")
+    public ResponseEntity<Long> getPendingDeliveryOrderCount() {
+        try {
+            long count = orderService.getPendingDeliveryOrderCount();
+            return ResponseEntity.ok(count);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(0L);
+        }
+    }
+
 }
