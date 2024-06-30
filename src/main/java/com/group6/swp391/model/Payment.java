@@ -1,6 +1,7 @@
 package com.group6.swp391.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,6 +20,7 @@ public class Payment {
     private int id;
     @ManyToOne
     @JoinColumn(name = "order_id", referencedColumnName = "order_id")
+    @JsonIgnore
     private Order order;
     private Date paymentDate;
     private double paymentAmount; //50%
