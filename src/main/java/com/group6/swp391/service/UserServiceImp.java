@@ -685,9 +685,4 @@ public class UserServiceImp implements UserService {
 
     // package job là tạo ra các jobs
 
-    @Override
-    public Long getNewUserCount(LocalDate startDate, LocalDate endDate) {
-        return userRepository.countNewUsersByDateRange(startDate, endDate);
-    }
-
 }

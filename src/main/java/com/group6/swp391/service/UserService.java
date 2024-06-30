@@ -59,6 +59,4 @@ public interface UserService {
 
     public boolean sendNotificationEmailHappyBirthDay() throws MessagingException, UnsupportedEncodingException;
 
-    public Long getNewUserCount(LocalDate startDate, LocalDate endDate);
-
 }
