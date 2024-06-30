@@ -123,12 +123,16 @@ public class PaymentController {
 
     @GetMapping("/vnpay")
     public void vnpay(@Param("orderID") String orderID, HttpServletRequest req, HttpServletResponse response) throws IOException {
-        Order order = orderService.getOrderByOrderID(Integer.parseInt(orderID));
-        long amount = (long) (order.getPrice()*100);
-        long haveToPay = (amount / 25000);
-        if(order.getStatus().toLowerCase().equals("chờ thanh toán")) {
-            String s = vnPayService.getVNPay(haveToPay, req, orderID);
-            response.sendRedirect(s);
+        try {
+            Order order = orderService.getOrderByOrderID(Integer.parseInt(orderID));
+            long amount = (long) (order.getPrice()*100);
+            long haveToPay = (amount / 25000);
+            if(order.getStatus().toLowerCase().equals("chờ thanh toán")) {
+                String s = vnPayService.getVNPay(haveToPay, req, orderID);
+                response.sendRedirect(s);
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
         }
     }
 

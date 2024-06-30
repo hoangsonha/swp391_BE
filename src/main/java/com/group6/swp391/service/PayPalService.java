@@ -9,13 +9,14 @@ import com.paypal.api.payments.*;
 import com.paypal.api.payments.Payment;
 import com.paypal.base.rest.APIContext;
 import com.paypal.base.rest.PayPalRESTException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 public class PayPalService {
     @Autowired private APIContext apiContext;
     @Autowired private UserRepository userRepository;
@@ -150,9 +151,11 @@ public class PayPalService {
             if ("completed".equalsIgnoreCase(refund.getState())) {
                 return true;
             } else {
+                log.error("Error canceling payment {}", transactionId);
                 return false;
             }
         } catch (PayPalRESTException e) {
+            log.error("Error canceling payment {}", transactionId, e);
             return false;
         }
     }
