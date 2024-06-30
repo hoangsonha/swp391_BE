@@ -2,7 +2,6 @@ package com.group6.swp391.vnpay;
 
 
 import jakarta.servlet.http.HttpServletRequest;
-
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
@@ -12,12 +11,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 public class VNPay {
-
-    public static String vnp_PayUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-    public static String vnp_ReturnUrl = "https://diamondshopgroup6.azurewebsites.net/payment/vnpaysuccess";
-    public static String vnp_TmnCode = "SI5BU0OD";
-    public static String secretKey = "GFGOXQ59UQLJL7FUWBXAL3L3V7B0010I";
-    public static String vnp_ApiUrl = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction";
 
     public static String md5(String message) throws Exception {
         String digest = null;
@@ -55,26 +48,26 @@ public class VNPay {
         return digest;
     }
 
-    //Util for VNPAY
-    public static String hashAllFields(Map fields) {
-        List fieldNames = new ArrayList(fields.keySet());
-        Collections.sort(fieldNames);
-        StringBuilder sb = new StringBuilder();
-        Iterator itr = fieldNames.iterator();
-        while (itr.hasNext()) {
-            String fieldName = (String) itr.next();
-            String fieldValue = (String) fields.get(fieldName);
-            if ((fieldValue != null) && (fieldValue.length() > 0)) {
-                sb.append(fieldName);
-                sb.append("=");
-                sb.append(fieldValue);
-            }
-            if (itr.hasNext()) {
-                sb.append("&");
-            }
-        }
-        return hmacSHA512(secretKey,sb.toString());
-    }
+//    //Util for VNPAY
+//    public static String hashAllFields(Map fields) {
+//        List fieldNames = new ArrayList(fields.keySet());
+//        Collections.sort(fieldNames);
+//        StringBuilder sb = new StringBuilder();
+//        Iterator itr = fieldNames.iterator();
+//        while (itr.hasNext()) {
+//            String fieldName = (String) itr.next();
+//            String fieldValue = (String) fields.get(fieldName);
+//            if ((fieldValue != null) && (fieldValue.length() > 0)) {
+//                sb.append(fieldName);
+//                sb.append("=");
+//                sb.append(fieldValue);
+//            }
+//            if (itr.hasNext()) {
+//                sb.append("&");
+//            }
+//        }
+//        return hmacSHA512(secretKey,sb.toString());
+//    }
 
     public static String hmacSHA512(final String key, final String data) {
         try {

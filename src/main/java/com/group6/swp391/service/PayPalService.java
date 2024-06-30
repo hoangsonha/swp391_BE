@@ -130,7 +130,9 @@ public class PayPalService {
     }
 
     public double priceToUSD(double price) {
-        return (price / 25450);
+        double value = (price / 25500);
+        String s = String.format("%.2f",value);
+        return Math.floor(Double.parseDouble(s));
     }
 
     public boolean cancelPayment(String transactionId, double amount, String currency) {
