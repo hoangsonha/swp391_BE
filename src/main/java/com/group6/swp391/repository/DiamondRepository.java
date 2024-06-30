@@ -353,5 +353,7 @@ public interface DiamondRepository extends JpaRepository<Diamond, String> {
     @Query("select d from Diamond d where d.carat <= ?1 and d.carat >= ?2 and d.colorLevel = ?3")
     public List<Diamond> getDiamondBySearchAdvancedExcludeTotalPriceShapeShapeClarify(float caratEnd, float caratBegin, char colorLevel);
 
+    List<Diamond> findByDiamondNameContaining(String diamondName);
 
+    List<Diamond> findByDiamondIDContaining(String diamondID);
 }
