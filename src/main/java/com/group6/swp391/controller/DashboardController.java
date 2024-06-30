@@ -23,6 +23,22 @@ public class DashboardController {
     @Autowired OrderService orderService;
     @Autowired DashboardService dashboardService;
 
+    // tong doanh thu trong ngay
+    @GetMapping("/total_revenue_date")
+    public ResponseEntity<ObjectResponse> totalRevenueToday() {
+        try {
+            int dateCurrent = LocalDate.now().getDayOfMonth();
+            int monthCurrent = LocalDate.now().getMonthValue();
+            int yearCurrent = LocalDate.now().getYear();
+            Double total = dashboardService.totalRevenueDate(dateCurrent, monthCurrent, yearCurrent);
+            if(total == null || total == 0) {
+                return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "no data", total));
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "total revenue in date", total));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "no data", null));
+        }
+    }
     //tong loi nhuan tu luc kinh doanh
     @GetMapping("/total_revenue_store")
     public ResponseEntity<ObjectResponse> totelRevenue() {
@@ -40,6 +56,7 @@ public class DashboardController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "get data failed", null));
         }
     }
+
     //tong doanh thu tung thang theo bieu do
     @GetMapping("/total_revenue")
     public ResponseEntity<ObjectResponse> getTotalRevenue() {

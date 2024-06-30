@@ -11,4 +11,5 @@ public interface DashboardService {
     Double getTotalRevenueProductcustomizer(int month, int year);
     List<Order> getOrderByStatus(int month, String status);
     Integer newUser(int month, int year);
+    Double totalRevenueDate(int date, int month, int year);
 }

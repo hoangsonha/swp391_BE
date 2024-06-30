@@ -48,4 +48,9 @@ public class DashboardServiceImp implements DashboardService {
     public Integer newUser(int month, int year) {
         return userRepository.newuser(month, year);
     }
+
+    @Override
+    public Double totalRevenueDate(int date, int month, int year) {
+        return orderRepository.totalRevenueInDate(date, month, year);
+    }
 }
