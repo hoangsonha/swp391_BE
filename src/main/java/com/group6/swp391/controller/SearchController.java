@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @RestController
@@ -17,7 +19,8 @@ public class SearchController {
 
     @GetMapping
     public ResponseEntity<?> search(@RequestParam String query) {
-        List<Object> results = searchService.search(query);
+        String decodedQuery = URLDecoder.decode(query, StandardCharsets.UTF_8);
+        List<Object> results = searchService.search(decodedQuery);
         return ResponseEntity.ok(results);
     }
 
