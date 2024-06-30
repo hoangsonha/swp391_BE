@@ -32,4 +32,7 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
     @Query("SELECT SUM(o.price) FROM order o " +
             "WHERE MONTH(o.orderDate) = :month AND YEAR(o.orderDate) = :year AND o.status = 'Đã giao'")
     Double findTotalRevenueInMonth(@Param("month") int month, @Param("year") int year);
+
+    @Query("SELECT o FROM order o WHERE o.status =:status AND MONTH(o.orderDate) =:month")
+    List<Order> findByStatusMonth(@Param("month") int month, @Param("status") String status);
 }

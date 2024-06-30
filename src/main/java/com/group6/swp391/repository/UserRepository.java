@@ -55,7 +55,9 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     
     public User getUserByPhone(String phone);
 
-    @Query("SELECT COUNT(u) FROM user u WHERE u.createAt BETWEEN :startDate AND :endDate")
-    Long countNewUsersByDateRange(@Param("startDate") LocalDate startDate,
-                                  @Param("endDate") LocalDate endDate);
+//    @Query("SELECT COUNT(*) AS new_users\n" +
+//            "FROM user\n" +
+//            "WHERE MONTH(create_at) = 6 AND YEAR(create_at) = 2024")
+    @Query("SELECT COUNT(*) AS new_users FROM user u WHERE MONTH(u.createAt) = :month AND YEAR(u.createAt)=:year")
+    Integer newuser(@Param("month") int month, @Param("year") int year);
 }
