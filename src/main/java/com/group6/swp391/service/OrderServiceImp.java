@@ -8,10 +8,7 @@ import com.group6.swp391.repository.SizeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -160,6 +157,12 @@ public class OrderServiceImp implements OrderService {
     @Override
     public Order updateOrderStatus(int orderID, String status) {
         return updateOrderStatus(orderID, status, null);
+    }
+
+    @Override
+    public long getPendingDeliveryOrderCount() {
+        List<Order> orders = orderRepository.findByStatus("Chờ giao hàng");
+        return orders.size();
     }
 
     @Override
