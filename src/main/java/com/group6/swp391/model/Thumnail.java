@@ -25,4 +25,9 @@ public class Thumnail {
     @JoinColumn(name = "product_id", nullable = false)
     @JsonIgnore
     private Product product;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "collection_id", nullable = false)
+    @JsonIgnore
+    private Collection collection;
 }

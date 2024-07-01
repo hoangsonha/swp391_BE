@@ -1,7 +1,10 @@
 package com.group6.swp391.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Entity
 @Getter
@@ -12,13 +15,31 @@ import lombok.*;
 public class Collection extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "collection_id")
-    private int collecitonId;
+    private String collecitonId;
 
-    @Column(name = "collection_name", nullable = false, length = 50)
+    @Column(name = "collection_tital", nullable = false, columnDefinition = "NVARCHAR(300)")
+    private String collectionTitel;
+
+    @Column(name = "collection_name", nullable = false, columnDefinition = "NVARCHAR(300)")
     private String collectionName;
 
-    @Column(name = "description", length = 1024)
-    private String description;
+    private double price;
+
+    @Column(name = "gem_stone", nullable = false, columnDefinition = "NVARCHAR(50)")
+    private String gemStone;
+
+    @Column(name = "gole_type")
+    private String goldType;
+
+    @Column(name = "gold_old")
+    private String goldOld;
+
+    @OneToMany(mappedBy = "collection", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("collection")
+    private List<CollectionProduct> collectionProduct;
+
+    @OneToMany(mappedBy = "collection", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("collection")
+    private List<Thumnail> thumnails;
 }

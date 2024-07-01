@@ -9,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @Setter
 @Getter
-public class ConllectionProduct {
+public class CollectionProduct {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,6 +18,10 @@ public class ConllectionProduct {
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
+
+    @ManyToOne
+    @JoinColumn(name = "diamond_id")
+    private Diamond diamond;
 
     @ManyToOne
     @JoinColumn(name = "collection_id")
