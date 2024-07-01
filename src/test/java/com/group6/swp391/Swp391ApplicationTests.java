@@ -1,6 +1,7 @@
 package com.group6.swp391;
 
 //import com.group6.swp391.cart.Cart;
+import com.group6.swp391.enumPayments.EnumPaymentMethod;
 import com.group6.swp391.model.Diamond;
 import com.group6.swp391.model.Product;
 import com.group6.swp391.model.User;
@@ -29,6 +30,12 @@ class Swp391ApplicationTests {
 
     @Test
     void contextLoads() {
+
+//        String s = "paypala";
+//
+//        boolean cehck = EnumPaymentMethod.checkExistPaymentMethod(s);
+//        System.out.println(cehck);
+
 
 //        User user = userRepository.getUserByEmail("hoangsonha492@gmail.com");
 //    int year = 2024;
