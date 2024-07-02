@@ -57,39 +57,26 @@ public class WarrantyCardController {
             if (warrantyCards == null || warrantyCards.isEmpty()) {
                 return ResponseEntity.noContent().build();
             }
-            List<WarrantyCardRespone> warrantyCardRespones = new ArrayList<>();
-            for (WarrantyCard warrantyCard : warrantyCards) {
-                WarrantyCardRespone warrantyCardRespone = new WarrantyCardRespone();
-                warrantyCardRespone.setWarrantyCardID(warrantyCard.getWarrantyCardID());
-                if (warrantyCard.getProductCustomize() != null) {
-                    warrantyCardRespone.setObjectId(warrantyCard.getProductCustomize().getProdcutCustomId());
-                } else if (warrantyCard.getDiamond() != null) {
-                    warrantyCardRespone.setObjectId(warrantyCard.getDiamond().getDiamondID());
-                }
-                warrantyCardRespone.setPurchaseDate(warrantyCard.getPurchaseDate());
-                warrantyCardRespone.setExpirationDate(warrantyCard.getExpirationDate());
-                warrantyCardRespones.add(warrantyCardRespone);
-            }
-            return ResponseEntity.ok(warrantyCardRespones);
+            return ResponseEntity.ok(warrantyCards);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
-//    @GetMapping("/user/{user_id}")
-//    public ResponseEntity<?> getByUserId(@PathVariable("user_id") int id) {
+//    @GetMapping("/all_warranty_card")
+//    public ResponseEntity<?> getAll() {
 //        try {
-//            List<WarrantyCardRespone> warrantyCardRespones = new ArrayList<>();
-//            List<WarrantyCard> warrantyCards = warrantyCardServiceImp.getByUser(id);
-//            if(warrantyCards == null || warrantyCards.isEmpty()) {
-//                return ResponseEntity.ok().body("Not warranty card");
+//            List<WarrantyCard> warrantyCards = warrantyCardServiceImp.getAll();
+//            if (warrantyCards == null || warrantyCards.isEmpty()) {
+//                return ResponseEntity.noContent().build();
 //            }
-//            for(WarrantyCard warrantyCard : warrantyCards) {
+//            List<WarrantyCardRespone> warrantyCardRespones = new ArrayList<>();
+//            for (WarrantyCard warrantyCard : warrantyCards) {
 //                WarrantyCardRespone warrantyCardRespone = new WarrantyCardRespone();
 //                warrantyCardRespone.setWarrantyCardID(warrantyCard.getWarrantyCardID());
-//                if(warrantyCard.getProductCustomize() != null) {
+//                if (warrantyCard.getProductCustomize() != null) {
 //                    warrantyCardRespone.setObjectId(warrantyCard.getProductCustomize().getProdcutCustomId());
-//                } else if(warrantyCard.getDiamond() != null) {
+//                } else if (warrantyCard.getDiamond() != null) {
 //                    warrantyCardRespone.setObjectId(warrantyCard.getDiamond().getDiamondID());
 //                }
 //                warrantyCardRespone.setPurchaseDate(warrantyCard.getPurchaseDate());
@@ -98,10 +85,9 @@ public class WarrantyCardController {
 //            }
 //            return ResponseEntity.ok(warrantyCardRespones);
 //        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
 //        }
 //    }
-//
 
     @GetMapping("/getExpiringSoon")
     public ResponseEntity<List<WarrantyCard>> getExpiringSoon() {

@@ -71,4 +71,18 @@ public class WarrantyCardServiceImp implements WarrantyCardService {
         }
         return results;
     }
+
+//    @Override
+//    public WarrantyCard findByIdOrDiamondIdOrProductCustomId(String id) {
+//        WarrantyCard warrantyCard = warrantyCardRepository.findByWarrantyCardID(id);
+//        if (warrantyCard == null) {
+//            warrantyCard = warrantyCardRepository.findByDiamond_DiamondID(id);
+//        }
+//        if (warrantyCard == null) {
+//            warrantyCard = warrantyCardRepository.findByProductCustomize_ProdcutCustomId(id);
+//        }
+//        return warrantyCard;
+//    }
+
+
 }

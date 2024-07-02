@@ -20,4 +20,5 @@ public interface WarrantyCardService {
 
     List<WarrantyCard> searchWarrantyCards(String searchQuery);
 
+    //WarrantyCard findByIdOrDiamondIdOrProductCustomId(String id);
 }

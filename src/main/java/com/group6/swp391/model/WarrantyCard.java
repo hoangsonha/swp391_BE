@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -15,6 +14,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class WarrantyCard {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,6 +41,7 @@ public class WarrantyCard {
         return  user != null ? user.getUserID() : null;
     }
 
+    @JsonIgnore
     public String getFullName() {
         return user != null ? ( user.getFirstName() + " " + user.getLastName()) : null;
     }
