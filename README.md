@@ -28,7 +28,7 @@ mvn spring-boot:run
 ```
 
 ### To view Swagger 3 API docs
-Run the server and browse to 
+Run the server and browse to h
 
 ### Main function
 
