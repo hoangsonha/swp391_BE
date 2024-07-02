@@ -28,7 +28,7 @@ mvn spring-boot:run
 ```
 
 ### To view Swagger 3 API docs
-Run the server and browse to https://diamondshopgroup6.azurewebsites.net/swagger-ui/index.html
+Run the server and browse to h
 
 ### Main function
 

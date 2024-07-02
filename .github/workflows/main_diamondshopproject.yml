@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy JAR app to Azure Web App - diamondshopgroup6
+name: Build and deploy JAR app to Azure Web App - DiamondShopProject
 
 on:
   push:
@@ -48,15 +48,15 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v1
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_C197F413E6E5478480D45B064AAA9500 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_E1EC90BCF26945028811AF657460684E }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_18F1173CEE00488FA7E0E26C58EEB571 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_E0411843C80C4C83A0B3140CC958B9B3 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_17427B430B6842249059BD31DEEE2381 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_D41B99E119624CB08E74F369DA56C7A5 }}
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'diamondshopgroup6'
+          app-name: 'DiamondShopProject'
           slot-name: 'Production'
           package: '*.jar'
           
