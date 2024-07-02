@@ -25,7 +25,14 @@ public interface WarrantyCardRepository extends JpaRepository<WarrantyCard, Inte
     List<WarrantyCard> findByProductCustomize_ProdcutCustomIdOrDiamond_DiamondID(@Param("productCustomizeID") String productCustomizeId,
                                                                                  @Param("diamondID") String diamondId);
 
-    List<WarrantyCard> findByProductCustomize_ProdcutCustomIdContaining(String productCustomizeId);
+    @Query("SELECT wc FROM WarrantyCard wc " +
+            "LEFT JOIN wc.productCustomize pc " +
+            "LEFT JOIN wc.diamond d " +
+            "WHERE pc.prodcutCustomId LIKE %:query% " +
+            "OR d.diamondID LIKE %:query% ")
+    List<WarrantyCard> searchWarrantyCards(@Param("query") String query);
+
+//    List<WarrantyCard> findByProductCustomize_ProdcutCustomIdContaining(String productCustomizeId);
 
     List<WarrantyCard> findByWarrantyCardID(int warrantyCardId);
 }

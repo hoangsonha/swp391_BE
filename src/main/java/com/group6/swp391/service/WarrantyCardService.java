@@ -18,10 +18,6 @@ public interface WarrantyCardService {
 
     List<WarrantyCard> getAll();
 
-    List<WarrantyCard> findByProductID(String productID);
-
-    List<WarrantyCard> findByProductCustomerId(String productCustomerId);
-
     List<WarrantyCard> searchWarrantyCards(String searchQuery);
 
 }

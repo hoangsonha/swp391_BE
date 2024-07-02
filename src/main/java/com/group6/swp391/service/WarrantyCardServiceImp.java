@@ -58,23 +58,16 @@ public class WarrantyCardServiceImp implements WarrantyCardService {
     }
 
     @Override
-    public List<WarrantyCard> findByProductID(String productID) {
-        return warrantyCardRepository.findByProductCustomize_ProdcutCustomIdOrDiamond_DiamondID(productID, productID);
-    }
-
-    @Override
-    public List<WarrantyCard> findByProductCustomerId(String productCustomerId) {
-        return warrantyCardRepository.findByProductCustomize_ProdcutCustomIdContaining(productCustomerId);
-    }
-
-    @Override
     public List<WarrantyCard> searchWarrantyCards(String searchQuery) {
-        List<WarrantyCard> results;
+        List<WarrantyCard> results = warrantyCardRepository.searchWarrantyCards(searchQuery);
         try {
-            int warrantyCardId = Integer.parseInt(searchQuery);
-            results = warrantyCardRepository.findByWarrantyCardID(warrantyCardId);
+            int id = Integer.parseInt(searchQuery);
+            List<WarrantyCard> card = warrantyCardRepository.findByWarrantyCardID(id);
+            if (card != null) {
+                results.addAll(card);
+            }
         } catch (NumberFormatException e) {
-            results = warrantyCardRepository.findByProductCustomize_ProdcutCustomIdContaining(searchQuery);
+
         }
         return results;
     }
