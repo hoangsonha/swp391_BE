@@ -1,4 +1,4 @@
-package com.group6.swp391.enumPayments;
+package com.group6.swp391.enums;
 
 public enum EnumPaymentMethod {
     paypal, vnpay;

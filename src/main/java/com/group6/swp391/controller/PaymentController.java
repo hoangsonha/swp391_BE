@@ -1,9 +1,7 @@
 package com.group6.swp391.controller;
 
-import com.group6.swp391.enumPayments.EnumPaymentMethod;
+import com.group6.swp391.enums.*;
 import com.group6.swp391.model.Order;
-import com.group6.swp391.enumPayments.EnumPayPalPaymentMethod;
-import com.group6.swp391.enumPayments.EnumPaypalPaymentIntent;
 import com.group6.swp391.request.CancelPaymentRequest;
 import com.group6.swp391.request.PaymentRequest;
 import com.group6.swp391.response.PaymentResponse;
@@ -35,43 +33,46 @@ public class PaymentController {
     @Autowired private VNPayService vnPayService;
 
     @PostMapping("/checkout")
-    public String pay(@RequestBody PaymentRequest paymentRequest, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<PaymentResponse> pay(@RequestBody PaymentRequest paymentRequest, HttpServletRequest request, HttpServletResponse response) {
         try {
             if(paymentRequest.getPaymentMethod().equals("paypal") && EnumPaymentMethod.checkExistPaymentMethod(paymentRequest.getPaymentMethod())) {
                 String cancelUrl = request.getRequestURL().toString().replace(request.getServletPath(), "") + "/payment/paypal/cancel?orderID=" + paymentRequest.getOrderID();
                 String successUrl = request.getRequestURL().toString().replace(request.getServletPath(), "") + "/payment/paypal/success?orderID=" + paymentRequest.getOrderID();
                 try {
                     Order order = orderService.getOrderByOrderID(Integer.parseInt(paymentRequest.getOrderID()));
-                    if(order != null && order.getStatus().toLowerCase().equals("chờ thanh toán")) {
+                    String orderStatus = EnumOrderStatus.Chờ_thanh_toán.name();
+                    if(order != null && order.getStatus().equals(orderStatus.replaceAll("_", " "))) {
                         Payment payment = payPalService.createPayment(order, EnumPayPalPaymentMethod.paypal,
                                 EnumPaypalPaymentIntent.sale, cancelUrl, successUrl);
                         for(Links links : payment.getLinks()) {
                             if(links.getRel().equals("approval_url")) {
-                                return "redirect:" + links.getHref();
+                                return ResponseEntity.status(HttpStatus.OK).body(new PaymentResponse("Success", "Redirect payment page successfully", null, links.getHref()));
                             }
                         }
                     }
                 } catch(Exception e) {
-                    log.error(e.getMessage());
+                    log.error("Error at paypal payment {}", e.getMessage());
                 }
-                return "Payment failed";
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PaymentResponse("Failed", "Redirect payment page failed", null, null));
             } else if(paymentRequest.getPaymentMethod().equals("vnpay") && EnumPaymentMethod.checkExistPaymentMethod(paymentRequest.getPaymentMethod())) {
                 try {
                     Order order = orderService.getOrderByOrderID(Integer.parseInt(paymentRequest.getOrderID()));
-                    if(order.getStatus().toLowerCase().equals("chờ thanh toán") && order != null) {
+                    String orderStatus = EnumOrderStatus.Chờ_thanh_toán.name();
+                    if(order.getStatus().equals(orderStatus.replaceAll("_", " ")) && order != null) {
                         long amount = (long) (order.getPrice()*100);
                         long haveToPay = (amount / 25000);
-                        String s = vnPayService.getVNPay(haveToPay, request, paymentRequest.getOrderID());
-                        response.sendRedirect(s);
+                        String link = vnPayService.getVNPay(haveToPay, request, paymentRequest.getOrderID());
+                        return ResponseEntity.status(HttpStatus.OK).body(new PaymentResponse("Success", "Redirect payment page successfully", null, link));
                     }
                 } catch (Exception e) {
                     log.error("Error at VNPay payment: {}", e.toString());
                 }
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PaymentResponse("Failed", "Redirect payment page failed", null, null));
             }
         } catch(Exception e) {
-            log.error(e.getMessage());
+            log.error("Error at checkout {}", e.getMessage());
         }
-        return "Checkout failed";
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PaymentResponse("Failed", "Redirect payment page failed", null, null));
     }
 
     @GetMapping("/paypal/cancel")
@@ -83,7 +84,8 @@ public class PaymentController {
     public ResponseEntity<PaymentResponse> paySuccess(@Param("orderID") String orderID, @RequestParam("paymentId") String paymentID, @RequestParam("PayerID") String payerID) {
         try {
             Order order = orderService.getOrderByOrderID(Integer.parseInt(orderID));
-            if(order.getStatus().toLowerCase().equals("chờ thanh toán") && order != null) {
+            String orderStatus = EnumOrderStatus.Chờ_thanh_toán.name();
+            if(order.getStatus().equals(orderStatus.replaceAll("_", " ")) && order != null) {
                 Payment payment = payPalService.executePayment(paymentID, payerID);
                 if(payment.getState().equals("approved")) {
                     SimpleDateFormat spm = new SimpleDateFormat("yyyy-MM-dd");
@@ -91,10 +93,14 @@ public class PaymentController {
                     String transactionID = payment.getTransactions().get(0).getRelatedResources().get(0).getSale().getId();
 //                  double paymentAmount = Double.parseDouble(payment.getTransactions().get(0).getAmount().getTotal());
 //                  double payAmount = Math.floor(paymentAmount * 25500);
-                    double remain = (order.getPrice() - order.getPrice());
-                    com.group6.swp391.model.Payment payment1 = new com.group6.swp391.model.Payment(order.getPrice(), order, date, remain, order.getPrice(), transactionID, "Paypal", "Thanh toán thành công");
-                    paymentService.save(payment1);
-                    order.setStatus("Chờ giao hàng");
+                    double paymentAmount = order.getPrice();
+                    double remainAmount = (order.getPrice() - paymentAmount);
+                    double totalAmount = order.getPrice();
+                    String paymentStatusSuccess = EnumPaymentStatus.Thanh_toán_thành_công.name();
+                    com.group6.swp391.model.Payment payment_order = new com.group6.swp391.model.Payment(paymentAmount, order, date, remainAmount, totalAmount, transactionID, "Paypal", paymentStatusSuccess.replaceAll("_", " "));
+                    paymentService.save(payment_order);
+                    String orderStatusSuccess = EnumOrderStatus.Chờ_giao_hàng.name();
+                    order.setStatus(orderStatusSuccess.replaceAll("_", " "));
                     orderService.save(order);
                     return ResponseEntity.status(HttpStatus.OK).body(new PaymentResponse("Success", "Payment successfully", null, null));
                 }
@@ -107,10 +113,10 @@ public class PaymentController {
 
     @GetMapping("/vnpaysuccess")
     public ResponseEntity<PaymentResponse> vnpaysuccess(HttpServletRequest request) throws ParseException {
-        String maloi = request.getParameter("vnp_ResponseCode"); // lay qua url
+        String responseCode = request.getParameter("vnp_ResponseCode"); // lay qua url
         String orderID = request.getParameter("vnp_TxnRef");
         String dateAt = request.getParameter("vnp_PayDate");
-        String amount = request.getParameter("vnp_Amount");
+//        String amount = request.getParameter("vnp_Amount");
         String nam = dateAt.substring(0, 4);
         String thang = dateAt.substring(4, 6);
         String ngay = dateAt.substring(6, 8);
@@ -119,14 +125,19 @@ public class PaymentController {
         String giay = dateAt.substring(12, 14);
         String dateParse = nam + "-" + thang + "-" + ngay + " " + gio + ":" + phut + ":" + giay;
         Order order = orderService.getOrderByOrderID(Integer.parseInt(orderID));
-        if(order.getStatus().toLowerCase().equals("chờ thanh toán") && order != null) {
-            if(maloi.equals("00")) {
+        String orderStatus = EnumOrderStatus.Chờ_thanh_toán.name();
+        if(order.getStatus().equals(orderStatus.replaceAll("_", " ")) && order != null) {
+            if(responseCode.equals("00")) {
                 SimpleDateFormat spm = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
                 Date date = spm.parse(dateParse);
-                double remain = (order.getPrice() - (order.getPrice()));
-                com.group6.swp391.model.Payment payment1 = new com.group6.swp391.model.Payment(order.getPrice(), order, date, remain, order.getPrice(), null, "VNPay", "Thanh toán thành công");
+                double paymentAmount = order.getPrice();
+                double remainAmount = (order.getPrice() - paymentAmount);
+                double totalAmount = order.getPrice();
+                String paymentStatusSuccess = EnumPaymentStatus.Thanh_toán_thành_công.name();
+                com.group6.swp391.model.Payment payment1 = new com.group6.swp391.model.Payment(paymentAmount, order, date, remainAmount, totalAmount, null, "VNPay", paymentStatusSuccess.replaceAll("_", " "));
                 paymentService.save(payment1);
-                order.setStatus("Chờ giao hàng");
+                String orderStatusSuccess = EnumOrderStatus.Chờ_giao_hàng.name();
+                order.setStatus(orderStatusSuccess.replaceAll("_", " "));
                 orderService.save(order);
                 return ResponseEntity.status(HttpStatus.OK).body(new PaymentResponse("Success", "Payment successfully", null, null));
             }
@@ -138,10 +149,12 @@ public class PaymentController {
     public ResponseEntity<PaymentResponse> refundWithPaypal(@RequestBody CancelPaymentRequest cancelPaymentRequest) throws PayPalRESTException {
         try {
             Order order = orderService.getOrderByOrderID(Integer.parseInt(cancelPaymentRequest.getOrderID()));
-            if (order != null && order.getStatus().toLowerCase().equals("chờ giao hàng")) {
+            String orderStatus = EnumOrderStatus.Chờ_giao_hàng.name();
+            if (order != null && order.getStatus().equals(orderStatus.replaceAll("_", " "))) {
                 com.group6.swp391.model.Payment payment = paymentService.findByOrder(order);
                 double amount = 0;
-                if(payment.getMethodPayment().toLowerCase().equals("paypal") && payment.getStatus().toLowerCase().equals("thanh toán thành công")) {
+                String paymentStatus = EnumPaymentStatus.Thanh_toán_thành_công.name();
+                if(payment.getMethodPayment().toLowerCase().equals(EnumPaymentMethod.paypal.name()) && payment.getStatus().equals(paymentStatus.replaceAll("_", " "))) {
                     amount += payment.getPaymentAmount();
                 }
                 String saleID = payment.getTransactionId();
@@ -151,9 +164,11 @@ public class PaymentController {
                     double amount_at = Math.floor(Double.parseDouble(result));
                     boolean check = payPalService.cancelPayment(saleID, amount_at, "USD");
                     if(check) {
-                        order.setStatus("Đã hoàn tiền");
+                        String orderStatusSuccess = EnumOrderStatus.Đã_hoàn_tiền.name();
+                        order.setStatus(orderStatusSuccess.replaceAll("_", " "));
                         orderService.save(order);
-                        payment.setStatus("Đã hoàn tiền");
+                        String paymentStatusSuccess = EnumPaymentStatus.Đã_hoàn_tiền.name();
+                        payment.setStatus(paymentStatusSuccess.replaceAll("_", " "));
                         paymentService.save(payment);
                         return ResponseEntity.status(HttpStatus.OK).body(new PaymentResponse("Success", "Refund successfully", null, null));
                     }

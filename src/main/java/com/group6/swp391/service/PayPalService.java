@@ -2,8 +2,8 @@ package com.group6.swp391.service;
 
 import com.group6.swp391.model.*;
 import com.group6.swp391.model.Order;
-import com.group6.swp391.enumPayments.EnumPayPalPaymentMethod;
-import com.group6.swp391.enumPayments.EnumPaypalPaymentIntent;
+import com.group6.swp391.enums.EnumPayPalPaymentMethod;
+import com.group6.swp391.enums.EnumPaypalPaymentIntent;
 import com.group6.swp391.repository.UserRepository;
 import com.paypal.api.payments.*;
 import com.paypal.api.payments.Payment;

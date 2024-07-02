@@ -1,23 +1,16 @@
 package com.group6.swp391;
 
 //import com.group6.swp391.cart.Cart;
-import com.group6.swp391.enumPayments.EnumPaymentMethod;
-import com.group6.swp391.model.Diamond;
-import com.group6.swp391.model.Product;
-import com.group6.swp391.model.User;
+import com.group6.swp391.enums.EnumOrderStatus;
+import com.group6.swp391.enums.EnumPaymentStatus;
 import com.group6.swp391.repository.DiamondRepository;
 import com.group6.swp391.repository.RoleRepository;
 import com.group6.swp391.repository.UserRepository;
 import com.group6.swp391.service.UserService;
-import lombok.Getter;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-
-import java.util.*;
 
 @SpringBootTest
 class Swp391ApplicationTests {
@@ -31,10 +24,17 @@ class Swp391ApplicationTests {
     @Test
     void contextLoads() {
 
-//        String s = "paypala";
+//        String orderStatus = EnumOrderStatus.Chờ_thanh_toán.name();
 //
-//        boolean cehck = EnumPaymentMethod.checkExistPaymentMethod(s);
-//        System.out.println(cehck);
+//        System.out.println(orderStatus);
+//
+//        System.out.println(orderStatus.replaceAll("_", " "));
+//
+//        String paymentStatus = EnumPaymentStatus.Đã_hoàn_tiền.name();
+//
+//        System.out.println(paymentStatus);
+//
+//        System.out.println(paymentStatus.replaceAll("_", " "));
 
 
 //        User user = userRepository.getUserByEmail("hoangsonha492@gmail.com");
