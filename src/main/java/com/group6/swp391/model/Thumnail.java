@@ -22,12 +22,12 @@ public class Thumnail {
     private String imageUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", nullable = false)
+    @JoinColumn(name = "product_id")
     @JsonIgnore
     private Product product;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "collection_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "collection_id")
     @JsonIgnore
     private Collection collection;
 }

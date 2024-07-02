@@ -7,7 +7,7 @@ import java.util.List;
 public interface CollectionService {
     Collection createCollection(Collection collection);
     List<Collection> getAllCollections();
-    Collection getCollection(int id);
+    Collection getCollection(String id);
     void updateCollection(Collection collection);
-    void deleteCollection(int id);
+    void deleteCollection(String id);
 }

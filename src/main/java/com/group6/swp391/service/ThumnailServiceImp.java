@@ -1,6 +1,10 @@
 package com.group6.swp391.service;
 
+import com.group6.swp391.model.Collection;
+import com.group6.swp391.model.Product;
 import com.group6.swp391.model.Thumnail;
+import com.group6.swp391.repository.CollectionRepository;
+import com.group6.swp391.repository.ProductRepository;
 import com.group6.swp391.repository.ThumnailRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,11 +15,14 @@ import java.util.List;
 public class ThumnailServiceImp implements ThumnailService {
     @Autowired
     ThumnailRepository thumnailRepository;
+    @Autowired ProductRepository productRepository;
+    @Autowired CollectionRepository collectionRepository;
 
     @Override
     public Thumnail createThumnail(Thumnail thumnails) {
         return thumnailRepository.save(thumnails);
     }
+
 
     @Override
     public List<Thumnail> getAllThumnails() {
@@ -49,5 +56,28 @@ public class ThumnailServiceImp implements ThumnailService {
         if(thumnailRepository.existsById(thumnailId)) {
             thumnailRepository.deleteById(thumnailId);
         }
+    }
+
+    @Override
+    public Thumnail createThumnailV2(String objectId, String imageUrl) {
+        Thumnail thumnail = new Thumnail();
+        if(objectId.startsWith("S") || objectId.startsWith("s")) {
+            Collection collectionExisting = collectionRepository.findById(objectId).orElseThrow();
+            if(collectionExisting == null) {
+                throw new RuntimeException("Collection Not Found");
+            }
+            thumnail.setCollection(collectionExisting);
+            thumnail.setImageUrl(imageUrl);
+            thumnail.setProduct(null);
+        } else {
+            Product productExisting = productRepository.findById(objectId).orElseThrow();
+            if(productExisting == null) {
+                throw new RuntimeException("Product Not Found");
+            }
+            thumnail.setProduct(productExisting);
+            thumnail.setImageUrl(imageUrl);
+            thumnail.setCollection(null);
+        }
+        return thumnailRepository.save(thumnail);
     }
 }
