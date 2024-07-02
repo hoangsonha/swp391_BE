@@ -59,4 +59,5 @@ public interface UserService {
 
     public boolean sendNotificationEmailHappyBirthDay() throws MessagingException, UnsupportedEncodingException;
 
+    public void setTimeOffline(Date date, String email);
 }

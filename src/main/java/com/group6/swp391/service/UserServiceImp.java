@@ -520,6 +520,11 @@ public class UserServiceImp implements UserService {
         return check;
     }
 
+    @Override
+    public void setTimeOffline(Date date, String email) {
+        userRepository.setTimeOfflineAt(date, email);
+    }
+
     public boolean mailOffline(User user, int monthOff) throws MessagingException, UnsupportedEncodingException {
         if(user.getEmail() == null) {
             return false;

@@ -52,6 +52,10 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Modifying
     @Query("update user set timeLoginFailed = ?1 where email = ?2")
     public void setTimeLoginFailed(Date date, String email);
+
+    @Modifying
+    @Query("update user set offlineAt = ?1 where email = ?2")
+    public void setTimeOfflineAt(Date date, String email);
     
     public User getUserByPhone(String phone);
 

@@ -138,7 +138,9 @@ public class MainController {
     @PostMapping("/logout")
     public ResponseEntity<ObjectResponse> getLogout(HttpServletRequest request) {
         String token = getToken(request);
+        String email = jwtToken.getEmailFromJwt(token);
         listToken.addToken(token);
+        userService.setTimeOffline(new Date(), email);
         return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Logout successfully", null));
     }
 
