@@ -10,4 +10,6 @@ public interface ThumnailService {
     Thumnail getById(int id);
     void updateThumnail(int id, Thumnail thumnail);
     void deleteThumnail(int thumnailId);
+
+    Thumnail createThumnailV2(String objectId, String imageUrl);
 }

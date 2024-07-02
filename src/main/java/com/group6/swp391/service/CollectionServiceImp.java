@@ -22,8 +22,8 @@ public class CollectionServiceImp implements CollectionService {
     }
 
     @Override
-    public Collection getCollection(int id) {
-        return collectionRepository.findById(id).orElseThrow();
+    public Collection getCollection(String id) {
+        return collectionRepository.getById(id);
     }
 
     @Override
@@ -32,7 +32,7 @@ public class CollectionServiceImp implements CollectionService {
     }
 
     @Override
-    public void deleteCollection(int id) {
+    public void deleteCollection(String id) {
         collectionRepository.deleteById(id);
     }
 }
