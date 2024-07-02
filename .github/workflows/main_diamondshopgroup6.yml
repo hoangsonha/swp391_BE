@@ -48,13 +48,13 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v1
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_501593DE1C2B45DF85933351F91878EA }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_2239E64749AD4EEFB473433F55966DDF }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_85D436EE7E7B40FEB874FFB211706DD0 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_C197F413E6E5478480D45B064AAA9500 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_E1EC90BCF26945028811AF657460684E }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_18F1173CEE00488FA7E0E26C58EEB571 }}
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
-        uses: azure/webapps-deploy@v3.0.0
+        uses: azure/webapps-deploy@v2
         with:
           app-name: 'diamondshopgroup6'
           slot-name: 'Production'
