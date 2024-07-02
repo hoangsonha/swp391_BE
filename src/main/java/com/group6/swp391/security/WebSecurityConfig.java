@@ -64,6 +64,8 @@ public class WebSecurityConfig {
                         .requestMatchers("/swp391/api/orders/**").permitAll()
                         .requestMatchers("/swp391/api/dashboards/**").permitAll()
                         .requestMatchers("/swp391/api/collections/**").permitAll()
+                        .requestMatchers("/swp391/api/feedback/**").permitAll()
+                        .requestMatchers("/swp391/api/search/**").permitAll()
                         .requestMatchers("/public/**").permitAll()
                         .requestMatchers("/v3/**").permitAll()
                         .requestMatchers("/swagger-ui/**").permitAll()
