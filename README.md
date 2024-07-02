@@ -1,4 +1,4 @@
-[![Build and deploy JAR app to Azure Web App - diamondshopgroup6](https://github.com/hoangsonha/swp391_BE/actions/workflows/main_diamondshopgroup6.yml/badge.svg)](https://github.com/hoangsonha/swp391_BE/actions/workflows/main_diamondshopgroup6.yml)
+[![Build and deploy JAR app to Azure Web App - DiamondShopProject](https://github.com/hoangsonha/swp391_BE/actions/workflows/main_diamondshopproject.yml/badge.svg)](https://github.com/hoangsonha/swp391_BE/actions/workflows/main_diamondshopproject.yml)
 
 
 ![Spring Boot 3.2.5](https://img.shields.io/badge/Spring%20Boot-3.2.5-brightgreen.svg)
