@@ -114,6 +114,7 @@ public class OrderController {
             } else if (confirmOrderRequest.getStatus().equalsIgnoreCase("Đã hủy")
                     || confirmOrderRequest.getStatus().equalsIgnoreCase("Hoàn Trả")
                     || confirmOrderRequest.getStatus().equalsIgnoreCase("Không Thành Công")) {
+
                 orderExisting.setStatus(confirmOrderRequest.getStatus());
                 orderExisting.setReason(confirmOrderRequest.getReason());
                 for(OrderDetail orderDetail: orderExisting.getOrderDetails()) {
