@@ -31,7 +31,7 @@ public class ThumnailServiceImp implements ThumnailService {
 
     @Override
     public Thumnail getById(int id) {
-        return thumnailRepository.findById(id).orElseThrow(() -> new RuntimeException("Thumnail Not Found"));
+        return thumnailRepository.finThumnailById(id);
     }
 
     @Override
@@ -79,5 +79,15 @@ public class ThumnailServiceImp implements ThumnailService {
             thumnail.setCollection(null);
         }
         return thumnailRepository.save(thumnail);
+    }
+
+    @Override
+    public void updateThumnaiV2(Thumnail thumnail) {
+        thumnailRepository.save(thumnail);
+    }
+
+    @Override
+    public List<Thumnail> getThumnailByObject(String objectId) {
+        return thumnailRepository.getByObject(objectId);
     }
 }

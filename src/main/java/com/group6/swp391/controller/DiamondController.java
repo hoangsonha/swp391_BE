@@ -1,9 +1,11 @@
 package com.group6.swp391.controller;
 
 import com.group6.swp391.model.Diamond;
+import com.group6.swp391.response.ObjectResponse;
 import com.group6.swp391.service.DiamondService;
 import com.group6.swp391.service.DiamondServiceImp;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -157,6 +159,19 @@ public class DiamondController {
             return ResponseEntity.ok("Diamond deleted successfully");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Delete diamond failed");
+        }
+    }
+
+    @GetMapping("/{dimension}")
+    public ResponseEntity<ObjectResponse> getByDimension(@PathVariable("dimension") float dimension) {
+        try {
+            List<Diamond> diamonds = diamondService.getByDimension(dimension);
+            if(diamonds == null || diamonds.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "no data", null));
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "List diamond search by dimension", diamonds));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Exception", e.getMessage()));
         }
     }
 

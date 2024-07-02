@@ -12,4 +12,7 @@ public interface ThumnailService {
     void deleteThumnail(int thumnailId);
 
     Thumnail createThumnailV2(String objectId, String imageUrl);
+
+    void updateThumnaiV2(Thumnail thumnail);
+    List<Thumnail> getThumnailByObject(String objectId);
 }

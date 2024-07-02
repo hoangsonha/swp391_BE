@@ -316,5 +316,15 @@ public class DiamondServiceImp implements DiamondService {
         }
     }
 
+    @Override
+    public List<Diamond> getByListDimensions(List<Float> dimensions) {
+        return diamondRepository.getByListDimensions(dimensions);
+    }
+
+    @Override
+    public List<Diamond> getByDimension(float dimension) {
+        return diamondRepository.getByDimension(dimension);
+    }
+
 
 }

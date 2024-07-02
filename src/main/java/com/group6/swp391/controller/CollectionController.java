@@ -5,7 +5,10 @@ import com.group6.swp391.model.CollectionProduct;
 import com.group6.swp391.model.Product;
 import com.group6.swp391.model.Thumnail;
 import com.group6.swp391.request.CollectionRequest;
+import com.group6.swp391.request.ThumnailRequest;
 import com.group6.swp391.response.AllColelctionRespone;
+import com.group6.swp391.response.CollectionDetailRespone;
+import com.group6.swp391.response.CollectionProductRespone;
 import com.group6.swp391.response.ObjectResponse;
 import com.group6.swp391.service.CollectionProductService;
 import com.group6.swp391.service.CollectionService;
@@ -91,8 +94,81 @@ public class CollectionController {
             }
             return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "List Collection", allColelctionResponeList));
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().body(null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "no data", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/collection_detail/{collection_id}")
+    public ResponseEntity<ObjectResponse> collectionDetail(@PathVariable("collection_id") String id) {
+        try {
+            Collection collectionExisting = collectionService.getCollection(id);
+            if(collectionExisting == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "no data", null));
+            }
+            CollectionDetailRespone collectionDetailRespone = new CollectionDetailRespone();
+            collectionDetailRespone.setCollectionId(collectionExisting.getCollecitonId());
+            collectionDetailRespone.setCollectionTitle(collectionExisting.getCollectionTitle());
+            collectionDetailRespone.setPrice(collectionExisting.getPrice());
+            collectionDetailRespone.setCollectionName(collectionExisting.getCollectionName());
+            collectionDetailRespone.setGemStone(collectionExisting.getGemStone());
+            collectionDetailRespone.setGoldOld(collectionExisting.getGoldOld());
+            collectionDetailRespone.setGoldType(collectionExisting.getGoldType());
+            collectionDetailRespone.setStatus(collectionExisting.isStatus());
+            List<CollectionProductRespone> collectionProductResponeList = new ArrayList<>();
+            List<Float> sizeDiamond = new ArrayList<>();
+            for (CollectionProduct collectionProduct : collectionExisting.getCollectionProduct()) {
+                CollectionProductRespone collectionProductRespone = new CollectionProductRespone();
+                collectionProductRespone.setProductId(collectionProduct.getProduct().getProductID());
+                collectionProductRespone.setProductName(collectionProduct.getProduct().getProductName());
+                Float size = collectionProduct.getProduct().getDimensionsDiamond();
+                sizeDiamond.add(size);
+                collectionProductResponeList.add(collectionProductRespone);
+            }
+            collectionDetailRespone.setCollectionProductRespones(collectionProductResponeList);
+            collectionDetailRespone.setSizeDiamond(sizeDiamond);
+            collectionDetailRespone.setThumnails(collectionExisting.getThumnails());
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Collection Detail Data", collectionDetailRespone));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "no data", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/{collection_id}")
+    public ResponseEntity<ObjectResponse> getThumnai(@PathVariable("collection_id") String id) {
+        try {
+            List<Thumnail> thumnailCollection = thumnailService.getThumnailByObject(id);
+            if(thumnailCollection.isEmpty() || thumnailCollection == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "no data", null));
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Thumnail collection with id: " + id, thumnailCollection));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "no data", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/update_thumail/{collection_id}")
+    public ResponseEntity<?> updateThumnailCollection(@PathVariable("collection_id") String id, @RequestBody List<ThumnailRequest> thumnailRequests) {
+        try {
+            List<Thumnail> thumnailCollection = thumnailService.getThumnailByObject(id);
+            if(thumnailCollection.isEmpty() || thumnailCollection == null) {
+                return ResponseEntity.badRequest().body("Collection null");
+            }
+            for (ThumnailRequest thumnailRequest: thumnailRequests) {
+                Thumnail thumnailExisting = thumnailService.getById(thumnailRequest.getImageId());
+                if(thumnailExisting == null) {
+                    thumnailExisting = new Thumnail();
+                    thumnailExisting.setImageUrl(thumnailRequest.getImageUrl());
+                    Collection collection = collectionService.getCollection(id);
+                    thumnailExisting.setCollection(collection);
+                    thumnailExisting.setProduct(null);
+                    thumnailService.createThumnail(thumnailExisting);
+                }
+                thumnailExisting.setImageUrl(thumnailRequest.getImageUrl());
+                thumnailService.updateThumnaiV2(thumnailExisting);
+            }
+            return ResponseEntity.ok().body("Update thumnail successfull");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 

@@ -9,6 +9,6 @@ import lombok.*;
 @Data
 @Builder
 public class ThumnailRequest {
-    private String ojectId;
+    private int imageId;
     private String imageUrl;
 }

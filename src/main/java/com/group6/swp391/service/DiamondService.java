@@ -28,4 +28,8 @@ public interface DiamondService {
 
     void updateStatus(String diamondId);
 
+    List<Diamond> getByListDimensions(List<Float> dimensions);
+
+    List<Diamond> getByDimension(float dimension);
+
 }

@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.concurrent.ForkJoinPool;
 
 @Repository
 public interface DiamondRepository extends JpaRepository<Diamond, String> {
@@ -356,4 +357,10 @@ public interface DiamondRepository extends JpaRepository<Diamond, String> {
     List<Diamond> findByDiamondNameContaining(String diamondName);
 
     List<Diamond> findByDiamondIDContaining(String diamondID);
+
+    @Query("SELECT d FROM Diamond d WHERE ROUND(d.dimensions,1) IN (:dimension)")
+    List<Diamond> getByListDimensions(@Param("dimension") List<Float> dimendsions);
+
+    @Query("SELECT d FROM Diamond d WHERE d.dimensions=:dimension")
+    List<Diamond> getByDimension(@Param("dimension") float dimension);
 }
