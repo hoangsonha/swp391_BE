@@ -99,9 +99,7 @@ public class MainController {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 String s = jwtToken.generatedToken(userDetails);
                 boolean check = jwtToken.validate(s);
-                if(check) {
-                    return ResponseEntity.status(HttpStatus.OK).body(new TokenResponse("Success", "Login successfully", s));
-                }
+                return ResponseEntity.status(HttpStatus.OK).body(new TokenResponse("Success", "Login successfully", s));
             } else {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new TokenResponse("Failed", "Login failed", null));
             }
