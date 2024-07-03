@@ -35,4 +35,9 @@ public class CollectionServiceImp implements CollectionService {
     public void deleteCollection(String id) {
         collectionRepository.deleteById(id);
     }
+
+    @Override
+    public String getLastCollectionId() {
+        return collectionRepository.getLastCollection();
+    }
 }
