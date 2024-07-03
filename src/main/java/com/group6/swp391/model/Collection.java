@@ -1,5 +1,6 @@
 package com.group6.swp391.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
@@ -39,9 +40,14 @@ public class Collection extends BaseEntity {
 
     @OneToMany(mappedBy = "collection", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnoreProperties("collection")
+    @JsonIgnore
     private List<CollectionProduct> collectionProduct;
 
     @OneToMany(mappedBy = "collection", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnoreProperties("collection")
+    @JsonIgnore
     private List<Thumnail> thumnails;
+
+    public Thumnail getThumail() {
+        return (thumnails != null && !thumnails.isEmpty()) ? thumnails.get(0) : null;
+    }
 }
