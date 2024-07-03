@@ -8,6 +8,6 @@ public interface CollectionProductService {
     CollectionProduct createCollectionProduct(CollectionProduct collectionProduct);
     CollectionProduct getCollectionProduct(int collectionProductId);
     List<CollectionProduct> getAllCollectionProducts();
-    void updateCollectionProduct(int collectionId, CollectionProduct collectionProduct);
+    void updateCollectionProduct(CollectionProduct collectionProduct);
     void deleteCollectionProduct(String collectionProductId);
 }

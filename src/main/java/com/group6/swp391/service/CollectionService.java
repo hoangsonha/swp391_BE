@@ -10,4 +10,5 @@ public interface CollectionService {
     Collection getCollection(String id);
     void updateCollection(Collection collection);
     void deleteCollection(String id);
+    String getLastCollectionId();
 }

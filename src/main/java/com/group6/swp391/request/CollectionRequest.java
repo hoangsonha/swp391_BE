@@ -1,6 +1,5 @@
 package com.group6.swp391.request;
 
-import com.group6.swp391.model.CollectionProduct;
 import com.group6.swp391.model.Thumnail;
 import lombok.*;
 
@@ -13,13 +12,12 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class CollectionRequest {
-    private String collectionId;
     private String collectionTitle;
     private String collectionName;
     private String gemStone;
     private String goldType;
     private String goldOld;
-    private double price;
+    private String status;
     private List<Thumnail> thumnails;
-    private List<String> productId;
+    private List<CollectionProductRequest> collectionProductRequests;
 }
