@@ -4,6 +4,7 @@ import com.group6.swp391.model.Collection;
 import com.group6.swp391.model.CollectionProduct;
 import com.group6.swp391.model.Product;
 import com.group6.swp391.model.Thumnail;
+import com.group6.swp391.request.CollectionProductRequest;
 import com.group6.swp391.request.CollectionRequest;
 import com.group6.swp391.request.ThumnailRequest;
 import com.group6.swp391.response.AllColelctionRespone;
@@ -31,22 +32,48 @@ public class CollectionController {
     @Autowired ThumnailService thumnailService;
     @Autowired ProductService productService;
 
+    private String generateNewCollectionId(String lastCollectionId) {
+        int newIdNumber = 100;
+        if(lastCollectionId != null && lastCollectionId.startsWith("SET")) {
+            String lastIdNumberStr = lastCollectionId.substring(3);
+            int lastIdNumber = Integer.parseInt(lastIdNumberStr);
+            newIdNumber = lastIdNumber + 1;
+        }
+        return "SET" + newIdNumber;
+    }
     @PostMapping("/create_collection")
     public ResponseEntity<?> createCollection(@RequestBody CollectionRequest collectionRequest) {
         try {
+            double price = 0.0;
             Collection newCollection = new Collection();
-            if(collectionService.getCollection(collectionRequest.getCollectionId()) != null) {
-                return ResponseEntity.badRequest().body("Collection already exists");
-            }
-            newCollection.setCollecitonId(collectionRequest.getCollectionId());
+            String lastCollection = collectionService.getLastCollectionId();
+            String newCollectionId = generateNewCollectionId(lastCollection);
+            newCollection.setCollecitonId(newCollectionId);
             newCollection.setCollectionTitle(collectionRequest.getCollectionTitle());
             newCollection.setCollectionName(collectionRequest.getCollectionName());
             newCollection.setGemStone(collectionRequest.getGemStone());
             newCollection.setGoldOld(collectionRequest.getGoldOld());
             newCollection.setGoldType(collectionRequest.getGoldType());
             newCollection.setStatus(true);
-            newCollection.setPrice(collectionRequest.getPrice());
+            List<CollectionProduct> collectionProducts = new ArrayList<>();
+            for (CollectionProductRequest collectionProductRequest : collectionRequest.getCollectionProductRequests()) {
+                CollectionProduct newCollectionProduct = new CollectionProduct();
+                collectionProducts.add(newCollectionProduct);
+                Product productExisting = productService.getProductById(collectionProductRequest.getProductId());
+                if (productExisting == null) {
+                    return ResponseEntity.badRequest().body("Product not found");
+                }
+                price += productExisting.getTotalPrice();
+                newCollectionProduct.setProduct(productExisting);
+                newCollectionProduct.setDiamond(null);
+            }
+            newCollection.setPrice(price);
+            newCollection.setCollectionProduct(collectionProducts);
             collectionService.createCollection(newCollection);
+            for (CollectionProduct collectionProduct : collectionProducts) {
+                collectionProduct.setCollection(newCollection);
+                collectionProductService.createCollectionProduct(collectionProduct);
+            }
             List<Thumnail> thumnailList = new ArrayList<>();
             for(Thumnail thumnail  : collectionRequest.getThumnails()) {
                 Thumnail newThumnail = new Thumnail();
@@ -56,20 +83,6 @@ public class CollectionController {
                 thumnailService.createThumnailV2(newCollection.getCollecitonId(), newThumnail.getImageUrl());
             }
             newCollection.setThumnails(thumnailList);
-            List<CollectionProduct> collectionProducts = new ArrayList<>();
-            for(String productId : collectionRequest.getProductId()) {
-                CollectionProduct newCollectionProduct = new CollectionProduct();
-                newCollectionProduct.setCollection(newCollection);
-                Product productExisting = productService.getProductById(productId);
-                if(productExisting == null) {
-                    return ResponseEntity.badRequest().body("product not found");
-                }
-                newCollectionProduct.setProduct(productExisting);
-                newCollectionProduct.setDiamond(null);
-                collectionProducts.add(newCollectionProduct);
-                collectionProductService.createCollectionProduct(newCollectionProduct);
-            }
-            newCollection.setCollectionProduct(collectionProducts);
             return ResponseEntity.ok("Create Collection Successfully");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -169,6 +182,62 @@ public class CollectionController {
             return ResponseEntity.ok().body("Update thumnail successfull");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/update_collection/{collection_id}")
+    public ResponseEntity<ObjectResponse> updateCollection(@PathVariable("collection_id") String id, @RequestBody CollectionRequest collectionRequest) {
+        try {
+            Collection collectionExisting = collectionService.getCollection(id);
+            if(collectionExisting == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Collection not exist", null));
+            }
+            if(collectionRequest.getCollectionTitle() != null) {
+                collectionExisting.setCollectionTitle(collectionRequest.getCollectionTitle());
+            }
+            if(collectionRequest.getCollectionName() != null) {
+                collectionExisting.setCollectionName(collectionRequest.getCollectionName());
+            }
+            if(collectionRequest.getGemStone() != null) {
+                collectionExisting.setGemStone(collectionRequest.getGemStone());
+            }
+            if(collectionRequest.getGoldOld() != null) {
+                collectionExisting.setGoldOld(collectionRequest.getGoldOld());
+            }
+            if(collectionRequest.getGoldType() != null) {
+                collectionExisting.setGoldType(collectionRequest.getGoldType());
+            }
+            if(collectionRequest.getStatus().equalsIgnoreCase("Hết")) {
+                collectionExisting.setStatus(false);
+            } else if(collectionRequest.getStatus().equalsIgnoreCase("Còn")) {
+                collectionExisting.setStatus(true);
+            }
+            if(collectionRequest.getCollectionProductRequests() != null) {
+                for (CollectionProductRequest collectionProductRequest : collectionRequest.getCollectionProductRequests()) {
+                    Product product = productService.getProductById(collectionProductRequest.getProductId());
+                    if(product == null) {
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Product not exist", null));
+                    }
+                    CollectionProduct collectionProduct = collectionProductService.getCollectionProduct(collectionProductRequest.getCollectionProductId());
+                    if(collectionProduct == null) {
+                        collectionProduct = new CollectionProduct();
+                        collectionProduct.setCollection(collectionExisting);
+                        collectionProduct.setProduct(product);
+                        collectionProduct.setDiamond(null);
+                        collectionExisting.setPrice(collectionExisting.getPrice() + product.getTotalPrice());
+                        collectionProductService.createCollectionProduct(collectionProduct);
+                        break;
+                    }
+                    collectionExisting.setPrice(collectionExisting.getPrice() - collectionProduct.getProduct().getTotalPrice() + product.getTotalPrice());
+                    collectionProduct.setProduct(product);
+                    collectionProductService.updateCollectionProduct(collectionProduct);
+                }
+            }
+            collectionService.updateCollection(collectionExisting);
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Update Collection Successfully", collectionExisting));
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "update failed", e.getMessage()));
         }
     }
 

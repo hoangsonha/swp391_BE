@@ -2,10 +2,13 @@ package com.group6.swp391.controller;
 
 import com.group6.swp391.model.Cart;
 import com.group6.swp391.model.CartItem;
+import com.group6.swp391.model.User;
 import com.group6.swp391.repository.CartItemRepository;
 import com.group6.swp391.request.CartRequest;
 import com.group6.swp391.response.CartResponse;
+import com.group6.swp391.response.UserRespone;
 import com.group6.swp391.service.CartServiceImp;
+import com.group6.swp391.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,10 +19,9 @@ import java.util.List;
 @RequestMapping("/swp391/api/carts")
 @CrossOrigin(origins = "*")
 public class CartController {
-    @Autowired
-    CartServiceImp cartServiceImp;
-    @Autowired
-    CartItemRepository CartItemRepository;
+    @Autowired CartServiceImp cartServiceImp;
+    @Autowired CartItemRepository CartItemRepository;
+    @Autowired UserService userService;
 
     @PostMapping("/add_cart")
     public ResponseEntity<?> addCart(@RequestBody CartRequest cartRequest) {
@@ -43,7 +45,22 @@ public class CartController {
             if (exsitingCart == null) {
                 return ResponseEntity.badRequest().body("user not found");
             }
-            return ResponseEntity.ok(exsitingCart);
+            CartResponse cartResponse = new CartResponse();
+            cartResponse.setCartId(exsitingCart.getCartId());
+            User userExisting = userService.getUserByID(userId);
+            UserRespone userRespone = new UserRespone();
+            userRespone.setUserID(userExisting.getUserID());
+            userRespone.setFirstName(userExisting.getFirstName());
+            userRespone.setLastName(userExisting.getLastName());
+            userRespone.setEmail(userExisting.getEmail());
+            userRespone.setGender(userExisting.getGender());
+            userRespone.setAddress(userExisting.getAddress());
+            userRespone.setPhone(userExisting.getPhone());
+            userRespone.setYearOfBirth(userExisting.getYearOfBirth());
+            userRespone.setPoints(userExisting.getPoints());
+            cartResponse.setUser(userRespone);
+            cartResponse.setItems(exsitingCart.getItems());
+            return ResponseEntity.ok(cartResponse);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

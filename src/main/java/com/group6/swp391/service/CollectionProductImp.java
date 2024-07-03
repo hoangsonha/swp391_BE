@@ -18,7 +18,7 @@ public class CollectionProductImp implements CollectionProductService{
 
     @Override
     public CollectionProduct getCollectionProduct(int collectionProductId) {
-        return collectionProductRepository.findById(collectionProductId).orElseThrow(() -> new RuntimeException("Collection product not found"));
+        return collectionProductRepository.findColectionProductId(collectionProductId);
     }
 
     @Override
@@ -27,11 +27,8 @@ public class CollectionProductImp implements CollectionProductService{
     }
 
     @Override
-    public void updateCollectionProduct(int collectionId, CollectionProduct collectionProduct) {
-        CollectionProduct collectionProductExisting = getCollectionProduct(collectionId);
-        if(collectionProductExisting == null) {
-            throw new RuntimeException("Collection product not found");
-        }
+    public void updateCollectionProduct(CollectionProduct collectionProduct) {
+        collectionProductRepository.save(collectionProduct);
     }
 
     @Override

@@ -17,7 +17,8 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
 
     Order getOrderByOrderID(int orderID);
 
-    List<Order> findByUserUserID(int userID);
+    @Query("SELECT o FROM order o WHERE o.user.userID =:id ORDER BY o.orderDate DESC ")
+    List<Order> findByUserUserID(@Param("id") int userID);
 
     @Query("SELECT o FROM order o WHERE o.status =:status ORDER BY o.orderDate DESC ")
     List<Order> findTopByOrderByOrderDateDesc(@Param("status") String status);

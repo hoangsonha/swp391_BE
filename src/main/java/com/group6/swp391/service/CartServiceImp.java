@@ -1,9 +1,6 @@
 package com.group6.swp391.service;
 
-import com.group6.swp391.model.Cart;
-import com.group6.swp391.model.CartItem;
-import com.group6.swp391.model.Diamond;
-import com.group6.swp391.model.ProductCustomize;
+import com.group6.swp391.model.*;
 import com.group6.swp391.repository.CartItemRepository;
 import com.group6.swp391.repository.CartRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +23,7 @@ public class  CartServiceImp implements CartService {
     @Autowired CartItemRepository CartItemRepository;
     @Autowired
     private CartItemRepository cartItemRepository;
+    @Autowired CollectionService collectionService;
 
     @Override
     public void addCart(int userId, String productId) {
@@ -49,12 +47,14 @@ public class  CartServiceImp implements CartService {
         if(productId.startsWith("P")||productId.startsWith("p")) {
             ProductCustomize productCustomize = productCustomizeServiceImp.getProductCustomizeById(productId);
             cartItem.setProductCustomize(productCustomize);
-            //cartItem.setDiamond(null);
             cartItem.setTotalPrice(productCustomize.getTotalPrice()*cartItem.getQuantity());
+        } else if(productId.startsWith("S")||productId.startsWith("s")) {
+            Collection collectionExisting = collectionService.getCollection(productId);
+            cartItem.setCollection(collectionExisting);
+            cartItem.setTotalPrice(collectionExisting.getPrice()*cartItem.getQuantity());
         } else {
             Diamond diamond = diamondServiceImp.getDiamondByDiamondID(productId);
             cartItem.setDiamondAdd(diamond);
-            cartItem.setProductCustomize(null);
             cartItem.setTotalPrice(diamond.getTotalPrice()*cartItem.getQuantity());
         }
         cart.addItem(cartItem);

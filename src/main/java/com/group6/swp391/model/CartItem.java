@@ -34,6 +34,10 @@ public class CartItem {
     @JoinColumn(name = "diamond_id")
     private Diamond diamondAdd;
 
+    @ManyToOne
+    @JoinColumn(name = "collection_id")
+    private Collection collection;
+
     private int quantity;
     private double totalPrice;
 }
