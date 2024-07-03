@@ -10,6 +10,7 @@ import com.group6.swp391.response.RecaptchaResponse;
 import com.group6.swp391.sms.SpeedSMSAPI;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -26,6 +27,7 @@ import java.time.LocalDate;
 import java.util.*;
 
 @Service
+@Slf4j
 public class UserServiceImp implements UserService {
 
     @Value(value = "${recaptcha.secretKey}")
@@ -118,76 +120,79 @@ public class UserServiceImp implements UserService {
         if(user.getEmail() == null) {
             return false;
         }
+        try {
+            String verifyURL = siteUrl + "/public/verify?code=" + user.getCodeVerify();
 
-        String verifyURL = siteUrl + "/public/verify?code=" + user.getCodeVerify();
+            String mai = "<body \n" +
+                    "    style=\"font-family: Arial, sans-serif;\n" +
+                    "            background-color: #f4f4f4;\n" +
+                    "            margin: 0;\n" +
+                    "            padding: 0;\n" +
+                    "            -webkit-text-size-adjust: none;\n" +
+                    "            -ms-text-size-adjust: none;\">\n" +
+                    "    <div class=\"email-container\"\n" +
+                    "         style=\"max-width: 600px;\n" +
+                    "                margin: auto;\n" +
+                    "                background-color: #ffffff;\n" +
+                    "                padding: 20px;\n" +
+                    "                border-radius: 8px;\n" +
+                    "                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);\">\n" +
+                    "        <div class=\"header\"\n" +
+                    "             style=\"text-align: center;\n" +
+                    "                    padding-bottom: 20px;\">\n" +
+                    "            <img src=\"https://firebasestorage.googleapis.com/v0/b/diamond-6401b.appspot.com/o/Logo.png?alt=media&token=13f983ed-b3e1-4bbe-83b2-a47edf62c6a6\"\n" +
+                    "                alt=\"Logo\" style=\"max-width: 300px;\">\n" +
+                    "        </div>\n" +
+                    "        <div class=\"content\"\n" +
+                    "              style=\"text-align: center;\n" +
+                    "                    color: #333333;\">\n" +
+                    "            <h1\n" +
+                    "            style=\"font-size: 24px;\n" +
+                    "                margin: 0;\n" +
+                    "                padding: 0;\"\n" +
+                    "            >Verify your email address</h1>\n" +
+                    "            <p\n" +
+                    "            style=\"font-size: 16px;\n" +
+                    "                    line-height: 1.5;\">Welcome to Group 6 Diamond.</p>\n" +
+                    "            <p\n" +
+                    "            style=\"font-size: 16px;\n" +
+                    "                line-height: 1.5;\">Please click the button below to confirm your email address and activate your account.</p>\n" +
+                    "            <a href=\"" + verifyURL + "\" class=\"btn\"\n" +
+                    "               style=\"display: inline-block;\n" +
+                    "               margin-top: 20px;\n" +
+                    "               padding: 15px 25px;\n" +
+                    "               font-size: 16px;\n" +
+                    "               color: #ffffff;\n" +
+                    "               background-color: #f52d56;\n" +
+                    "               border-radius: 5px;\n" +
+                    "               text-decoration: none;\">Confirm Email</a>\n" +
+                    "            <p>If you received this email in error, simply ignore this email and do not click the button.</p>\n" +
+                    "        </div>\n" +
+                    "        <div class=\"footer\"\n" +
+                    "             style=\"text-align: center;\n" +
+                    "             font-size: 14px;\n" +
+                    "             color: #777777;\n" +
+                    "             margin-top: 20px;\">\n" +
+                    "            <p>Copyright &copy; 2019, YOUWORK.TODAY INC</p>\n" +
+                    "            <h2>Thank you, have a good day .</h2></br>Group6 Team\n" +
+                    "        </div>\n" +
+                    "    </div>\n" +
+                    "</body>";
 
-        String mai = "<body \n" +
-                "    style=\"font-family: Arial, sans-serif;\n" +
-                "            background-color: #f4f4f4;\n" +
-                "            margin: 0;\n" +
-                "            padding: 0;\n" +
-                "            -webkit-text-size-adjust: none;\n" +
-                "            -ms-text-size-adjust: none;\">\n" +
-                "    <div class=\"email-container\"\n" +
-                "         style=\"max-width: 600px;\n" +
-                "                margin: auto;\n" +
-                "                background-color: #ffffff;\n" +
-                "                padding: 20px;\n" +
-                "                border-radius: 8px;\n" +
-                "                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);\">\n" +
-                "        <div class=\"header\"\n" +
-                "             style=\"text-align: center;\n" +
-                "                    padding-bottom: 20px;\">\n" +
-                "            <img src=\"https://firebasestorage.googleapis.com/v0/b/diamond-6401b.appspot.com/o/Logo.png?alt=media&token=13f983ed-b3e1-4bbe-83b2-a47edf62c6a6\"\n" +
-                "                alt=\"Logo\" style=\"max-width: 300px;\">\n" +
-                "        </div>\n" +
-                "        <div class=\"content\"\n" +
-                "              style=\"text-align: center;\n" +
-                "                    color: #333333;\">\n" +
-                "            <h1\n" +
-                "            style=\"font-size: 24px;\n" +
-                "                margin: 0;\n" +
-                "                padding: 0;\"\n" +
-                "            >Verify your email address</h1>\n" +
-                "            <p\n" +
-                "            style=\"font-size: 16px;\n" +
-                "                    line-height: 1.5;\">Welcome to Group 6 Diamond.</p>\n" +
-                "            <p\n" +
-                "            style=\"font-size: 16px;\n" +
-                "                line-height: 1.5;\">Please click the button below to confirm your email address and activate your account.</p>\n" +
-                "            <a href=\"" + verifyURL + "\" class=\"btn\"\n" +
-                "               style=\"display: inline-block;\n" +
-                "               margin-top: 20px;\n" +
-                "               padding: 15px 25px;\n" +
-                "               font-size: 16px;\n" +
-                "               color: #ffffff;\n" +
-                "               background-color: #f52d56;\n" +
-                "               border-radius: 5px;\n" +
-                "               text-decoration: none;\">Confirm Email</a>\n" +
-                "            <p>If you received this email in error, simply ignore this email and do not click the button.</p>\n" +
-                "        </div>\n" +
-                "        <div class=\"footer\"\n" +
-                "             style=\"text-align: center;\n" +
-                "             font-size: 14px;\n" +
-                "             color: #777777;\n" +
-                "             margin-top: 20px;\">\n" +
-                "            <p>Copyright &copy; 2019, YOUWORK.TODAY INC</p>\n" +
-                "            <h2>Thank you, have a good day .</h2></br>Group6 Team\n" +
-                "        </div>\n" +
-                "    </div>\n" +
-                "</body>";
-
-        String title = "Please verify your registration";
-        String senderName = "Group6";
-        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
-        helper.setFrom("hoangsonhadiggory@gmail.com", senderName);
-        helper.setTo(user.getEmail());
-        helper.setSubject(title);
-        helper.setText(mai, true);
-
-        javaMailSender.send(mimeMessage);
-        return true;
+            String title = "Please verify your registration";
+            String senderName = "Group6";
+            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
+            helper.setFrom("hoangsonhadiggory@gmail.com", senderName);
+            helper.setTo(user.getEmail());
+            helper.setSubject(title);
+            helper.setText(mai, true);
+            javaMailSender.send(mimeMessage);
+            return true;
+        } catch(Exception e) {
+            log.error("Cannot send mail {}", e.toString());
+            return false;
+        }
     }
 
     @Override
@@ -226,73 +231,76 @@ public class UserServiceImp implements UserService {
 
     @Override
     public boolean sendResetPasswordEmail(OTPRequest otpRequest, String siteUrl) throws MessagingException, UnsupportedEncodingException {
-        String phoneOrEmail = otpRequest.getEmailOrPhone();
-        User user = null;
-        boolean check = checkEmailOrPhone(phoneOrEmail);
-        if(check) {
-            user = userRepository.getUserByEmail(phoneOrEmail);
-        } else user = userRepository.getUserByPhone(phoneOrEmail);
-        String otp = generatedNumber();
-        String content = "Dear Customer, Absolutely do not provide this authentication Code to anyone. Enter OTP code " + otp + " to reset the password";
-        otpMap.put(phoneOrEmail, otp);
-        String mai = "<body \n" +
-                "    style=\"font-family: Arial, sans-serif;\n" +
-                "            background-color: #f4f4f4;\n" +
-                "            margin: 0;\n" +
-                "            padding: 0;\n" +
-                "            -webkit-text-size-adjust: none;\n" +
-                "            -ms-text-size-adjust: none;\">\n" +
-                "    <div class=\"email-container\"\n" +
-                "         style=\"max-width: 600px;\n" +
-                "                margin: auto;\n" +
-                "                background-color: #ffffff;\n" +
-                "                padding: 20px;\n" +
-                "                border-radius: 8px;\n" +
-                "                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);\">\n" +
-                "        <div class=\"header\"\n" +
-                "             style=\"text-align: center;\n" +
-                "                    padding-bottom: 20px;\">\n" +
-                "            <img src=\"https://firebasestorage.googleapis.com/v0/b/diamond-6401b.appspot.com/o/Logo.png?alt=media&token=13f983ed-b3e1-4bbe-83b2-a47edf62c6a6\"\n" +
-                "                alt=\"Logo\" style=\"max-width: 300px;\">\n" +
-                "        </div>\n" +
-                "        <div class=\"content\"\n" +
-                "              style=\"text-align: center;\n" +
-                "                    color: #333333;\">\n" +
-                "            <h1\n" +
-                "            style=\"font-size: 24px;\n" +
-                "                margin: 0;\n" +
-                "                padding: 0;\"\n" +
-                "            >Verify your email address</h1>\n" +
-                "            <p\n" +
-                "            style=\"font-size: 16px;\n" +
-                "                    line-height: 1.5;\">Welcome to Group 6 Diamond.</p>\n" +
-                "            <h1\n" +
-                "            style=\"font-size: 20px;\n" +
-                "                line-height: 1.5;\">" + content + "</h1>\n" +
-                "            <p>If you received this email in error, simply ignore this email and do not click the button.</p>\n" +
-                "        </div>\n" +
-                "        <div class=\"footer\"\n" +
-                "             style=\"text-align: center;\n" +
-                "             font-size: 14px;\n" +
-                "             color: #777777;\n" +
-                "             margin-top: 20px;\">\n" +
-                "            <p>Copyright &copy; 2019, YOUWORK.TODAY INC</p>\n" +
-                "            <h2>Thank you, have a good day .</h2></br>Group6 Team\n" +
-                "        </div>\n" +
-                "    </div>\n" +
-                "</body>";
-
-        String title = "Please verify your registration";
-        String senderName = "Group6";
-        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
-        helper.setFrom("hoangsonhadiggory@gmail.com", senderName);
-        helper.setTo(user.getEmail());
-        helper.setSubject(title);
-        helper.setText(mai, true);
-
-        javaMailSender.send(mimeMessage);
-        return true;
+        try {
+            String phoneOrEmail = otpRequest.getEmailOrPhone();
+            User user = null;
+            boolean check = checkEmailOrPhone(phoneOrEmail);
+            if(check) {
+                user = userRepository.getUserByEmail(phoneOrEmail);
+            } else user = userRepository.getUserByPhone(phoneOrEmail);
+            String otp = generatedNumber();
+            String content = "Dear Customer, Absolutely do not provide this authentication Code to anyone. Enter OTP code " + otp + " to reset the password";
+            otpMap.put(phoneOrEmail, otp);
+            String mai = "<body \n" +
+                    "    style=\"font-family: Arial, sans-serif;\n" +
+                    "            background-color: #f4f4f4;\n" +
+                    "            margin: 0;\n" +
+                    "            padding: 0;\n" +
+                    "            -webkit-text-size-adjust: none;\n" +
+                    "            -ms-text-size-adjust: none;\">\n" +
+                    "    <div class=\"email-container\"\n" +
+                    "         style=\"max-width: 600px;\n" +
+                    "                margin: auto;\n" +
+                    "                background-color: #ffffff;\n" +
+                    "                padding: 20px;\n" +
+                    "                border-radius: 8px;\n" +
+                    "                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);\">\n" +
+                    "        <div class=\"header\"\n" +
+                    "             style=\"text-align: center;\n" +
+                    "                    padding-bottom: 20px;\">\n" +
+                    "            <img src=\"https://firebasestorage.googleapis.com/v0/b/diamond-6401b.appspot.com/o/Logo.png?alt=media&token=13f983ed-b3e1-4bbe-83b2-a47edf62c6a6\"\n" +
+                    "                alt=\"Logo\" style=\"max-width: 300px;\">\n" +
+                    "        </div>\n" +
+                    "        <div class=\"content\"\n" +
+                    "              style=\"text-align: center;\n" +
+                    "                    color: #333333;\">\n" +
+                    "            <h1\n" +
+                    "            style=\"font-size: 24px;\n" +
+                    "                margin: 0;\n" +
+                    "                padding: 0;\"\n" +
+                    "            >Verify your email address</h1>\n" +
+                    "            <p\n" +
+                    "            style=\"font-size: 16px;\n" +
+                    "                    line-height: 1.5;\">Welcome to Group 6 Diamond.</p>\n" +
+                    "            <h1\n" +
+                    "            style=\"font-size: 20px;\n" +
+                    "                line-height: 1.5;\">" + content + "</h1>\n" +
+                    "            <p>If you received this email in error, simply ignore this email and do not click the button.</p>\n" +
+                    "        </div>\n" +
+                    "        <div class=\"footer\"\n" +
+                    "             style=\"text-align: center;\n" +
+                    "             font-size: 14px;\n" +
+                    "             color: #777777;\n" +
+                    "             margin-top: 20px;\">\n" +
+                    "            <p>Copyright &copy; 2019, YOUWORK.TODAY INC</p>\n" +
+                    "            <h2>Thank you, have a good day .</h2></br>Group6 Team\n" +
+                    "        </div>\n" +
+                    "    </div>\n" +
+                    "</body>";
+            String title = "Please verify your registration";
+            String senderName = "Group6";
+            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
+            helper.setFrom("hoangsonhadiggory@gmail.com", senderName);
+            helper.setTo(user.getEmail());
+            helper.setSubject(title);
+            helper.setText(mai, true);
+            javaMailSender.send(mimeMessage);
+            return true;
+        } catch (Exception e) {
+            log.error("Cannot send email {}", e.toString());
+            return false;
+        }
     }
 
     @Override
@@ -356,6 +364,7 @@ public class UserServiceImp implements UserService {
             otpMap.put(phoneOrEmail, otp);
             return true;
         } catch (Exception e) {
+            log.error("Cannot send SMS {}", e.toString());
             return false;
         }
     }
@@ -391,33 +400,36 @@ public class UserServiceImp implements UserService {
 
     @Override
     public long calculateSecondIn5Minute(User user) {
-        int yearInDB = getPartDate(user.getTimeLoginFailed(), Calendar.YEAR);
-        int monthInDB = getPartDate(user.getTimeLoginFailed(), Calendar.MONTH);
-        int dayInDB = getPartDate(user.getTimeLoginFailed(), Calendar.DATE);
-        int hourInDB = getPartDate(user.getTimeLoginFailed(), Calendar.HOUR_OF_DAY);
-        int minuteInDB = getPartDate(user.getTimeLoginFailed(), Calendar.MINUTE);
-        int secondInDB = getPartDate(user.getTimeLoginFailed(), Calendar.SECOND);
-        monthInDB += 1;
-        int yearInNow = getPartDate(new Date(), Calendar.YEAR);
-        int monthInNow = getPartDate(new Date(), Calendar.MONTH);
-        int dayInNow = getPartDate(new Date(), Calendar.DATE);
-        int hourNow = getPartDate(new Date(), Calendar.HOUR_OF_DAY);
-        int minuteNow = getPartDate(new Date(), Calendar.MINUTE);
-        int secondNow = getPartDate(new Date(), Calendar.SECOND);
-        monthInNow += 1;
-
-        int countDayInYearInDB = countDayInYear(yearInDB, monthInDB, dayInDB);
-        int countDayInYearInNow = countDayInYear(yearInNow, monthInNow, dayInNow);
-        long countSecondInDB = (countDayInYearInDB * 24 * 60 * 60) + (hourInDB * 60 * 60 + (minuteInDB * 60 + secondInDB));
-        long countSecondInNow = countDayInYearInNow * 24 * 60 * 60 + (hourNow * 60 * 60 + (minuteNow * 60 + secondNow));
         long countSecond = 0;
-        if (yearInDB == yearInNow) {
-            countSecond = countSecondInNow - countSecondInDB;
-        } else {
-            if (yearInDB < yearInNow) {
-                long countSecondIn1Year = countDayIn1Year(yearInDB) * 24 * 60 * 60;
-                long countSecondInBD = countSecondIn1Year - countSecondInDB;
-                countSecond = countSecondInBD + countSecondInNow;
+        if(user.getTimeLoginFailed() != null) {
+            int yearInDB = getPartDate(user.getTimeLoginFailed(), Calendar.YEAR);
+            int monthInDB = getPartDate(user.getTimeLoginFailed(), Calendar.MONTH);
+            int dayInDB = getPartDate(user.getTimeLoginFailed(), Calendar.DATE);
+            int hourInDB = getPartDate(user.getTimeLoginFailed(), Calendar.HOUR_OF_DAY);
+            int minuteInDB = getPartDate(user.getTimeLoginFailed(), Calendar.MINUTE);
+            int secondInDB = getPartDate(user.getTimeLoginFailed(), Calendar.SECOND);
+            monthInDB += 1;
+            int yearInNow = getPartDate(new Date(), Calendar.YEAR);
+            int monthInNow = getPartDate(new Date(), Calendar.MONTH);
+            int dayInNow = getPartDate(new Date(), Calendar.DATE);
+            int hourNow = getPartDate(new Date(), Calendar.HOUR_OF_DAY);
+            int minuteNow = getPartDate(new Date(), Calendar.MINUTE);
+            int secondNow = getPartDate(new Date(), Calendar.SECOND);
+            monthInNow += 1;
+
+            int countDayInYearInDB = countDayInYear(yearInDB, monthInDB, dayInDB);
+            int countDayInYearInNow = countDayInYear(yearInNow, monthInNow, dayInNow);
+            long countSecondInDB = (countDayInYearInDB * 24 * 60 * 60) + (hourInDB * 60 * 60 + (minuteInDB * 60 + secondInDB));
+            long countSecondInNow = countDayInYearInNow * 24 * 60 * 60 + (hourNow * 60 * 60 + (minuteNow * 60 + secondNow));
+
+            if (yearInDB == yearInNow) {
+                countSecond = countSecondInNow - countSecondInDB;
+            } else {
+                if (yearInDB < yearInNow) {
+                    long countSecondIn1Year = countDayIn1Year(yearInDB) * 24 * 60 * 60;
+                    long countSecondInBD = countSecondIn1Year - countSecondInDB;
+                    countSecond = countSecondInBD + countSecondInNow;
+                }
             }
         }
         return countSecond;
@@ -529,136 +541,146 @@ public class UserServiceImp implements UserService {
         if(user.getEmail() == null) {
             return false;
         }
-        String verifyURL = "feedback";
-        String mai = "<body \n" +
-                "    style=\"font-family: Arial, sans-serif;\n" +
-                "            background-color: #f4f4f4;\n" +
-                "            margin: 0;\n" +
-                "            padding: 0;\n" +
-                "            -webkit-text-size-adjust: none;\n" +
-                "            -ms-text-size-adjust: none;\">\n" +
-                "    <div class=\"email-container\"\n" +
-                "         style=\"max-width: 600px;\n" +
-                "                margin: auto;\n" +
-                "                background-color: #ffffff;\n" +
-                "                padding: 20px;\n" +
-                "                border-radius: 8px;\n" +
-                "                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);\">\n" +
-                "        <div class=\"header\"\n" +
-                "             style=\"text-align: center;\n" +
-                "                    padding-bottom: 20px;\">\n" +
-                "            <img src=\"https://firebasestorage.googleapis.com/v0/b/diamond-6401b.appspot.com/o/Logo.png?alt=media&token=13f983ed-b3e1-4bbe-83b2-a47edf62c6a6\"\n" +
-                "                alt=\"Logo\" style=\"max-width: 300px;\">\n" +
-                "        </div>\n" +
-                "        <div class=\"content\"\n" +
-                "              style=\"text-align: center;\n" +
-                "                    color: #333333;\">\n" +
-                "            <h1\n" +
-                "            style=\"font-size: 24px;\n" +
-                "                margin: 0;\n" +
-                "                padding: 0;\"\n" +
-                "            >Bạn đã không đăng nhập \"" + monthOff + "\" tháng!</h1>\n" +
-                "            <p\n" +
-                "            style=\"font-size: 16px;\n" +
-                "                    line-height: 1.5;\">Welcome to Group 6 Diamond.</p>\n" +
-                "            <p\n" +
-                "            style=\"font-size: 16px;\n" +
-                "                line-height: 1.5;\">Nếu có vấn đề gì không hài lòng hãy phản hồi cho chúng tôi.</p>\n" +
-                "            <a href=\"" + verifyURL + "\" class=\"btn\"\n" +
-                "               style=\"display: inline-block;\n" +
-                "               margin-top: 20px;\n" +
-                "               padding: 15px 25px;\n" +
-                "               font-size: 16px;\n" +
-                "               color: #ffffff;\n" +
-                "               background-color: #f52d56;\n" +
-                "               border-radius: 5px;\n" +
-                "               text-decoration: none;\">Góp ý</a>\n" +
-                "        </div>\n" +
-                "        <div class=\"footer\"\n" +
-                "             style=\"text-align: center;\n" +
-                "             font-size: 14px;\n" +
-                "             color: #777777;\n" +
-                "             margin-top: 20px;\">\n" +
-                "            <p>Copyright &copy; 2019, YOUWORK.TODAY INC</p>\n" +
-                "            <h2>Thank you, have a good day .</h2></br>Group6 Team\n" +
-                "        </div>\n" +
-                "    </div>\n" +
-                "</body>";
+        try {
+            String verifyURL = "feedback";
+            String mai = "<body \n" +
+                    "    style=\"font-family: Arial, sans-serif;\n" +
+                    "            background-color: #f4f4f4;\n" +
+                    "            margin: 0;\n" +
+                    "            padding: 0;\n" +
+                    "            -webkit-text-size-adjust: none;\n" +
+                    "            -ms-text-size-adjust: none;\">\n" +
+                    "    <div class=\"email-container\"\n" +
+                    "         style=\"max-width: 600px;\n" +
+                    "                margin: auto;\n" +
+                    "                background-color: #ffffff;\n" +
+                    "                padding: 20px;\n" +
+                    "                border-radius: 8px;\n" +
+                    "                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);\">\n" +
+                    "        <div class=\"header\"\n" +
+                    "             style=\"text-align: center;\n" +
+                    "                    padding-bottom: 20px;\">\n" +
+                    "            <img src=\"https://firebasestorage.googleapis.com/v0/b/diamond-6401b.appspot.com/o/Logo.png?alt=media&token=13f983ed-b3e1-4bbe-83b2-a47edf62c6a6\"\n" +
+                    "                alt=\"Logo\" style=\"max-width: 300px;\">\n" +
+                    "        </div>\n" +
+                    "        <div class=\"content\"\n" +
+                    "              style=\"text-align: center;\n" +
+                    "                    color: #333333;\">\n" +
+                    "            <h1\n" +
+                    "            style=\"font-size: 24px;\n" +
+                    "                margin: 0;\n" +
+                    "                padding: 0;\"\n" +
+                    "            >Bạn đã không đăng nhập \"" + monthOff + "\" tháng!</h1>\n" +
+                    "            <p\n" +
+                    "            style=\"font-size: 16px;\n" +
+                    "                    line-height: 1.5;\">Welcome to Group 6 Diamond.</p>\n" +
+                    "            <p\n" +
+                    "            style=\"font-size: 16px;\n" +
+                    "                line-height: 1.5;\">Nếu có vấn đề gì không hài lòng hãy phản hồi cho chúng tôi.</p>\n" +
+                    "            <a href=\"" + verifyURL + "\" class=\"btn\"\n" +
+                    "               style=\"display: inline-block;\n" +
+                    "               margin-top: 20px;\n" +
+                    "               padding: 15px 25px;\n" +
+                    "               font-size: 16px;\n" +
+                    "               color: #ffffff;\n" +
+                    "               background-color: #f52d56;\n" +
+                    "               border-radius: 5px;\n" +
+                    "               text-decoration: none;\">Góp ý</a>\n" +
+                    "        </div>\n" +
+                    "        <div class=\"footer\"\n" +
+                    "             style=\"text-align: center;\n" +
+                    "             font-size: 14px;\n" +
+                    "             color: #777777;\n" +
+                    "             margin-top: 20px;\">\n" +
+                    "            <p>Copyright &copy; 2019, YOUWORK.TODAY INC</p>\n" +
+                    "            <h2>Thank you, have a good day .</h2></br>Group6 Team\n" +
+                    "        </div>\n" +
+                    "    </div>\n" +
+                    "</body>";
 
-        String title = "Chăm sóc khách hàng";
-        String senderName = "Auto notification";
-        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
-        helper.setFrom("hoangsonhadiggory@gmail.com", senderName);
-        helper.setTo(user.getEmail());
-        helper.setSubject(title);
-        helper.setText(mai, true);
+            String title = "Chăm sóc khách hàng";
+            String senderName = "Auto notification";
+            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
+            helper.setFrom("hoangsonhadiggory@gmail.com", senderName);
+            helper.setTo(user.getEmail());
+            helper.setSubject(title);
+            helper.setText(mai, true);
 
-        javaMailSender.send(mimeMessage);
-        return true;
+            javaMailSender.send(mimeMessage);
+            return true;
+        } catch(Exception e) {
+            log.error("Cannot send mail ", e.toString());
+            return false;
+        }
     }
 
     public boolean emailHappyBirth(User user) throws MessagingException, UnsupportedEncodingException {
         if(user.getEmail() == null) {
             return false;
         }
-        String mai = "<body \n" +
-                "    style=\"font-family: Arial, sans-serif;\n" +
-                "            background-color: #f4f4f4;\n" +
-                "            margin: 0;\n" +
-                "            padding: 0;\n" +
-                "            -webkit-text-size-adjust: none;\n" +
-                "            -ms-text-size-adjust: none;\">\n" +
-                "    <div class=\"email-container\"\n" +
-                "         style=\"max-width: 600px;\n" +
-                "                margin: auto;\n" +
-                "                background-color: #ffffff;\n" +
-                "                padding: 20px;\n" +
-                "                border-radius: 8px;\n" +
-                "                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);\">\n" +
-                "        <div class=\"header\"\n" +
-                "             style=\"text-align: center;\n" +
-                "                    padding-bottom: 20px;\">\n" +
-                "            <img src=\"https://firebasestorage.googleapis.com/v0/b/diamond-6401b.appspot.com/o/Logo.png?alt=media&token=13f983ed-b3e1-4bbe-83b2-a47edf62c6a6\"\n" +
-                "                alt=\"Logo\" style=\"max-width: 300px;\">\n" +
-                "        </div>\n" +
-                "        <div class=\"content\"\n" +
-                "              style=\"text-align: center;\n" +
-                "                    color: #333333;\">\n" +
-                "            <h1\n" +
-                "            style=\"font-size: 24px;\n" +
-                "                margin: 0;\n" +
-                "                padding: 0;\"\n" +
-                "            >Chúc mừng sinh nhật</h1>\n" +
-                "            <p\n" +
-                "            style=\"font-size: 16px;\n" +
-                "                    line-height: 1.5;\">Welcome to Group 6 Diamond.</p>\n" +
-                "            <p\n" +
-                "            style=\"font-size: 16px;\n" +
-                "                line-height: 1.5;\">Diamond shop xin cảm ơn quý khách đã ủng hộ shop trong thời gian vừa qua và Happy Birth Day</p>\n" +
-                "        </div>\n" +
-                "        <div class=\"footer\"\n" +
-                "             style=\"text-align: center;\n" +
-                "             font-size: 14px;\n" +
-                "             color: #777777;\n" +
-                "             margin-top: 20px;\">\n" +
-                "            <p>Copyright &copy; 2019, YOUWORK.TODAY INC</p>\n" +
-                "            <h2>Thank you, have a good day .</h2></br>Group6 Team\n" +
-                "        </div>\n" +
-                "    </div>\n" +
-                "</body>";
+        try {
+            String mai = "<body \n" +
+                    "    style=\"font-family: Arial, sans-serif;\n" +
+                    "            background-color: #f4f4f4;\n" +
+                    "            margin: 0;\n" +
+                    "            padding: 0;\n" +
+                    "            -webkit-text-size-adjust: none;\n" +
+                    "            -ms-text-size-adjust: none;\">\n" +
+                    "    <div class=\"email-container\"\n" +
+                    "         style=\"max-width: 600px;\n" +
+                    "                margin: auto;\n" +
+                    "                background-color: #ffffff;\n" +
+                    "                padding: 20px;\n" +
+                    "                border-radius: 8px;\n" +
+                    "                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);\">\n" +
+                    "        <div class=\"header\"\n" +
+                    "             style=\"text-align: center;\n" +
+                    "                    padding-bottom: 20px;\">\n" +
+                    "            <img src=\"https://firebasestorage.googleapis.com/v0/b/diamond-6401b.appspot.com/o/Logo.png?alt=media&token=13f983ed-b3e1-4bbe-83b2-a47edf62c6a6\"\n" +
+                    "                alt=\"Logo\" style=\"max-width: 300px;\">\n" +
+                    "        </div>\n" +
+                    "        <div class=\"content\"\n" +
+                    "              style=\"text-align: center;\n" +
+                    "                    color: #333333;\">\n" +
+                    "            <h1\n" +
+                    "            style=\"font-size: 24px;\n" +
+                    "                margin: 0;\n" +
+                    "                padding: 0;\"\n" +
+                    "            >Chúc mừng sinh nhật</h1>\n" +
+                    "            <p\n" +
+                    "            style=\"font-size: 16px;\n" +
+                    "                    line-height: 1.5;\">Welcome to Group 6 Diamond.</p>\n" +
+                    "            <p\n" +
+                    "            style=\"font-size: 16px;\n" +
+                    "                line-height: 1.5;\">Diamond shop xin cảm ơn quý khách đã ủng hộ shop trong thời gian vừa qua và Happy Birth Day</p>\n" +
+                    "        </div>\n" +
+                    "        <div class=\"footer\"\n" +
+                    "             style=\"text-align: center;\n" +
+                    "             font-size: 14px;\n" +
+                    "             color: #777777;\n" +
+                    "             margin-top: 20px;\">\n" +
+                    "            <p>Copyright &copy; 2019, YOUWORK.TODAY INC</p>\n" +
+                    "            <h2>Thank you, have a good day .</h2></br>Group6 Team\n" +
+                    "        </div>\n" +
+                    "    </div>\n" +
+                    "</body>";
 
-        String title = "Happy Birth Day";
-        String senderName = "Auto notification";
-        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
-        helper.setFrom("hoangsonhadiggory@gmail.com", senderName);
-        helper.setTo(user.getEmail());
-        helper.setSubject(title);
-        helper.setText(mai, true);
+            String title = "Happy Birth Day";
+            String senderName = "Auto notification";
+            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
+            helper.setFrom("hoangsonhadiggory@gmail.com", senderName);
+            helper.setTo(user.getEmail());
+            helper.setSubject(title);
+            helper.setText(mai, true);
 
-        javaMailSender.send(mimeMessage);
-        return true;
+            javaMailSender.send(mimeMessage);
+            return true;
+        } catch (Exception e) {
+            log.error("Cannot send mail {}", e.toString());
+            return false;
+        }
     }
 
     public boolean checkBirthDay(User user) {
@@ -676,18 +698,5 @@ public class UserServiceImp implements UserService {
         }
         return check;
     }
-
-
-    //1. chạy vào MainSchedule class để start Scheduler bởi @PostConstruct, mỗi Scheduler sẽ có Trigger và JobDetail,
-    //   có thể tạo ra nhiều Scheduler, trong đây là 1 Scheduler với TriggerInfo và String cron để set time
-    //2. chạy đến service để run job bởi @PostConstruct, gọi tới CommonUtils để get ìnformation of Trigger và JobDetail, sau
-    //   đó trả về TriggerInfo và tên class để run và gọi hàm thực thi Scheduler ở MainSchedule class
-    //3. ở hàm thực thi Scheduler ở MainSchedule class sẽ lấy ra Trigger và JobDetail dựa theo tên class và TriggerInfo
-    //   mà đc trả về trước đó từ class JobRun
-    //  trong hàm getJobDetail sẽ map class vào JobData với tên là class và value là TriggerInfo đc truyền vào
-    //  trong hàm getTrigger sẽ thiết lập các thuộc tính của TriggerInfo đc truyền vào
-    //4. chạy vào Job class mà implement interface Job
-
-    // package job là tạo ra các jobs
 
 }

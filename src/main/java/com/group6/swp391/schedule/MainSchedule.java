@@ -32,3 +32,15 @@ public class MainSchedule {
         scheduler.shutdown();
     }
 }
+
+//1. chạy vào MainSchedule class để start Scheduler bởi @PostConstruct, mỗi Scheduler sẽ có Trigger và JobDetail,
+//   có thể tạo ra nhiều Scheduler, trong đây là 1 Scheduler với TriggerInfo và String cron để set time
+//2. chạy đến service để run job bởi @PostConstruct, gọi tới CommonUtils để get ìnformation of Trigger và JobDetail, sau
+//   đó trả về TriggerInfo và tên class để run và gọi hàm thực thi Scheduler ở MainSchedule class
+//3. ở hàm thực thi Scheduler ở MainSchedule class sẽ lấy ra Trigger và JobDetail dựa theo tên class và TriggerInfo
+//   mà đc trả về trước đó từ class JobRun
+//  trong hàm getJobDetail sẽ map class vào JobData với tên là class và value là TriggerInfo đc truyền vào
+//  trong hàm getTrigger sẽ thiết lập các thuộc tính của TriggerInfo đc truyền vào
+//4. chạy vào Job class mà implement interface Job
+
+// package job là tạo ra các jobs

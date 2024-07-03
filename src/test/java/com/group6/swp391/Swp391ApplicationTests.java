@@ -7,6 +7,7 @@ import com.group6.swp391.repository.DiamondRepository;
 import com.group6.swp391.repository.RoleRepository;
 import com.group6.swp391.repository.UserRepository;
 import com.group6.swp391.service.UserService;
+import io.jsonwebtoken.lang.Strings;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,6 +24,15 @@ class Swp391ApplicationTests {
 
     @Test
     void contextLoads() {
+
+        String s = "s";
+
+        String r = null;
+
+        System.out.println(Strings.hasText(s));
+
+
+
 
 //        String orderStatus = EnumOrderStatus.Chờ_thanh_toán.name();
 //

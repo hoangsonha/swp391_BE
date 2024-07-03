@@ -7,6 +7,7 @@ import com.group6.swp391.request.AdminRegister;
 import com.group6.swp391.response.ObjectResponse;
 import com.group6.swp391.service.RoleService;
 import com.group6.swp391.service.UserService;
+import io.jsonwebtoken.lang.Strings;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -45,12 +46,26 @@ public class AdminController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/all_role")
+    public ResponseEntity<ObjectResponse> getAllRole() {
+        List<Role> lists = roleService.getAllRoles();
+        boolean check = false;
+        if(lists !=null) {
+            if(lists.size() > 0) {
+                check = true;
+            }
+        }
+        return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Get all role successfully", lists))
+                : ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ObjectResponse("Failed", "Get_all role failed", lists));
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/register")
     public ResponseEntity<ObjectResponse> adminRegister(@Valid @RequestBody AdminRegister adminRegister, HttpServletRequest request) throws MessagingException, UnsupportedEncodingException {
         String randomString = UUID.randomUUID().toString();
         Role role = null;
         String role_register = adminRegister.getRole();
-        if(role_register == null) {
+        if(role_register == null || !Strings.hasText(role_register)) {
             role = roleService.getRoleByRoleName(EnumRoleName.ROLE_USER);
         } else {
             switch (role_register) {
@@ -63,6 +78,11 @@ public class AdminController {
                 case "2":
                     role = roleService.getRoleByRoleName(EnumRoleName.ROLE_DELIVERY);
                     break;
+                case "1":
+                    role = roleService.getRoleByRoleName(EnumRoleName.ROLE_ADMIN);
+                    break;
+                default:
+                    role = roleService.getRoleByRoleName(EnumRoleName.ROLE_USER);
             }
         }
         boolean check = true;
@@ -70,7 +90,7 @@ public class AdminController {
         User user = new User(adminRegister.getFirstName(), adminRegister.getLastName(), adminRegister.getEmail(),
                 bCryptPasswordEncoder.encode(adminRegister.getPassword()), adminRegister.getPhone(), adminRegister.getAddress(), adminRegister.getAvata(),
                 randomString, active, true, role, 0, null, null, null);
-        if(userService.getUserByEmail(adminRegister.getEmail()) != null || adminRegister == null) {
+        if(userService.getUserByEmail(adminRegister.getEmail()) != null || adminRegister.getEmail() == null) {
             check = false;
         }
         if(check) {
@@ -81,7 +101,7 @@ public class AdminController {
             }
         }
         return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Create account successfully", user))
-                :ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Create account failed", null));
+                : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Create account failed", null));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -89,7 +109,7 @@ public class AdminController {
     public ResponseEntity<ObjectResponse> adminLockedAccount(@PathVariable("id") int id) {
         boolean check = userService.lockedUser(id);
         return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Lock account successfully", null))
-                :ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Lock account failed", null));
+                : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Lock account failed", null));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -101,7 +121,7 @@ public class AdminController {
             userService.setQuantityLoginFailed(0, user.getEmail());
         }
         return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Lock account successfully", null))
-                :ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Lock account failed", null));
+                : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Lock account failed", null));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -109,7 +129,7 @@ public class AdminController {
     public ResponseEntity<ObjectResponse> adminDeleteAccount(@PathVariable("id") int id) {
         boolean check = userService.deleteUser(id);
         return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Delete account successfully", null))
-                :ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Delete account failed", null));
+                : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Delete account failed", null));
     }
 
 }
