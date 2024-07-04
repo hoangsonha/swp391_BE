@@ -59,10 +59,8 @@ public class MainController {
     @PostMapping("/register")
     public ResponseEntity<ObjectResponse> userRegister(@Valid @RequestBody UserRegister userRegister, HttpServletRequest request) throws MessagingException, UnsupportedEncodingException {
         Role role = roleService.getRoleByRoleName(EnumRoleName.ROLE_USER);
-
         String randomString = UUID.randomUUID().toString();
         boolean check = true;
-
         User user = new User(null, null, userRegister.getEmail(), bCryptPasswordEncoder.encode(userRegister.getPassword()), null, null, null, randomString, false, true, role, 0, null, null, null);
         if(userRegister == null || userService.getUserByEmail(userRegister.getEmail()) != null) {
             check = false;
@@ -70,7 +68,6 @@ public class MainController {
         if(check) {
             userService.save(user);
             String siteUrl = request.getRequestURL().toString().replace(request.getServletPath(), "");
-            // http://localhost:8080
             check = userService.sendVerificationEmail(user, siteUrl);
         }
         return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Create account successfully", user))
@@ -91,9 +88,9 @@ public class MainController {
     @PostMapping("/login")
     public ResponseEntity<TokenResponse> loginPage(@Valid @RequestBody UserLogin userLogin, HttpServletRequest request, HttpServletResponse response) {
         try {
-//            String gRecaptchaResponse = userLogin.getRecaptchaResponse();
-//            boolean check_captcha = userService.verifyRecaptcha(gRecaptchaResponse);
-//            if(check_captcha) {
+            String gRecaptchaResponse = userLogin.getRecaptchaResponse();
+            boolean check_captcha = userService.verifyRecaptcha(gRecaptchaResponse);
+            if(check_captcha) {
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                         new UsernamePasswordAuthenticationToken(userLogin.getEmail(), userLogin.getPassword());
                 Authentication authentication = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
@@ -102,9 +99,9 @@ public class MainController {
                 String s = jwtToken.generatedToken(userDetails);
                 boolean check = jwtToken.validate(s);
                 return ResponseEntity.status(HttpStatus.OK).body(new TokenResponse("Success", "Login successfully", s));
-//            } else {
-//                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new TokenResponse("Failed", "Login failed", null));
-//            }
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new TokenResponse("Failed", "Login failed", null));
+            }
         } catch(Exception e) {
             log.error("Cannot login : {}", e.toString());
             User user = userService.getUserByEmail(userLogin.getEmail());
@@ -203,11 +200,11 @@ public class MainController {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
         String vnp_CreateDate = formatter.format(cld.getTime());
 
-        Calendar cld2 = Calendar.getInstance(TimeZone.getTimeZone("UTC+7"));
+        Calendar cld2 = Calendar.getInstance(TimeZone.getTimeZone("SE Asia Standard Time"));
         SimpleDateFormat formatter2 = new SimpleDateFormat("yyyyMMddHHmmss");
         String vnp_CreateDate2 = formatter2.format(cld2.getTime());
 
-        Calendar cld3 = Calendar.getInstance(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
+        Calendar cld3 = Calendar.getInstance(TimeZone.getTimeZone("SE Asia Standard Time"));
         SimpleDateFormat formatter3 = new SimpleDateFormat("yyyyMMddHHmmss");
         String vnp_CreateDate3 = formatter3.format(cld3.getTime());
 
