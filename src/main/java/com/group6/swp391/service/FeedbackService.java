@@ -16,6 +16,8 @@ public interface FeedbackService {
 
     List<Feedback> getFeedbacksByCollectionID(String collectionID);
 
+    boolean deleteFeedback(int feedbackID);
+
     Feedback saveFeedback(FeedbackRequest feedbackRequest);
 
     List<Feedback> getNewestFeedbacks(int limit);

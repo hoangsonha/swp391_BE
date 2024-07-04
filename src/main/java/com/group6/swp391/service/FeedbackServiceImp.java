@@ -52,6 +52,21 @@ public class FeedbackServiceImp implements FeedbackService {
     }
 
     @Override
+    public boolean deleteFeedback(int feedbackID) {
+        try {
+            if (feedbackRepository.existsById(feedbackID)) {
+                feedbackRepository.deleteById(feedbackID);
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
     public Feedback saveFeedback(FeedbackRequest feedbackRequest) {
         try {
             Diamond diamond = null;

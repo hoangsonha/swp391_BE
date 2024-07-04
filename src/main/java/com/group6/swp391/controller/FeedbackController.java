@@ -115,6 +115,22 @@ public class FeedbackController {
         }
     }
 
+    @DeleteMapping("/delete_feedback/{id}")
+    public ResponseEntity<?> deleteFeedback(@PathVariable int id) {
+        try {
+            boolean isDeleted = feedbackService.deleteFeedback(id);
+            if (isDeleted) {
+                return ResponseEntity.ok("Feedback deleted successfully");
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("Feedback not found with ID: " + id);
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error deleting feedback: " + e.getMessage());
+        }
+    }
+
     @PostMapping("/submit_feedback")
     public ResponseEntity<?> submitFeedback(@RequestBody FeedbackRequest feedbackRequest) {
         try {
