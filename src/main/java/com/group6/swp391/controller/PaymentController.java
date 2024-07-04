@@ -182,6 +182,42 @@ public class PaymentController {
     }
 
 
+    @PostMapping("/vnpay/refund")
+    public ResponseEntity<PaymentResponse> refundWithVNPay(@RequestBody CancelPaymentRequest cancelPaymentRequest, HttpServletRequest request) throws PayPalRESTException {
+        try {
+            Order order = orderService.getOrderByOrderID(Integer.parseInt(cancelPaymentRequest.getOrderID()));
+            String orderStatus = EnumOrderStatus.Chờ_giao_hàng.name();
+            if (order != null && order.getStatus().equals(orderStatus.replaceAll("_", " "))) {
+                com.group6.swp391.model.Payment payment = paymentService.findByOrder(order);
+                double amount = 0;
+                String paymentStatus = EnumPaymentStatus.Thanh_toán_thành_công.name();
+                if(payment.getMethodPayment().toLowerCase().equals(EnumPaymentMethod.vnpay.name()) && payment.getStatus().equals(paymentStatus.replaceAll("_", " "))) {
+                    amount += payment.getPaymentAmount();
+                }
+
+                    double value = (amount / 25500);
+                    String result = String.format("%.2f",value);
+                    double amount_at = Math.floor(Double.parseDouble(result));
+                    String check = vnPayService.refundVNPay(amount_at, request, cancelPaymentRequest.getOrderID());
+//                    if(check) {
+//                        String orderStatusSuccess = EnumOrderStatus.Đã_hoàn_tiền.name();
+//                        order.setStatus(orderStatusSuccess.replaceAll("_", " "));
+//                        orderService.save(order);
+//                        String paymentStatusSuccess = EnumPaymentStatus.Đã_hoàn_tiền.name();
+//                        payment.setStatus(paymentStatusSuccess.replaceAll("_", " "));
+//                        paymentService.save(payment);
+//                        return ResponseEntity.status(HttpStatus.OK).body(new PaymentResponse("Success", "Refund successfully", null, null));
+//                    }
+
+            }
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PaymentResponse("Failed", "Refund failed", null, null));
+        } catch (Exception e) {
+            log.error("ERROR: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PaymentResponse("Failed", "Refund failed", null, null));
+        }
+    }
+
+
 
 
 
