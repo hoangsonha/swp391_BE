@@ -14,5 +14,6 @@ public class FeedbackRequest {
     private double rating;
     private String diamondID;
     private String productID;
+    private String collectionID;
     private int userID;
 }

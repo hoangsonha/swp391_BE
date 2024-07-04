@@ -4,6 +4,7 @@ import com.group6.swp391.model.Feedback;
 import com.group6.swp391.request.FeedbackRequest;
 import com.group6.swp391.service.FeedbackService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,12 +24,12 @@ public class FeedbackController {
         try {
             feedbacks = feedbackService.getAllFeedbacks();
             if (feedbacks.isEmpty()) {
-                return ResponseEntity.badRequest().body("Feedback list is empty");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Feedback list is empty");
             } else {
                 return ResponseEntity.ok(feedbacks);
             }
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Get all feedbacks failed");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Get all feedbacks failed");
         }
     }
 
@@ -38,12 +39,14 @@ public class FeedbackController {
         try {
             feedbacks = feedbackService.getFeedbacksByDiamondID(id);
             if (feedbacks.isEmpty()) {
-                return ResponseEntity.badRequest().body("No feedback found for diamond ID: " + id);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("No feedback found for diamond ID: " + id);
             } else {
                 return ResponseEntity.ok(feedbacks);
             }
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error retrieving feedback for diamond ID: " + id);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error retrieving feedback for diamond ID: " + id);
         }
     }
 
@@ -53,12 +56,14 @@ public class FeedbackController {
         try {
             feedbacks = feedbackService.getFeedbacksByUserID(id);
             if (feedbacks.isEmpty()) {
-                return ResponseEntity.badRequest().body("No feedback for user ID: " + id);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("No feedback for user ID: " + id);
             } else {
                 return ResponseEntity.ok(feedbacks);
             }
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error retrieving feedback for user ID: " + id);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error retrieving feedback for user ID: " + id);
         }
     }
 
@@ -68,12 +73,31 @@ public class FeedbackController {
         try {
             feedbacks = feedbackService.getFeedbacksByProductID(id);
             if (feedbacks.isEmpty()) {
-                return ResponseEntity.badRequest().body("No feedback for product ID: " + id);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("No feedback for product ID: " + id);
             } else {
                 return ResponseEntity.ok(feedbacks);
             }
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error retrieving feedback for product ID: " + id);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error retrieving feedback for product ID: " + id);
+        }
+    }
+
+    @GetMapping("/feedbacks_by_collection/{id}")
+    public ResponseEntity<?> getFeedbacksByCollectionID(@PathVariable String id) {
+        List<Feedback> feedbacks;
+        try {
+            feedbacks = feedbackService.getFeedbacksByCollectionID(id);
+            if (feedbacks.isEmpty()){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("No feedback for collection ID: " + id);
+            } else {
+                return ResponseEntity.ok(feedbacks);
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error retrieving feedback for collection ID: " + id);
         }
     }
 
@@ -82,11 +106,12 @@ public class FeedbackController {
         try {
             List<Feedback> feedbacks = feedbackService.getNewestFeedbacks(limit);
             if (feedbacks.isEmpty()) {
-                return ResponseEntity.badRequest().body("No feedbacks found");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No feedbacks found");
             }
             return ResponseEntity.ok(feedbacks);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error retrieving newest feedbacks: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error retrieving newest feedbacks: " + e.getMessage());
         }
     }
 
@@ -97,10 +122,12 @@ public class FeedbackController {
             if (feedback != null) {
                 return ResponseEntity.ok(feedback);
             } else {
-                return ResponseEntity.badRequest().body("Error saving feedback: Invalid product, diamond, or user ID");
+                return ResponseEntity.badRequest()
+                        .body("Error saving feedback: Invalid product, diamond, or user ID");
             }
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error saving feedback: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error saving feedback: " + e.getMessage());
         }
     }
 }

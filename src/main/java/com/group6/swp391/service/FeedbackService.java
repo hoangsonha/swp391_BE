@@ -14,6 +14,8 @@ public interface FeedbackService {
 
     List<Feedback> getFeedbacksByProductID(String productID);
 
+    List<Feedback> getFeedbacksByCollectionID(String collectionID);
+
     Feedback saveFeedback(FeedbackRequest feedbackRequest);
 
     List<Feedback> getNewestFeedbacks(int limit);

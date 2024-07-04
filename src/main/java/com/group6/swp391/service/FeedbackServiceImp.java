@@ -1,13 +1,7 @@
 package com.group6.swp391.service;
 
-import com.group6.swp391.model.Diamond;
-import com.group6.swp391.model.Feedback;
-import com.group6.swp391.model.Product;
-import com.group6.swp391.model.User;
-import com.group6.swp391.repository.DiamondRepository;
-import com.group6.swp391.repository.FeedbackRepository;
-import com.group6.swp391.repository.ProductRepository;
-import com.group6.swp391.repository.UserRepository;
+import com.group6.swp391.model.*;
+import com.group6.swp391.repository.*;
 import com.group6.swp391.request.FeedbackRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,6 +22,9 @@ public class FeedbackServiceImp implements FeedbackService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private CollectionRepository collectionRepository;
 
     @Override
     public List<Feedback> getAllFeedbacks() {
@@ -50,10 +47,17 @@ public class FeedbackServiceImp implements FeedbackService {
     }
 
     @Override
+    public List<Feedback> getFeedbacksByCollectionID(String collectionID) {
+        return feedbackRepository.findByCollectionCollecitonId(collectionID);
+    }
+
+    @Override
     public Feedback saveFeedback(FeedbackRequest feedbackRequest) {
         try {
             Diamond diamond = null;
             Product product = null;
+            Collection collection = null;
+
             User user = userRepository.findById(feedbackRequest.getUserID()).orElse(null);
             if (user == null) {
                 return null;
@@ -69,6 +73,12 @@ public class FeedbackServiceImp implements FeedbackService {
                 if (product == null) {
                     return null;
                 }
+            } else if (feedbackRequest.getCollectionID() != null) {
+                collection = collectionRepository.findById(feedbackRequest
+                        .getCollectionID()).orElse(null);
+                if (collection == null) {
+                    return null;
+                }
             } else {
                 return null;
             }
@@ -78,6 +88,7 @@ public class FeedbackServiceImp implements FeedbackService {
                     .rating(feedbackRequest.getRating())
                     .diamond(diamond)
                     .product(product)
+                    .collection(collection)
                     .user(user)
                     .build();
 

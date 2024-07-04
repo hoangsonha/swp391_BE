@@ -1,7 +1,6 @@
 package com.group6.swp391.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -33,6 +32,11 @@ public class Feedback extends BaseEntity {
     private Product product;
 
     @ManyToOne(cascade = CascadeType.MERGE)
+    @JoinColumn(name = "collection_id")
+    @JsonIgnore
+    private Collection collection;
+
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "user_id")
     @JsonIgnore
     private User user;
@@ -51,10 +55,12 @@ public class Feedback extends BaseEntity {
         return user != null ? ( user.getFirstName() + " " + user.getLastName()) : null;
     }
 
-    public Feedback(String comment, double rating, Diamond diamond, Product product) {
+    public Feedback(String comment, double rating, Diamond diamond,
+                    Product product, Collection collection) {
         this.comment = comment;
         this.rating = rating;
         this.diamond = diamond;
         this.product = product;
+        this.collection = collection;
     }
 }

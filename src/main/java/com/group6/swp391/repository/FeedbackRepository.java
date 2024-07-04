@@ -16,6 +16,8 @@ public interface FeedbackRepository extends JpaRepository<Feedback, Integer> {
 
     List<Feedback> findByProductProductID(String productID);
 
+    List<Feedback> findByCollectionCollecitonId(String collectionID);
+
     @Query(value = "SELECT f FROM Feedback f ORDER BY f.createAt DESC")
     List<Feedback> findTopByOrderByCreateAtDesc(@Param("limit") int limit);
 }

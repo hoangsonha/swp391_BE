@@ -47,6 +47,10 @@ public class Collection extends BaseEntity {
     @JsonIgnore
     private List<Thumnail> thumnails;
 
+    @OneToMany(mappedBy = "collection")
+    @JsonIgnore
+    private List<Feedback> feedbacks;
+
     public Thumnail getThumail() {
         return (thumnails != null && !thumnails.isEmpty()) ? thumnails.get(0) : null;
     }
