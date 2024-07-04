@@ -34,6 +34,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @RestController
@@ -189,5 +191,30 @@ public class MainController {
         return lists.size() > 0 ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Get all diamond by search advance successfully", lists))
                 : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Get all diamond by search advance failed", null));
     }
+
+    @GetMapping("/time")
+    public ResponseEntity<ObjectResponse> getTimeInServer() {
+        LocalDateTime dateTime = LocalDateTime.now();
+        Date date = new Date();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+
+        Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+        String vnp_CreateDate = formatter.format(cld.getTime());
+
+        Calendar cld2 = Calendar.getInstance(TimeZone.getTimeZone("UTC+7"));
+        SimpleDateFormat formatter2 = new SimpleDateFormat("yyyyMMddHHmmss");
+        String vnp_CreateDate2 = formatter2.format(cld2.getTime());
+
+        Calendar cld3 = Calendar.getInstance(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
+        SimpleDateFormat formatter3 = new SimpleDateFormat("yyyyMMddHHmmss");
+        String vnp_CreateDate3 = formatter3.format(cld3.getTime());
+
+        String s ="LocalDate: " + dateTime + ", Date: " + date + ", Calendar: " + calendar.getTime() + ", Calendar.getTimeZone(ETC)" + vnp_CreateDate + ", Calendar.getTimeZone(UTC)" + vnp_CreateDate2 + ", Calendar.getTimeZone(asia)" + vnp_CreateDate3;
+
+        return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Time", "Time", s));
+    }
+
 
 }
