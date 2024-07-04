@@ -2,12 +2,10 @@ package com.group6.swp391.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.group6.swp391.enums.EnumGenderName;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
-
 import java.util.Date;
 import java.util.List;
 
@@ -25,7 +23,7 @@ public class User extends BaseEntity {
     private String lastName;
     @Column(name = "email", nullable = false, length = 100, unique = true)
     private String email;
-    @Column(name = "password", length = 100)
+    @Column(name = "password", length = 100, nullable = true)
     private String password;
     @Column(name = "phone", length = 15)
     private String phone;
@@ -50,6 +48,7 @@ public class User extends BaseEntity {
     @Column(name = "offline_at")
     private Date offlineAt;
 
+    @Column(columnDefinition = "INT DEFAULT 0", nullable = true)
     private int quantityLoginFailed;
 
     @DateTimeFormat(pattern = "YYYY-MM-DD hh:mm:ss")
@@ -100,4 +99,5 @@ public class User extends BaseEntity {
         this.yearOfBirth = yearOfBirth;
         this.timeLoginFailed = timeLoginFailed;
     }
+
 }

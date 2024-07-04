@@ -6,6 +6,8 @@ import com.group6.swp391.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class RoleServiceImp implements RoleService {
 
@@ -15,5 +17,10 @@ public class RoleServiceImp implements RoleService {
     public Role getRoleByRoleName(EnumRoleName roleName) {
         Role role = roleRepository.getRoleByRoleName(roleName);
         return role;
+    }
+
+    @Override
+    public List<Role> getAllRoles() {
+        return roleRepository.findAll();
     }
 }
