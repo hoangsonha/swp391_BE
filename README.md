@@ -2,7 +2,7 @@
 
 
 ![Spring Boot 3.2.5](https://img.shields.io/badge/Spring%20Boot-3.2.5-brightgreen.svg)
-![Mysql 8.0](https://img.shields.io/badge/Mysql-8.0-blue.svg)
+![Mysql 8.0](https://img.shields.io/badge/Mysql-8.3.0-blue.svg)
 ![JDK 20](https://img.shields.io/badge/JDK-20-brightgreen.svg)
 ![Maven](https://img.shields.io/badge/Maven-3.9.7-yellowgreen.svg)
 ![license](https://img.shields.io/crates/l/rustc-serialize/0.3.24.svg)
