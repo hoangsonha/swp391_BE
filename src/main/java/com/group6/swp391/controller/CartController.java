@@ -1,7 +1,6 @@
 package com.group6.swp391.controller;
 
 import com.group6.swp391.model.Cart;
-import com.group6.swp391.model.CartItem;
 import com.group6.swp391.model.User;
 import com.group6.swp391.repository.CartItemRepository;
 import com.group6.swp391.request.CartRequest;

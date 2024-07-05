@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Repository
@@ -20,4 +21,7 @@ public interface ProductRepository extends JpaRepository<Product, String> {
     List<Product> getByCondition(@Param("shape") String shapeDiamond,@Param("dimensions") float dimensionDiamond);
 
     List<Product> findByProductNameContaining(String productName);
+
+    @Query("SELECT p FROM Product p WHERE MONTH (p.createAt)=:month AND YEAR (p.createAt)=:year")
+    List<Product> findByCreateInMOnth(@Param("month") int month, @Param("year") int year);
 }

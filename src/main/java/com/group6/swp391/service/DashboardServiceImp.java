@@ -1,12 +1,14 @@
 package com.group6.swp391.service;
 
+import com.group6.swp391.model.Diamond;
 import com.group6.swp391.model.Order;
-import com.group6.swp391.repository.OrderDetailRepository;
-import com.group6.swp391.repository.OrderRepository;
-import com.group6.swp391.repository.UserRepository;
+import com.group6.swp391.model.Product;
+import com.group6.swp391.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Service
@@ -14,6 +16,8 @@ public class DashboardServiceImp implements DashboardService {
     @Autowired OrderRepository orderRepository;
     @Autowired OrderDetailRepository orderDetailRepository;
     @Autowired UserRepository userRepository;
+    @Autowired DiamondRepository diamondRepository;
+    @Autowired ProductRepository productRepository;
 
 
     @Override
@@ -50,7 +54,18 @@ public class DashboardServiceImp implements DashboardService {
     }
 
     @Override
-    public Double totalRevenueDate(int date, int month, int year) {
-        return orderRepository.totalRevenueInDate(date, month, year);
+    public Double totalRevenueDate(LocalDateTime startdate,LocalDateTime endtdate) {
+        return orderRepository.totalRevenueInDate(startdate, endtdate);
     }
+
+    @Override
+    public List<Diamond> getNewDiamonds(int month, int year) {
+        return diamondRepository.findByCreateAtMonth(month, year);
+    }
+
+    @Override
+    public List<Product> getNewProducts(int month, int year) {
+        return productRepository.findByCreateInMOnth(month, year);
+    }
+
 }

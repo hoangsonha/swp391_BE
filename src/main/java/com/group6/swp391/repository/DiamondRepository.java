@@ -8,10 +8,12 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.concurrent.ForkJoinPool;
 
 @Repository
 public interface DiamondRepository extends JpaRepository<Diamond, String> {
+
+    @Query("SELECT d FROM Diamond d WHERE MONTH(d.inputDate)=:month AND YEAR(d.inputDate)=:year")
+    List<Diamond> findByCreateAtMonth(@Param("month") int month, @Param("year") int year);
 
     public Diamond getDiamondByDiamondID(String diamondID);
 
