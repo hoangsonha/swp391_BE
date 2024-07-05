@@ -31,6 +31,55 @@ public class DashboardController {
         return formattedNumber;
     }
 
+    private Double totalCurrentDate() {
+        try {
+            LocalDate currentDate = LocalDate.now();
+            LocalDateTime startDate = currentDate.atStartOfDay();
+            LocalDateTime endDate = startDate.plusDays(1).minusNanos(1);
+            Double total = dashboardService.totalRevenueDate(startDate, endDate);
+            if(total == null || total == 0.0) {
+                return 0.0;
+            }
+            return total;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private Double totalBegoreDate() {
+        try {
+            LocalDate currentDate = LocalDate.now();
+            LocalDate prevDate = currentDate.minusDays(1);
+            LocalDateTime starPrevDatetDate = prevDate.atStartOfDay();
+            LocalDateTime endPevDateDate = starPrevDatetDate.plusDays(1).minusNanos(1);
+            Double total = dashboardService.totalRevenueDate(starPrevDatetDate, endPevDateDate);
+            if(total == null || total == 0.0) {
+                return 0.0;
+            }
+            return total;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @GetMapping("/compare_total_date")
+    public ResponseEntity<ObjectResponse> campareBetweenPrevAndCurrentDate() {
+        try {
+            Double currentDate = totalCurrentDate();
+            Double prevDate = totalBegoreDate();
+            Double total = (currentDate - prevDate)/prevDate * 100;
+            if (total == null || total == 0.0) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "no data", 0.0));
+            }
+            String numberFormat = formatNumberDouble(total);
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Get value compare between two month", numberFormat));
+        } catch (Exception e) {
+            return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "failed", e.getMessage()));
+        }
+    }
+
     // tong doanh thu trong ngay
     @GetMapping("/total_revenue_date")
     public ResponseEntity<ObjectResponse> totalRevenueToday() {
@@ -39,11 +88,11 @@ public class DashboardController {
             LocalDateTime startDate = currentDate.atStartOfDay();
             LocalDateTime endDate = startDate.plusDays(1).minusNanos(1);
             Double total = dashboardService.totalRevenueDate(startDate, endDate);
-            if(total == null || total == 0) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Success", "no data", 0.0));
+            if(total == null || total == 0.0) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "no data", 0.0));
             }
-            String formatTotal = formatNumberDouble(total);
-            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "total revenue in date", formatTotal));
+
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "total revenue in date", total));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "no data", e.getMessage()));
         }
@@ -59,10 +108,10 @@ public class DashboardController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "get data failed", 0.0));
             }
             for (Order order : orders) {
-                toteal = order.getPrice();
+                toteal += order.getPrice();
             }
-            String formatTotal = formatNumberDouble(toteal);
-            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Total Revenue Store", formatTotal));
+
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Total Revenue Store", toteal));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "get data failed", e.getMessage()));
         }
@@ -73,11 +122,10 @@ public class DashboardController {
     public ResponseEntity<ObjectResponse> getTotalRevenue() {
         try {
             int currentYear = LocalDate.now().getYear();
-            List<String> totalRevenue = new ArrayList<>();
+            List<Double> totalRevenue = new ArrayList<>();
             for(int i = 1; i < 13; i++) {
                 Double moonth = dashboardService.getTotalRevenueInMonth(i,currentYear);
-                String formatTotal = formatNumberDouble(moonth);
-                totalRevenue.add(formatTotal);
+                totalRevenue.add(moonth);
             }
             return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Total Revenue in month", totalRevenue));
         } catch (Exception e) {
@@ -90,11 +138,10 @@ public class DashboardController {
     public ResponseEntity<ObjectResponse> gettotalDiamondRevenue() {
         try {
             int currentYear = LocalDate.now().getYear();
-            List<String> totalRevenue = new ArrayList<>();
+            List<Double> totalRevenue = new ArrayList<>();
             for(int i = 1; i < 13; i++) {
                 Double moonth = dashboardService.getTotalRevenueDiamond(i, currentYear);
-                String formatTotal = formatNumberDouble(moonth);
-                totalRevenue.add(formatTotal);
+                totalRevenue.add(moonth);
             }
             return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Total Diamond Revenue in month", totalRevenue));
         } catch (Exception e) {
@@ -107,11 +154,10 @@ public class DashboardController {
     public ResponseEntity<ObjectResponse> gettotalProductCustomizeRevenue() {
         try {
             int currentYear = LocalDate.now().getYear();
-            List<String> totalRevenue = new ArrayList<>();
+            List<Double> totalRevenue = new ArrayList<>();
             for(int i = 1; i < 13; i++) {
                 Double moonth = dashboardService.getTotalRevenueProductcustomizer(i, currentYear);
-                String formatTotal = formatNumberDouble(moonth);
-                totalRevenue.add(formatTotal);
+                totalRevenue.add(moonth);
             }
             return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Total Productcustomize Revenue in month", totalRevenue));
         } catch (Exception e) {
@@ -205,8 +251,8 @@ public class DashboardController {
             Double totalRevenueMonthPrev = dashboardService.getTotalRevenueInMonth(monthPrev, year);
             Double totalRevenueMonthCurrent = dashboardService.getTotalRevenueInMonth(monthCurrent, year);
             Double totalCompare = (((totalRevenueMonthCurrent - totalRevenueMonthPrev)/totalRevenueMonthPrev) * 100);
-            String formatTotal = formatNumberDouble(totalCompare);
-            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Get value compare between two month", formatTotal));
+            String numberFormat = formatNumberDouble(totalCompare);
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Get value compare between two month", numberFormat));
         } catch (Exception e) {
             return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "failed", e.getMessage()));
         }

@@ -39,4 +39,5 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
 
     @Query("SELECT SUM(o.price) FROM order o WHERE o.orderDate >= :startDate AND o.orderDate < :endDate AND o.status = 'Đã giao'")
     Double totalRevenueInDate(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+
 }
