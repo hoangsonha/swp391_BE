@@ -32,6 +32,7 @@ public class PaymentController {
     @Autowired private PaymentService paymentService;
     @Autowired private VNPayService vnPayService;
 
+
     @PostMapping("/checkout")
     public ResponseEntity<PaymentResponse> pay(@RequestBody PaymentRequest paymentRequest, HttpServletRequest request, HttpServletResponse response) {
         try {
@@ -139,7 +140,8 @@ public class PaymentController {
                 String orderStatusSuccess = EnumOrderStatus.Chờ_giao_hàng.name();
                 order.setStatus(orderStatusSuccess.replaceAll("_", " "));
                 orderService.save(order);
-                return ResponseEntity.status(HttpStatus.OK).body(new PaymentResponse("Success", "Payment successfully", null, null));
+                String successUrl = request.getRequestURL().toString().replace(request.getServletPath(), "") + "/payment/success?orderID=" + orderID;
+                return ResponseEntity.status(HttpStatus.OK).body(new PaymentResponse("Success", "Payment successfully", null, successUrl));
             }
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PaymentResponse("Failed", "Payment failed", null, null));
