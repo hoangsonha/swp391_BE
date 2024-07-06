@@ -60,6 +60,7 @@ public class WarrantyCardController {
     }
 
     @GetMapping("/search")
+    @JsonView(Views.Public.class)
     public ResponseEntity<?> searchWarrantyCards(@RequestParam("query") String query) {
         try {
             List<WarrantyCard> warrantyCards = warrantyCardServiceImp.searchWarrantyCards(query);
@@ -97,8 +98,6 @@ public class WarrantyCardController {
 //            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
 //        }
 //    }
-
-
 
     @GetMapping("/all_warranty_card")
     @JsonView(Views.Internal.class)
