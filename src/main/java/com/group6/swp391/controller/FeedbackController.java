@@ -3,6 +3,7 @@ package com.group6.swp391.controller;
 import com.group6.swp391.model.Feedback;
 import com.group6.swp391.request.FeedbackRequest;
 import com.group6.swp391.service.FeedbackService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -132,7 +133,7 @@ public class FeedbackController {
     }
 
     @PostMapping("/submit_feedback")
-    public ResponseEntity<?> submitFeedback(@RequestBody FeedbackRequest feedbackRequest) {
+    public ResponseEntity<?> submitFeedback(@RequestBody @Valid FeedbackRequest feedbackRequest) {
         try {
             Feedback feedback = feedbackService.saveFeedback(feedbackRequest);
             if (feedback != null) {

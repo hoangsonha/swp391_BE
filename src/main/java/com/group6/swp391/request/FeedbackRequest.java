@@ -1,5 +1,9 @@
 package com.group6.swp391.request;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -10,10 +14,20 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class FeedbackRequest {
-    private String comment;
-    private double rating;
-    private String diamondID;
-    private String productID;
-    private String collectionID;
-    private int userID;
+    @NotBlank
+    String comment;
+
+    @Min(0)
+    @Max(5)
+    @NotNull
+    double rating;
+
+    String diamondID;
+
+    String productID;
+
+    String collectionID;
+
+    @NotNull
+    int userID;
 }
