@@ -2,6 +2,7 @@ package com.group6.swp391.repository;
 
 import com.group6.swp391.model.Diamond;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -10,7 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface DiamondRepository extends JpaRepository<Diamond, String> {
+public interface DiamondRepository extends JpaRepository<Diamond, String>, JpaSpecificationExecutor {
 
     @Query("SELECT d FROM Diamond d WHERE MONTH(d.inputDate)=:month AND YEAR(d.inputDate)=:year")
     List<Diamond> findByCreateAtMonth(@Param("month") int month, @Param("year") int year);
@@ -355,10 +356,6 @@ public interface DiamondRepository extends JpaRepository<Diamond, String> {
     @Modifying
     @Query("select d from Diamond d where d.carat <= ?1 and d.carat >= ?2 and d.colorLevel = ?3")
     public List<Diamond> getDiamondBySearchAdvancedExcludeTotalPriceShapeShapeClarify(float caratEnd, float caratBegin, char colorLevel);
-
-    List<Diamond> findByDiamondNameContaining(String diamondName);
-
-    List<Diamond> findByDiamondIDContaining(String diamondID);
 
     @Query("SELECT d FROM Diamond d WHERE ROUND(d.dimensions,1) IN (:dimension)")
     List<Diamond> getByListDimensions(@Param("dimension") List<Float> dimendsions);

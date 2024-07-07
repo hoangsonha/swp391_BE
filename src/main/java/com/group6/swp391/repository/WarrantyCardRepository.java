@@ -33,4 +33,5 @@ public interface WarrantyCardRepository extends JpaRepository<WarrantyCard, Inte
     List<WarrantyCard> searchWarrantyCards(@Param("query") String query);
 
     List<WarrantyCard> findByWarrantyCardID(int warrantyCardId);
+
 }
