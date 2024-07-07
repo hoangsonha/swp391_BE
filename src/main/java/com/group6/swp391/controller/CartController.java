@@ -8,6 +8,7 @@ import com.group6.swp391.response.CartResponse;
 import com.group6.swp391.response.UserRespone;
 import com.group6.swp391.service.CartServiceImp;
 import com.group6.swp391.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +24,7 @@ public class CartController {
     @Autowired UserService userService;
 
     @PostMapping("/add_cart")
-    public ResponseEntity<?> addCart(@RequestBody CartRequest cartRequest) {
+    public ResponseEntity<?> addCart(@RequestBody @Valid CartRequest cartRequest) {
         try {
             if(cartRequest.getProductId() == null) {
                 return ResponseEntity.badRequest().body("Product is required");

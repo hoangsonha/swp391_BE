@@ -86,7 +86,8 @@ public class UserController {
 
     @PreAuthorize("hasRole('USER')")
     @PostMapping("/change_password/{user_id}")
-    public ResponseEntity<ObjectResponse> changePassWord(@PathVariable("user_id") int userId,@RequestBody PasswordRequest passwordRequest) {
+    public ResponseEntity<ObjectResponse> changePassWord(@PathVariable("user_id") int userId,
+                                                         @RequestBody @Valid PasswordRequest passwordRequest) {
         try {
             User user = userService.getUserByID(userId);
             if(user == null) {

@@ -7,6 +7,7 @@ import com.group6.swp391.request.PointRequest;
 import com.group6.swp391.service.OrderServiceImp;
 import com.group6.swp391.service.PointsServiceImp;
 import com.group6.swp391.service.UserServiceImp;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +24,7 @@ public class PointsController {
     OrderServiceImp orderServiceImp;
 
     @PostMapping("/create_point")
-    public ResponseEntity<Points> creatPoints(@RequestBody PointRequest pointRequest) {
+    public ResponseEntity<Points> creatPoints(@RequestBody @Valid PointRequest pointRequest) {
         try {
             if(pointRequest == null) {
                 return ResponseEntity.status(400).body(null);

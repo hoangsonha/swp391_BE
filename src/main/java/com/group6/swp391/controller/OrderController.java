@@ -7,6 +7,7 @@ import com.group6.swp391.response.NewOrderRespone;
 import com.group6.swp391.response.OrderDetailRespone;
 import com.group6.swp391.response.OrderRespone;
 import com.group6.swp391.service.*;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -303,7 +304,7 @@ public class OrderController {
     }
 
     @PostMapping("/submit_order")
-    public ResponseEntity<?> submitOrder(@RequestBody OrderRequest orderRequest) {
+    public ResponseEntity<?> submitOrder(@RequestBody @Valid OrderRequest orderRequest) {
         try {
             User existingUser = userService.getUserByID(orderRequest.getUserID());
             if(existingUser == null) {

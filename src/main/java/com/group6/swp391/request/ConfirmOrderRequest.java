@@ -1,6 +1,7 @@
 package com.group6.swp391.request;
 
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Setter
 @Getter
@@ -8,7 +9,8 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ConfirmOrderRequest {
-    private String status;
-    private String reason;
+    String status;
+    String reason;
 }

@@ -14,12 +14,12 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class FeedbackRequest {
-    @NotBlank
+    @NotBlank(message = "Bình luận không được để trống")
     String comment;
 
-    @Min(0)
-    @Max(5)
-    @NotNull
+    @Min(value = 0, message = "Đánh giá phải lớn hơn hoặc bằng 0")
+    @Max(value = 5, message = "Đánh giá phải nhỏ hơn hoặc bằng 5")
+    @NotNull(message = "Đánh giá không được để trống")
     double rating;
 
     String diamondID;
@@ -28,6 +28,6 @@ public class FeedbackRequest {
 
     String collectionID;
 
-    @NotNull
+    @NotNull(message = "Mã người dùng không được để trống")
     int userID;
 }

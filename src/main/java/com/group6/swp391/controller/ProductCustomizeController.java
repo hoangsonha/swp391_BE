@@ -6,6 +6,7 @@ import com.group6.swp391.model.ProductCustomize;
 import com.group6.swp391.repository.DiamondRepository;
 import com.group6.swp391.request.CustomizeRequest;
 import com.group6.swp391.service.*;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +32,8 @@ public class ProductCustomizeController {
     @Autowired CartServiceImp cartServiceImp;
 
     @PostMapping("/create_customizeProduct/{userId}")
-    public ResponseEntity<?> createProductCustome(@PathVariable("userId") int userId, @RequestBody CustomizeRequest customizeRequest) {
+    public ResponseEntity<?> createProductCustome(@PathVariable("userId") int userId,
+                                                  @RequestBody @Valid CustomizeRequest customizeRequest) {
         try {
             if(customizeRequest == null) {
                 return ResponseEntity.badRequest().body("Custome Request can't be null");

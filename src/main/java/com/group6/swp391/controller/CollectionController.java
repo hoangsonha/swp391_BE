@@ -15,6 +15,7 @@ import com.group6.swp391.service.CollectionProductService;
 import com.group6.swp391.service.CollectionService;
 import com.group6.swp391.service.ProductService;
 import com.group6.swp391.service.ThumnailService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,7 +43,7 @@ public class CollectionController {
         return "SET" + newIdNumber;
     }
     @PostMapping("/create_collection")
-    public ResponseEntity<?> createCollection(@RequestBody CollectionRequest collectionRequest) {
+    public ResponseEntity<?> createCollection(@RequestBody @Valid CollectionRequest collectionRequest) {
         try {
             double price = 0.0;
             Collection newCollection = new Collection();
@@ -160,7 +161,8 @@ public class CollectionController {
     }
 
     @PostMapping("/update_thumail/{collection_id}")
-    public ResponseEntity<?> updateThumnailCollection(@PathVariable("collection_id") String id, @RequestBody List<ThumnailRequest> thumnailRequests) {
+    public ResponseEntity<?> updateThumnailCollection(@PathVariable("collection_id") String id,
+                                                      @RequestBody @Valid List<ThumnailRequest> thumnailRequests) {
         try {
             List<Thumnail> thumnailCollection = thumnailService.getThumnailByObject(id);
             if(thumnailCollection.isEmpty() || thumnailCollection == null) {
