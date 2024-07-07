@@ -21,4 +21,10 @@ public interface FeedbackService {
     Feedback saveFeedback(FeedbackRequest feedbackRequest);
 
     List<Feedback> getNewestFeedbacks(int limit);
+
+    double getAverageRatingForProduct(String productID);
+
+    double getAverageRatingForDiamond(String diamondID);
+
+    double getAverageRatingForCollection(String collectionID);
 }

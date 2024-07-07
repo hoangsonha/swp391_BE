@@ -147,4 +147,40 @@ public class FeedbackController {
                     .body("Error saving feedback: " + e.getMessage());
         }
     }
+
+    @GetMapping("/average_rating_product/{productID}")
+    public ResponseEntity<?> getAverageRatingForProduct(@PathVariable String productID) {
+        try {
+            double averageRating = feedbackService.getAverageRatingForProduct(productID);
+            return ResponseEntity.ok("Average rating for product ID " + productID
+                    + " is: " + averageRating);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error calculating average rating for product ID: " + productID);
+        }
+    }
+
+    @GetMapping("/average_rating_diamond/{diamondID}")
+    public ResponseEntity<?> getAverageRatingForDiamond(@PathVariable String diamondID) {
+        try {
+            double averageRating = feedbackService.getAverageRatingForDiamond(diamondID);
+            return ResponseEntity.ok("Average rating for product ID " + diamondID
+                    + " is: " + averageRating);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error calculating average rating for product ID: " + diamondID);
+        }
+    }
+
+    @GetMapping("/average_rating_collection/{collectionID}")
+    public ResponseEntity<?> getAverageRatingForCollection(@PathVariable String collectionID) {
+        try {
+            double averageRating = feedbackService.getAverageRatingForCollection(collectionID);
+            return ResponseEntity.ok("Average rating for product ID " + collectionID
+                    + " is: " + averageRating);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error calculating average rating for product ID: " + collectionID);
+        }
+    }
 }

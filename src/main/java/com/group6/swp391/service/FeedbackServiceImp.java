@@ -118,4 +118,49 @@ public class FeedbackServiceImp implements FeedbackService {
     public List<Feedback> getNewestFeedbacks(int limit) {
         return feedbackRepository.findTopByOrderByCreateAtDesc(limit);
     }
+
+    @Override
+    public double getAverageRatingForProduct(String productID) {
+        try {
+            List<Feedback> feedbacks = feedbackRepository.findByProductProductID(productID);
+            if (feedbacks.isEmpty()) {
+                return 0.0;
+            }
+            double totalRating = feedbacks.stream().mapToDouble(Feedback::getRating).sum();
+            return totalRating / feedbacks.size();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    @Override
+    public double getAverageRatingForDiamond(String diamondID) {
+        try {
+            List<Feedback> feedbacks = feedbackRepository.findByDiamondDiamondID(diamondID);
+            if (feedbacks.isEmpty()) {
+                return 0.0;
+            }
+            double totalRating = feedbacks.stream().mapToDouble(Feedback::getRating).sum();
+            return totalRating / feedbacks.size();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    @Override
+    public double getAverageRatingForCollection(String collectionID) {
+        try {
+            List<Feedback> feedbacks = feedbackRepository.findByCollectionCollecitonId(collectionID);
+            if (feedbacks.isEmpty()) {
+                return 0.0;
+            }
+            double totalRating = feedbacks.stream().mapToDouble(Feedback::getRating).sum();
+            return totalRating / feedbacks.size();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
 }
