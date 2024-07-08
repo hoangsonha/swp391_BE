@@ -5,9 +5,8 @@ import com.group6.swp391.repository.WarrantyCardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class WarrantyCardServiceImp implements WarrantyCardService {
@@ -59,18 +58,33 @@ public class WarrantyCardServiceImp implements WarrantyCardService {
 
     @Override
     public List<WarrantyCard> searchWarrantyCards(String searchQuery) {
-        List<WarrantyCard> results = warrantyCardRepository.searchWarrantyCards(searchQuery);
+        Set<WarrantyCard> results = new LinkedHashSet<>(warrantyCardRepository.searchWarrantyCards(searchQuery));
         try {
             int id = Integer.parseInt(searchQuery);
-            List<WarrantyCard> card = warrantyCardRepository.findByWarrantyCardID(id);
-            if (card != null) {
-                results.addAll(card);
+            List<WarrantyCard> warrantyCards = warrantyCardRepository.findByWarrantyCardID(id);
+            if (warrantyCards != null) {
+                results.addAll(warrantyCards);
             }
         } catch (NumberFormatException e) {
 
         }
-        return results;
+        return results.stream().collect(Collectors.toList());
     }
+
+//    @Override
+//    public List<WarrantyCard> searchWarrantyCards(String searchQuery) {
+//        List<WarrantyCard> results = warrantyCardRepository.searchWarrantyCards(searchQuery);
+//        try {
+//            int id = Integer.parseInt(searchQuery);
+//            List<WarrantyCard> card = warrantyCardRepository.findByWarrantyCardID(id);
+//            if (card != null) {
+//                results.addAll(card);
+//            }
+//        } catch (NumberFormatException e) {
+//
+//        }
+//        return results;
+//    }
 
 //    @Override
 //    public WarrantyCard findByIdOrDiamondIdOrProductCustomId(String id) {
