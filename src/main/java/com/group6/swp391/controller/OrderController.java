@@ -89,7 +89,7 @@ public class OrderController {
             } else if(confirmOrderRequest.getStatus().equalsIgnoreCase("Đã giao")) {
                 orderExisting.setStatus(confirmOrderRequest.getStatus());
                 orderExisting.setReason(null);
-
+                pointsService.createPoints(orderExisting.getUser().getUserID(), orderExisting.getOrderID());
                 List<OrderDetail> orderDetails = orderExisting.getOrderDetails();
                 for(OrderDetail orderDetail : orderDetails) {
                     WarrantyCard newWarrantyCard = new WarrantyCard();
@@ -343,10 +343,11 @@ public class OrderController {
                 if (cartItem.getProductCustomize() != null) {
                     ProductCustomize productCustomize = cartItem.getProductCustomize();
                     Diamond diamondInProductCustomize = productCustomize.getDiamond();
-                    if (diamondInProductCustomize != null) {
-                        diamondInProductCustomize.setStatus(false);
-                        diamondService.saveDiamond(diamondInProductCustomize);
+                    if(!diamondInProductCustomize.isStatus()) {
+                        return ResponseEntity.badRequest().body("Diamonds are out of stock");
                     }
+                    diamondInProductCustomize.setStatus(false);
+                    diamondService.saveDiamond(diamondInProductCustomize);
                     orderDetail.setProductCustomize(productCustomize);
                 }
                 newOrder.setQuantity(newOrder.getQuantity() + orderDetail.getQuantity());

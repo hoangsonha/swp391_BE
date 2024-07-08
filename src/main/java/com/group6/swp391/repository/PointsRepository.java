@@ -12,4 +12,7 @@ import java.util.List;
 public interface PointsRepository extends JpaRepository<Points, Integer> {
     @Query("SELECT po FROM Points po WHERE po.user.userID =:userId")
     Points findByUser(@Param("userId") int user);
+
+    @Query("SELECT po FROM Points  po WHERE po.order.orderID =:orderId")
+    Points findByOrderId(@Param("orderId") int orderId);
 }
