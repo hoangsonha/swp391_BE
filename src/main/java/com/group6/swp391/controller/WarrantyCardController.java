@@ -65,7 +65,7 @@ public class WarrantyCardController {
         try {
             List<WarrantyCard> warrantyCards = warrantyCardServiceImp.searchWarrantyCards(query);
             if (warrantyCards == null || warrantyCards.isEmpty()) {
-                return ResponseEntity.ok().body("No warranty card found");
+                return ResponseEntity.ok(warrantyCards);
             }
             List<WarrantyCardRespone> warrantyCardRespones = new ArrayList<>();
             for (WarrantyCard warrantyCard: warrantyCards) {
@@ -134,7 +134,8 @@ public class WarrantyCardController {
             List<WarrantyCardRespone> warrantyCardRespones = new ArrayList<>();
             List<WarrantyCard> warrantyCards = warrantyCardServiceImp.getByUser(id);
             if(warrantyCards == null || warrantyCards.isEmpty()) {
-                return ResponseEntity.ok().body("Not warranty card");
+                //return ResponseEntity.ok().body("Not warranty card");
+                return ResponseEntity.ok(warrantyCardRespones);
             }
             for(WarrantyCard warrantyCard : warrantyCards) {
                 WarrantyCardRespone warrantyCardRespone = new WarrantyCardRespone();
@@ -156,7 +157,7 @@ public class WarrantyCardController {
 
     @GetMapping("/getExpiringSoon")
     public ResponseEntity<List<WarrantyCard>> getExpiringSoon() {
-        List<WarrantyCard> warrantyCards = null;
+        List<WarrantyCard> warrantyCards;
         try {
             warrantyCards = warrantyCardServiceImp.findWarrantyCardsExpiringSoon();
             if(warrantyCards == null) {
@@ -170,7 +171,7 @@ public class WarrantyCardController {
 
     @DeleteMapping("/warrantyCard_id/{warrantyCard_id}")
     public ResponseEntity<String> deleteWarrantyCard(@PathVariable("warrantyCard_id") int id) {
-        WarrantyCard warrantyCard = null;
+        WarrantyCard warrantyCard;
         try {
             warrantyCard = warrantyCardServiceImp.getById(id);
             if(warrantyCard == null) {
