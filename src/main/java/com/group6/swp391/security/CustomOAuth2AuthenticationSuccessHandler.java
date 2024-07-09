@@ -29,6 +29,8 @@ public class CustomOAuth2AuthenticationSuccessHandler extends SimpleUrlAuthentic
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
+//      this.setAlwaysUseDefaultTargetUrl(true);
+//      this.setDefaultTargetUrl("http://localhost:3000/");
         User user = null;
         if(authentication instanceof OAuth2AuthenticationToken) {
             OAuth2User oauth2User = ((OAuth2AuthenticationToken) authentication).getPrincipal();
@@ -53,5 +55,7 @@ public class CustomOAuth2AuthenticationSuccessHandler extends SimpleUrlAuthentic
             response.getWriter().write(new ObjectMapper().writeValueAsString(new TokenResponse("Failed", "Login account failed", null)));
         }
     }
+
+
 
 }
