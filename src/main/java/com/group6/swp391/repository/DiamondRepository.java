@@ -13,6 +13,9 @@ import java.util.List;
 @Repository
 public interface DiamondRepository extends JpaRepository<Diamond, String>, JpaSpecificationExecutor {
 
+    @Query("SELECT d FROM Diamond d WHERE d.status= true ")
+    List<Diamond> getAllDiamond();
+
     @Query("SELECT d FROM Diamond d WHERE MONTH(d.inputDate)=:month AND YEAR(d.inputDate)=:year")
     List<Diamond> findByCreateAtMonth(@Param("month") int month, @Param("year") int year);
 

@@ -32,4 +32,6 @@ public interface DiamondService {
 
     List<Diamond> getByDimension(float dimension);
 
+    List<Diamond> getAllDiamondWithStatus();
+
 }

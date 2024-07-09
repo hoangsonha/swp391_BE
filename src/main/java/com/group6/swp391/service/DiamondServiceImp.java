@@ -326,5 +326,10 @@ public class DiamondServiceImp implements DiamondService {
         return diamondRepository.getByDimension(dimension);
     }
 
+    @Override
+    public List<Diamond> getAllDiamondWithStatus() {
+        return diamondRepository.getAllDiamond();
+    }
+
 
 }

@@ -43,6 +43,19 @@ public class DiamondController {
         }
     }
 
+    @GetMapping("/get_all_diamond")
+    public ResponseEntity<ObjectResponse> getAllDiamond() {
+        try {
+            List<Diamond> listDiamond = diamondService.getAllDiamond();
+            if(listDiamond == null || listDiamond.isEmpty()) {
+                return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Diamond out of stock", null));
+            }
+            return  ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "List Diamond", listDiamond));
+        } catch (Exception e) {
+            return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Get Data Filed", e.getMessage()));
+        }
+    }
+
     @GetMapping("/diamond_id/{diamond_id}")
     public ResponseEntity<Diamond> getDiamondByDiamondID(@PathVariable("diamond_id") String diamondID) {
         try {
