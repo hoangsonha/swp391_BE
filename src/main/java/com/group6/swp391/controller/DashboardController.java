@@ -200,7 +200,7 @@ public class DashboardController {
     public ResponseEntity<ObjectResponse> listOrderReturn() {
         try {
             int monthCurrent = LocalDate.now().getMonthValue();
-            List<Order> listOrderReturn = dashboardService.getOrderByStatus(monthCurrent, "Hoàn trả");
+            List<Order> listOrderReturn = dashboardService.getOrderByStatus(monthCurrent, "Đã Hoàn Tiền");
             if(listOrderReturn == null || listOrderReturn.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "List Is empty", null));
             }
@@ -215,7 +215,7 @@ public class DashboardController {
     public ResponseEntity<ObjectResponse> listOrderSuccessfully() {
         try {
             int monthCurrent = LocalDate.now().getMonthValue();
-            List<Order> listOrderSuccessfully = dashboardService.getOrderByStatus(monthCurrent, "Giao thành công");
+            List<Order> listOrderSuccessfully = dashboardService.getOrderByStatus(monthCurrent, "Đã giao");
             if(listOrderSuccessfully == null || listOrderSuccessfully.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "List Is empty", null));
             }
