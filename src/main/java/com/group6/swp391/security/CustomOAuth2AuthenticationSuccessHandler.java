@@ -34,6 +34,7 @@ public class CustomOAuth2AuthenticationSuccessHandler extends SimpleUrlAuthentic
         User user = null;
         if(authentication instanceof OAuth2AuthenticationToken) {
             OAuth2User oauth2User = ((OAuth2AuthenticationToken) authentication).getPrincipal();
+            String name = oauth2User.getName();
             user = userRepository.getUserByEmail(oauth2User.getAttribute("email").toString());
             if(user!=null){
                 String token = jwtToken.generatedToken(CustomUserDetail.mapUserToUserDetail(user));

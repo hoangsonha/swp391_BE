@@ -17,6 +17,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -31,7 +33,6 @@ public class PaymentController {
     @Autowired private OrderService orderService;
     @Autowired private PaymentService paymentService;
     @Autowired private VNPayService vnPayService;
-
 
     @PostMapping("/checkout")
     public ResponseEntity<PaymentResponse> pay(@RequestBody PaymentRequest paymentRequest, HttpServletRequest request, HttpServletResponse response) {
@@ -77,12 +78,13 @@ public class PaymentController {
     }
 
     @GetMapping("/paypal/cancel")
-    public ResponseEntity<PaymentResponse> payByPayPalCancel() {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PaymentResponse("Failed", "Payment page failed", null, null));
+    public void payByPayPalCancel(HttpServletResponse response) throws IOException {
+        response.sendRedirect("https://diamond-6401b.web.app");
     }
 
+
     @GetMapping("/paypal/success")
-    public ResponseEntity<PaymentResponse> paySuccess(@Param("orderID") String orderID, @RequestParam("paymentId") String paymentID, @RequestParam("PayerID") String payerID) {
+    public void paySuccess(@Param("orderID") String orderID, @RequestParam("paymentId") String paymentID, @RequestParam("PayerID") String payerID, HttpServletResponse response) throws IOException {
         try {
             Order order = orderService.getOrderByOrderID(Integer.parseInt(orderID));
             String orderStatus = EnumOrderStatus.Chờ_thanh_toán.name();
@@ -103,21 +105,21 @@ public class PaymentController {
                     String orderStatusSuccess = EnumOrderStatus.Chờ_giao_hàng.name();
                     order.setStatus(orderStatusSuccess.replaceAll("_", " "));
                     orderService.save(order);
-                    return ResponseEntity.status(HttpStatus.OK).body(new PaymentResponse("Success", "Payment successfully", null, null));
+                    response.sendRedirect("https://diamond-6401b.web.app");
                 }
             }
         } catch (Exception e) {
             log.error(e.getMessage());
         }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PaymentResponse("Failed", "Payment failed", null, null));
+        response.sendRedirect("https://diamond-6401b.web.app");
     }
 
     @GetMapping("/vnpaysuccess")
-    public ResponseEntity<PaymentResponse> vnpaysuccess(HttpServletRequest request) throws ParseException {
+    public void vnpaysuccess(HttpServletRequest request, HttpServletResponse response) throws ParseException, IOException {
         String responseCode = request.getParameter("vnp_ResponseCode"); // lay qua url
         String orderID = request.getParameter("vnp_TxnRef");
         String dateAt = request.getParameter("vnp_PayDate");
-//        String amount = request.getParameter("vnp_Amount");
+//      String amount = request.getParameter("vnp_Amount");
         String nam = dateAt.substring(0, 4);
         String thang = dateAt.substring(4, 6);
         String ngay = dateAt.substring(6, 8);
@@ -141,10 +143,10 @@ public class PaymentController {
                 order.setStatus(orderStatusSuccess.replaceAll("_", " "));
                 orderService.save(order);
                 String successUrl = request.getRequestURL().toString().replace(request.getServletPath(), "") + "/payment/success?orderID=" + orderID;
-                return ResponseEntity.status(HttpStatus.OK).body(new PaymentResponse("Success", "Payment successfully", null, successUrl));
+                response.sendRedirect("https://diamond-6401b.web.app");
             }
         }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PaymentResponse("Failed", "Payment failed", null, null));
+        response.sendRedirect("https://diamond-6401b.web.app");
     }
 
     @PostMapping("/paypal/refund")
