@@ -3,6 +3,7 @@ package com.group6.swp391.service;
 import com.group6.swp391.model.WarrantyCard;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface WarrantyCardService {
 
@@ -18,7 +19,6 @@ public interface WarrantyCardService {
 
     List<WarrantyCard> getAll();
 
-    List<WarrantyCard> searchWarrantyCards(String searchQuery);
+    Optional<WarrantyCard> searchWarrantyCards(String searchQuery);
 
-    //WarrantyCard findByIdOrDiamondIdOrProductCustomId(String id);
 }

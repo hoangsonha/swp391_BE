@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/swp391/api/warrantycards")
@@ -63,28 +64,52 @@ public class WarrantyCardController {
     @JsonView(Views.Public.class)
     public ResponseEntity<?> searchWarrantyCards(@RequestParam("query") String query) {
         try {
-            List<WarrantyCard> warrantyCards = warrantyCardServiceImp.searchWarrantyCards(query);
-            if (warrantyCards == null || warrantyCards.isEmpty()) {
-                return ResponseEntity.ok(warrantyCards);
+            Optional<WarrantyCard> optionalWarrantyCard = warrantyCardServiceImp.searchWarrantyCards(query);
+            if (!optionalWarrantyCard.isPresent()) {
+                return ResponseEntity.ok().build();
             }
-            List<WarrantyCardRespone> warrantyCardRespones = new ArrayList<>();
-            for (WarrantyCard warrantyCard: warrantyCards) {
-                WarrantyCardRespone warrantyCardRespone = new WarrantyCardRespone();
-                warrantyCardRespone.setWarrantyCardID(warrantyCard.getWarrantyCardID());
-                if (warrantyCard.getProductCustomize() != null) {
-                    warrantyCardRespone.setObjectId(warrantyCard.getProductCustomize().getProdcutCustomId());
-                } else if (warrantyCard.getDiamond() != null) {
-                    warrantyCardRespone.setObjectId(warrantyCard.getDiamond().getDiamondID());
-                }
-                warrantyCardRespone.setPurchaseDate(warrantyCard.getPurchaseDate());
-                warrantyCardRespone.setExpirationDate(warrantyCard.getExpirationDate());
-                warrantyCardRespones.add(warrantyCardRespone);
+            WarrantyCard warrantyCard = optionalWarrantyCard.get();
+            WarrantyCardRespone warrantyCardRespone = new WarrantyCardRespone();
+            warrantyCardRespone.setWarrantyCardID(warrantyCard.getWarrantyCardID());
+            if (warrantyCard.getProductCustomize() != null) {
+                warrantyCardRespone.setObjectId(warrantyCard.getProductCustomize().getProdcutCustomId());
+            } else if (warrantyCard.getDiamond() != null) {
+                warrantyCardRespone.setObjectId(warrantyCard.getDiamond().getDiamondID());
             }
-            return ResponseEntity.ok(warrantyCardRespones);
+            warrantyCardRespone.setPurchaseDate(warrantyCard.getPurchaseDate());
+            warrantyCardRespone.setExpirationDate(warrantyCard.getExpirationDate());
+            return ResponseEntity.ok(warrantyCardRespone);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
+
+//    @GetMapping("/search")
+//    @JsonView(Views.Public.class)
+//    public ResponseEntity<?> searchWarrantyCards(@RequestParam("query") String query) {
+//        try {
+//            List<WarrantyCard> warrantyCards = warrantyCardServiceImp.searchWarrantyCards(query);
+//            if (warrantyCards == null || warrantyCards.isEmpty()) {
+//                return ResponseEntity.ok(warrantyCards);
+//            }
+//            List<WarrantyCardRespone> warrantyCardRespones = new ArrayList<>();
+//            for (WarrantyCard warrantyCard: warrantyCards) {
+//                WarrantyCardRespone warrantyCardRespone = new WarrantyCardRespone();
+//                warrantyCardRespone.setWarrantyCardID(warrantyCard.getWarrantyCardID());
+//                if (warrantyCard.getProductCustomize() != null) {
+//                    warrantyCardRespone.setObjectId(warrantyCard.getProductCustomize().getProdcutCustomId());
+//                } else if (warrantyCard.getDiamond() != null) {
+//                    warrantyCardRespone.setObjectId(warrantyCard.getDiamond().getDiamondID());
+//                }
+//                warrantyCardRespone.setPurchaseDate(warrantyCard.getPurchaseDate());
+//                warrantyCardRespone.setExpirationDate(warrantyCard.getExpirationDate());
+//                warrantyCardRespones.add(warrantyCardRespone);
+//            }
+//            return ResponseEntity.ok(warrantyCardRespones);
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+//        }
+//    }
 
 //    @GetMapping("/all_warranty_card")
 //    public ResponseEntity<?> getAll() {

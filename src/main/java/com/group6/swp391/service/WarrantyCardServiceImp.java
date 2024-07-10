@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class WarrantyCardServiceImp implements WarrantyCardService {
@@ -57,46 +56,36 @@ public class WarrantyCardServiceImp implements WarrantyCardService {
     }
 
     @Override
-    public List<WarrantyCard> searchWarrantyCards(String searchQuery) {
-        Set<WarrantyCard> results = new LinkedHashSet<>(warrantyCardRepository.searchWarrantyCards(searchQuery));
+    public Optional<WarrantyCard> searchWarrantyCards(String searchQuery) {
+        Optional<WarrantyCard> byId = Optional.empty();
         try {
             int id = Integer.parseInt(searchQuery);
-            List<WarrantyCard> warrantyCards = warrantyCardRepository.findByWarrantyCardID(id);
-            if (warrantyCards != null) {
-                results.addAll(warrantyCards);
-            }
+            byId = warrantyCardRepository.findById(id);
         } catch (NumberFormatException e) {
-
+            // Không làm gì, tiếp tục tìm kiếm theo các trường hợp khác
         }
-        return results.stream().collect(Collectors.toList());
+
+        if (byId.isPresent()) {
+            return byId;
+        }
+
+        // Nếu không phải ID trực tiếp, tìm kiếm trong các trường hợp khác
+        return warrantyCardRepository.searchWarrantyCard(searchQuery);
     }
 
 //    @Override
 //    public List<WarrantyCard> searchWarrantyCards(String searchQuery) {
-//        List<WarrantyCard> results = warrantyCardRepository.searchWarrantyCards(searchQuery);
+//        Set<WarrantyCard> results = new LinkedHashSet<>(warrantyCardRepository.searchWarrantyCards(searchQuery));
 //        try {
 //            int id = Integer.parseInt(searchQuery);
-//            List<WarrantyCard> card = warrantyCardRepository.findByWarrantyCardID(id);
-//            if (card != null) {
-//                results.addAll(card);
+//            List<WarrantyCard> warrantyCards = warrantyCardRepository.findByWarrantyCardID(id);
+//            if (warrantyCards != null) {
+//                results.addAll(warrantyCards);
 //            }
 //        } catch (NumberFormatException e) {
 //
 //        }
-//        return results;
+//        return results.stream().collect(Collectors.toList());
 //    }
-
-//    @Override
-//    public WarrantyCard findByIdOrDiamondIdOrProductCustomId(String id) {
-//        WarrantyCard warrantyCard = warrantyCardRepository.findByWarrantyCardID(id);
-//        if (warrantyCard == null) {
-//            warrantyCard = warrantyCardRepository.findByDiamond_DiamondID(id);
-//        }
-//        if (warrantyCard == null) {
-//            warrantyCard = warrantyCardRepository.findByProductCustomize_ProdcutCustomId(id);
-//        }
-//        return warrantyCard;
-//    }
-
 
 }
