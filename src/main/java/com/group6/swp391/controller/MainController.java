@@ -196,6 +196,7 @@ public class MainController {
 
         Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+
         String vnp_CreateDate = formatter.format(cld.getTime());
 
         Calendar cld2 = Calendar.getInstance(TimeZone.getTimeZone("SE Asia Standard Time"));
