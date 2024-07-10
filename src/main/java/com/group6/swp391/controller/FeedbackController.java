@@ -1,14 +1,20 @@
 package com.group6.swp391.controller;
 
 import com.group6.swp391.model.Feedback;
+import com.group6.swp391.model.Order;
+import com.group6.swp391.model.OrderDetail;
 import com.group6.swp391.request.FeedbackRequest;
+import com.group6.swp391.response.ObjectResponse;
+import com.group6.swp391.response.ProductFeedbackRespone;
 import com.group6.swp391.service.FeedbackService;
+import com.group6.swp391.service.OrderService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -18,6 +24,8 @@ public class FeedbackController {
 
     @Autowired
     private FeedbackService feedbackService;
+
+    @Autowired OrderService orderService;
 
     @GetMapping("/all_feedbacks")
     public ResponseEntity<?> getAllFeedbacks() {
@@ -181,6 +189,31 @@ public class FeedbackController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error calculating average rating for product ID: " + collectionID);
+        }
+    }
+
+    @GetMapping("/get_model_detail/{order_id}")
+    public ResponseEntity<ObjectResponse> getProductFeedback(@PathVariable("order_id") int id) {
+        try {
+            Order orderExisting = orderService.getOrderByOrderID(id);
+            if(orderExisting == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Order do not exist", "null"));
+            }
+            if(!orderExisting.getStatus().equalsIgnoreCase("Đã giao")) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Status of order invalid", "null"));
+            }
+            List<ProductFeedbackRespone> list = new ArrayList<>();
+            for (OrderDetail orderDetail : orderExisting.getOrderDetails()) {
+                ProductFeedbackRespone product = new ProductFeedbackRespone();
+                if(orderDetail.getProductCustomize() != null) {
+                    product.setProductID(orderDetail.getProductCustomize().getProdcutCustomId());
+                    product.setProductName(orderDetail.getProductCustomize().getProduct().getProductName());
+                    list.add(product);
+                }
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","List product need feedback", list));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Data exception", e.getMessage()));
         }
     }
 }
