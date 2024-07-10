@@ -48,10 +48,6 @@ public class  CartServiceImp implements CartService {
             ProductCustomize productCustomize = productCustomizeServiceImp.getProductCustomizeById(productId);
             cartItem.setProductCustomize(productCustomize);
             cartItem.setTotalPrice(productCustomize.getTotalPrice()*cartItem.getQuantity());
-        } else if(productId.startsWith("S")||productId.startsWith("s")) {
-            Collection collectionExisting = collectionService.getCollection(productId);
-            cartItem.setCollection(collectionExisting);
-            cartItem.setTotalPrice(collectionExisting.getPrice()*cartItem.getQuantity());
         } else {
             Diamond diamond = diamondServiceImp.getDiamondByDiamondID(productId);
             cartItem.setDiamondAdd(diamond);

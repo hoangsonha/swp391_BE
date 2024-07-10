@@ -66,7 +66,6 @@ public class CollectionController {
                 }
                 price += productExisting.getTotalPrice();
                 newCollectionProduct.setProduct(productExisting);
-                newCollectionProduct.setDiamond(null);
             }
             newCollection.setPrice(price);
             newCollection.setCollectionProduct(collectionProducts);
@@ -225,7 +224,6 @@ public class CollectionController {
                         collectionProduct = new CollectionProduct();
                         collectionProduct.setCollection(collectionExisting);
                         collectionProduct.setProduct(product);
-                        collectionProduct.setDiamond(null);
                         collectionExisting.setPrice(collectionExisting.getPrice() + product.getTotalPrice());
                         collectionProductService.createCollectionProduct(collectionProduct);
                         break;

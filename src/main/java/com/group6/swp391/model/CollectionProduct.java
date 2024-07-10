@@ -20,10 +20,6 @@ public class CollectionProduct {
     private Product product;
 
     @ManyToOne
-    @JoinColumn(name = "diamond_id")
-    private Diamond diamond;
-
-    @ManyToOne
     @JoinColumn(name = "collection_id")
     private Collection collection;
 }

@@ -1,13 +1,16 @@
 package com.group6.swp391.controller;
 
+import com.group6.swp391.model.Collection;
 import com.group6.swp391.model.Diamond;
 import com.group6.swp391.model.Product;
 import com.group6.swp391.model.ProductCustomize;
 import com.group6.swp391.repository.DiamondRepository;
 import com.group6.swp391.request.CustomizeRequest;
+import com.group6.swp391.response.ObjectResponse;
 import com.group6.swp391.service.*;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,18 +21,13 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 public class ProductCustomizeController {
 
-    @Autowired
-    ProductCustomizeServiceImp productCustomizeServiceImp;
-    @Autowired
-    ProductServiceImp productServiceImp;
-    @Autowired
-    DiamondServiceImp diamondServiceImp;
-    @Autowired
-    private DiamondRepository diamondRepository;
-    @Autowired
-    CategoryServiceImp categoryServiceImp;
-
+    @Autowired ProductCustomizeServiceImp productCustomizeServiceImp;
+    @Autowired ProductServiceImp productServiceImp;
+    @Autowired DiamondServiceImp diamondServiceImp;
+    @Autowired DiamondRepository diamondRepository;
+    @Autowired CategoryServiceImp categoryServiceImp;
     @Autowired CartServiceImp cartServiceImp;
+    @Autowired CollectionService collectionService;
 
     @PostMapping("/create_customizeProduct/{userId}")
     public ResponseEntity<?> createProductCustome(@PathVariable("userId") int userId,
@@ -51,12 +49,44 @@ public class ProductCustomizeController {
             cus.setProduct(product);
             cus.setDiamond(diamond);
             cus.setSize(customizeRequest.getSize());
-            cus.setTotalPrice(customizeRequest.getTotalPrice());
+            cus.setTotalPrice(product.getTotalPrice() + diamond.getTotalPrice());
             productCustomizeServiceImp.createProductCustomize(cus);
             cartServiceImp.addCart(userId, cus.getProdcutCustomId());
             return ResponseEntity.ok().body("Custome created");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/create_productcustomize_collection")
+    public ResponseEntity<ObjectResponse> createWithCollection(@RequestBody CustomizeRequest customizeRequest) {
+        try {
+            Product productExisting = productServiceImp.getProductById(customizeRequest.getProductId());
+            if(productExisting == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Product do not exist", null));
+            }
+            Diamond diamondExisting = diamondServiceImp.getDiamondByDiamondID(customizeRequest.getDiamondId());
+            if(diamondExisting == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Diamond do not exist", null));
+            }
+            Collection collectionExisting = collectionService.getCollection(customizeRequest.getCollectionId());
+            if(collectionExisting == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Collection do not exist", null));
+            }
+            ProductCustomize pcn = new ProductCustomize();
+            pcn.setProdcutCustomId("P" + customizeRequest.getProductId() + "-" + diamondExisting.getDiamondID());
+            pcn.setProduct(productExisting);
+            if(productExisting.getDimensionsDiamond() != diamondExisting.getDimensions()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Demension product and diamond invalid", null));
+            }
+            pcn.setDiamond(diamondExisting);
+            pcn.setSize(customizeRequest.getSize());
+            pcn.setTotalPrice(productExisting.getTotalPrice() + diamondExisting.getTotalPrice());
+            pcn.setCollection(collectionExisting);
+            productCustomizeServiceImp.createProductCustomize(pcn);
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Product Customize created successfully", pcn));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Data Exception", e.getMessage()));
         }
     }
 

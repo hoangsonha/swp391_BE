@@ -33,5 +33,8 @@ public class ProductCustomize {
     @Column(name = "size")
     private int size;
 
+    @ManyToOne
+    @JoinColumn(name = "collection_id")
+    private Collection collection;
 }
 
