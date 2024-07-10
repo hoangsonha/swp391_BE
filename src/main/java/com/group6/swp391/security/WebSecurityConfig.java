@@ -66,9 +66,11 @@ public class WebSecurityConfig {
                         .requestMatchers("/swp391/api/collections/**").permitAll()
                         .requestMatchers("/swp391/api/feedback/**").permitAll()
                         .requestMatchers("/swp391/api/search/**").permitAll()
+                        .requestMatchers("/swp391/api/report/**").permitAll()
                         .requestMatchers("/public/**").permitAll()
                         .requestMatchers("/v3/**").permitAll()
                         .requestMatchers("/swagger-ui/**").permitAll()
+                        .requestMatchers("/oauth2/**").permitAll()
 //                              .requestMatchers(HttpMethod.POST, "/ues", "/*").permitAll()
                         .anyRequest().authenticated())
 
@@ -76,7 +78,7 @@ public class WebSecurityConfig {
 //                  .oauth2Login(oauth2 -> oauth2.successHandler(customOAuth2AuthenticationSuccessHandler));
 
                 .oauth2Login(oauth2 -> {
-                    oauth2.loginPage("/public/login").permitAll();
+//                    oauth2.loginPage("/public/login").permitAll();
                     oauth2.successHandler(customOAuth2AuthenticationSuccessHandler);
                 });
 

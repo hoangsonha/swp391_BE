@@ -72,6 +72,10 @@ public class User extends BaseEntity {
     }
 
     @Transient
+    private String roleName;
+
+
+    @Transient
     public double getTotalUsedPoints() {
         if (points == null) {
             return 0;

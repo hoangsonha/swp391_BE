@@ -82,7 +82,6 @@ public class PaymentController {
         response.sendRedirect("https://diamond-6401b.web.app");
     }
 
-
     @GetMapping("/paypal/success")
     public void paySuccess(@Param("orderID") String orderID, @RequestParam("paymentId") String paymentID, @RequestParam("PayerID") String payerID, HttpServletResponse response) throws IOException {
         try {
