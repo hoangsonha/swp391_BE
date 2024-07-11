@@ -19,6 +19,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,6 +51,9 @@ public class MainController {
     @Autowired private BCryptPasswordEncoder bCryptPasswordEncoder;
     @Autowired private DiamondService diamondService;
 
+    @Value("${frontend.url}")
+    private String urlRedirect;
+
     @GetMapping("/all_users")
     public List<User> getAll() {
         return userService.findAll("admin");
@@ -78,7 +82,7 @@ public class MainController {
         boolean check = false;
         try {
             check = userService.verifyAccount(code);
-            if(check) response.sendRedirect("http://localhost:5173/");
+            if(check) response.sendRedirect(urlRedirect);
         } catch(Exception e) {
             log.error("Can not verify account");
         }

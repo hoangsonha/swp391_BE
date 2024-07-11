@@ -1,7 +1,9 @@
 package com.group6.swp391.controller;
 
 import com.group6.swp391.enums.*;
+import com.group6.swp391.model.Diamond;
 import com.group6.swp391.model.Order;
+import com.group6.swp391.model.OrderDetail;
 import com.group6.swp391.request.CancelPaymentRequest;
 import com.group6.swp391.request.PaymentRequest;
 import com.group6.swp391.response.PaymentResponse;
@@ -13,6 +15,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +36,11 @@ public class PaymentController {
     @Autowired private OrderService orderService;
     @Autowired private PaymentService paymentService;
     @Autowired private VNPayService vnPayService;
+    @Autowired private DiamondService diamondService;
+
+    @Value("${frontend.url}")
+    private String urlRedirect;
+
 
     @PostMapping("/checkout")
     public ResponseEntity<PaymentResponse> pay(@RequestBody PaymentRequest paymentRequest, HttpServletRequest request, HttpServletResponse response) {
@@ -79,7 +87,7 @@ public class PaymentController {
 
     @GetMapping("/paypal/cancel")
     public void payByPayPalCancel(HttpServletResponse response) throws IOException {
-        response.sendRedirect("https://diamond-6401b.web.app");
+        response.sendRedirect(urlRedirect);
     }
 
     @GetMapping("/paypal/success")
@@ -104,13 +112,13 @@ public class PaymentController {
                     String orderStatusSuccess = EnumOrderStatus.Chờ_giao_hàng.name();
                     order.setStatus(orderStatusSuccess.replaceAll("_", " "));
                     orderService.save(order);
-                    response.sendRedirect("https://diamond-6401b.web.app");
+                    response.sendRedirect(urlRedirect);
                 }
             }
         } catch (Exception e) {
             log.error(e.getMessage());
         }
-        response.sendRedirect("https://diamond-6401b.web.app");
+        response.sendRedirect(urlRedirect);
     }
 
     @GetMapping("/vnpaysuccess")
@@ -142,10 +150,10 @@ public class PaymentController {
                 order.setStatus(orderStatusSuccess.replaceAll("_", " "));
                 orderService.save(order);
                 String successUrl = request.getRequestURL().toString().replace(request.getServletPath(), "") + "/payment/success?orderID=" + orderID;
-                response.sendRedirect("https://diamond-6401b.web.app");
+                response.sendRedirect(urlRedirect);
             }
         }
-        response.sendRedirect("https://diamond-6401b.web.app");
+        response.sendRedirect(urlRedirect);
     }
 
     @PostMapping("/paypal/refund")
@@ -173,6 +181,18 @@ public class PaymentController {
                         String paymentStatusSuccess = EnumPaymentStatus.Đã_hoàn_tiền.name();
                         payment.setStatus(paymentStatusSuccess.replaceAll("_", " "));
                         paymentService.save(payment);
+                        for(OrderDetail orderDetail : order.getOrderDetails()) {
+                            if(orderDetail.getDiamond() != null) {
+                                Diamond diamond = diamondService.getDiamondByDiamondID(orderDetail.getDiamond().getDiamondID());
+                                diamond.setStatus(true);
+                                diamondService.saveDiamond(diamond);
+                            }
+                            if(orderDetail.getProductCustomize() != null) {
+                                Diamond diamond = diamondService.getDiamondByDiamondID(orderDetail.getProductCustomize().getDiamond().getDiamondID());
+                                diamond.setStatus(true);
+                                diamondService.saveDiamond(diamond);
+                            }
+                        }
                         return ResponseEntity.status(HttpStatus.OK).body(new PaymentResponse("Success", "Refund successfully", null, null));
                     }
                 }
