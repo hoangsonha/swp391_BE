@@ -206,7 +206,7 @@ public class FeedbackController {
             for (OrderDetail orderDetail : orderExisting.getOrderDetails()) {
                 ProductFeedbackRespone product = new ProductFeedbackRespone();
                 if(orderDetail.getProductCustomize() != null) {
-                    product.setProductID(orderDetail.getProductCustomize().getProdcutCustomId());
+                    product.setProductID(orderDetail.getProductCustomize().getProduct().getProductID());
                     product.setProductName(orderDetail.getProductCustomize().getProduct().getProductName());
                     list.add(product);
                 }
