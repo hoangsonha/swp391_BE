@@ -3,6 +3,7 @@ package com.group6.swp391;
 //import com.group6.swp391.cart.Cart;
 import com.group6.swp391.enums.EnumOrderStatus;
 import com.group6.swp391.enums.EnumPaymentStatus;
+import com.group6.swp391.model.User;
 import com.group6.swp391.repository.DiamondRepository;
 import com.group6.swp391.repository.RoleRepository;
 import com.group6.swp391.repository.UserRepository;
@@ -12,6 +13,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import java.util.List;
 
 @SpringBootTest
 class Swp391ApplicationTests {
@@ -25,12 +28,18 @@ class Swp391ApplicationTests {
     @Test
     void contextLoads() {
 
-        String s = "s";
+        List<User> listsUser = userRepository.findAll();
+        if(listsUser.size() > 0) {
+            for(User user : listsUser) {
+                if(user.getRole() != null) {
+                    user.setRoleName(user.getRole().getRoleName().name());
+                }
+            }
+        }
 
-        String r = null;
-
-        System.out.println(Strings.hasText(s));
-
+        for(User l : listsUser) {
+            System.out.println(l.getRoleName());
+        }
 
 
 

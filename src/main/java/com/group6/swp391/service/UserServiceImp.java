@@ -1,8 +1,7 @@
 package com.group6.swp391.service;
 
 import com.group6.swp391.enums.EnumRoleName;
-import com.group6.swp391.model.Role;
-import com.group6.swp391.model.User;
+import com.group6.swp391.model.*;
 import com.group6.swp391.repository.UserRepository;
 import com.group6.swp391.request.OTPRequest;
 import com.group6.swp391.request.OTPValidationRequest;
@@ -22,7 +21,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+
 import java.io.UnsupportedEncodingException;
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -38,10 +40,16 @@ public class UserServiceImp implements UserService {
 
     private Map<String, String> otpMap = new HashMap<>();
 
-    @Autowired private UserRepository userRepository;
-    @Autowired private RoleService roleService;
-    @Autowired private JavaMailSender javaMailSender;
-    @Autowired private RestTemplate restTemplate;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private RoleService roleService;
+    @Autowired
+    private PaymentService paymentService;
+    @Autowired
+    private JavaMailSender javaMailSender;
+    @Autowired
+    private RestTemplate restTemplate;
 
 
     // CRUD
@@ -54,15 +62,15 @@ public class UserServiceImp implements UserService {
         Role role_admin = roleService.getRoleByRoleName(EnumRoleName.ROLE_ADMIN);
         Role role_delivery = roleService.getRoleByRoleName(EnumRoleName.ROLE_DELIVERY);
 
-        if(role.equals("staff")) {
+        if (role.equals("staff")) {
             for (User user : lists) {
                 if (user.getRole().equals(role_admin) || user.getRole().equals(role_delivery)) {
                     listsByRole.remove(user);
                 }
             }
-        } else if(role.equals("admin")) {
-                    return lists;
-                }
+        } else if (role.equals("admin")) {
+            return lists;
+        }
         return listsByRole;
     }
 
@@ -74,7 +82,7 @@ public class UserServiceImp implements UserService {
     @Override
     public boolean lockedUser(int id) {
         User user = userRepository.getUserByUserID(id);
-        if(user!=null && user.isNonLocked()) {
+        if (user != null && user.isNonLocked()) {
             userRepository.locked(id);
             return true;
         }
@@ -84,7 +92,7 @@ public class UserServiceImp implements UserService {
     @Override
     public boolean unLockedUser(int id) {
         User user = userRepository.getUserByUserID(id);
-        if(user!=null && !user.isNonLocked()) {
+        if (user != null && !user.isNonLocked()) {
             userRepository.unLocked(id);
             return true;
         }
@@ -117,7 +125,7 @@ public class UserServiceImp implements UserService {
 
     @Override
     public boolean sendVerificationEmail(User user, String siteUrl) throws MessagingException, UnsupportedEncodingException {
-        if(user.getEmail() == null) {
+        if (user.getEmail() == null) {
             return false;
         }
         try {
@@ -189,7 +197,7 @@ public class UserServiceImp implements UserService {
             helper.setText(mai, true);
             javaMailSender.send(mimeMessage);
             return true;
-        } catch(Exception e) {
+        } catch (Exception e) {
             log.error("Cannot send mail {}", e.toString());
             return false;
         }
@@ -198,7 +206,7 @@ public class UserServiceImp implements UserService {
     @Override
     public boolean verifyAccount(String code) {
         User user = userRepository.getUserByCodeVerify(code);
-        if(user == null || user.isEnabled() || !user.isNonLocked()) {
+        if (user == null || user.isEnabled() || !user.isNonLocked()) {
             return false;
         }
         userRepository.enabled(user.getUserID());
@@ -235,7 +243,7 @@ public class UserServiceImp implements UserService {
             String phoneOrEmail = otpRequest.getEmailOrPhone();
             User user = null;
             boolean check = checkEmailOrPhone(phoneOrEmail);
-            if(check) {
+            if (check) {
                 user = userRepository.getUserByEmail(phoneOrEmail);
             } else user = userRepository.getUserByPhone(phoneOrEmail);
             String otp = generatedNumber();
@@ -307,10 +315,10 @@ public class UserServiceImp implements UserService {
     public boolean setNewPassword(String emailOrPhone, String newPassword) {
         boolean check = false;
         char c = emailOrPhone.toLowerCase().charAt(0);
-        if(c >= 'a' && c <= 'z') {
+        if (c >= 'a' && c <= 'z') {
             userRepository.setPasswordByEmail(newPassword, emailOrPhone);
             check = true;
-        } else if(c >= '0' && c <= '9') {
+        } else if (c >= '0' && c <= '9') {
             userRepository.setPasswordByPhone(newPassword, emailOrPhone);
             check = true;
         }
@@ -321,7 +329,7 @@ public class UserServiceImp implements UserService {
         Random random = new Random();
         int otpRD = random.nextInt(999999);
         String otp = String.valueOf(otpRD);
-        while(otp.length() < 6) {
+        while (otp.length() < 6) {
             otp = '0' + otp;
         }
         return otp;
@@ -331,10 +339,10 @@ public class UserServiceImp implements UserService {
     public boolean validateOTP(OTPValidationRequest otpValidationRequest) {
         Set<String> set = otpMap.keySet();
         String phoneOrEmail = null;
-        for(String s : set) {
+        for (String s : set) {
             phoneOrEmail = s;
         }
-        if(otpValidationRequest.getEmailOrPhone().equals(phoneOrEmail) && otpMap.get(phoneOrEmail).equals(otpValidationRequest.getOtp())) {
+        if (otpValidationRequest.getEmailOrPhone().equals(phoneOrEmail) && otpMap.get(phoneOrEmail).equals(otpValidationRequest.getOtp())) {
             otpMap.remove(phoneOrEmail);
             return true;
         } else {
@@ -345,7 +353,7 @@ public class UserServiceImp implements UserService {
     @Override
     public boolean getUserByPhone(String phone) {
         User user = userRepository.getUserByPhone(phone);
-        if(user==null || !user.isNonLocked() || !user.isEnabled()) {
+        if (user == null || !user.isNonLocked() || !user.isEnabled()) {
             return false;
         }
         return true;
@@ -376,7 +384,7 @@ public class UserServiceImp implements UserService {
     @Override
     public void lockedUserByEmail(String email) {
         User user = userRepository.getUserByEmail(email);
-        if(user!=null && user.isNonLocked()) {
+        if (user != null && user.isNonLocked()) {
             userRepository.lockedByEmail(email);
         }
     }
@@ -401,7 +409,7 @@ public class UserServiceImp implements UserService {
     @Override
     public long calculateSecondIn5Minute(User user) {
         long countSecond = 0;
-        if(user.getTimeLoginFailed() != null) {
+        if (user.getTimeLoginFailed() != null) {
             int yearInDB = getPartDate(user.getTimeLoginFailed(), Calendar.YEAR);
             int monthInDB = getPartDate(user.getTimeLoginFailed(), Calendar.MONTH);
             int dayInDB = getPartDate(user.getTimeLoginFailed(), Calendar.DATE);
@@ -436,13 +444,13 @@ public class UserServiceImp implements UserService {
     }
 
     public int countDayInMonth(int year, int month) {
-        if(month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12) {
+        if (month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12) {
             return 31;
-        } else if(month == 4 || month == 6 || month == 9 || month == 11) {
+        } else if (month == 4 || month == 6 || month == 9 || month == 11) {
             return 30;
         }
-        if(year % 4 == 0 && year % 100 != 0) {
-            if(month == 2) {
+        if (year % 4 == 0 && year % 100 != 0) {
+            if (month == 2) {
                 return 29;
             }
         }
@@ -451,7 +459,7 @@ public class UserServiceImp implements UserService {
 
     public int countDayInYear(int year, int month, int day) {
         int count = 0;
-        for(int i = 1; i < month; i++) {
+        for (int i = 1; i < month; i++) {
             count += countDayInMonth(year, i);
         }
         count += day;
@@ -459,7 +467,7 @@ public class UserServiceImp implements UserService {
     }
 
     public int countDayIn1Year(int year) {
-        if(year % 4 == 0 && year % 100 != 0) {
+        if (year % 4 == 0 && year % 100 != 0) {
             return 366;
         }
         return 365;
@@ -470,28 +478,26 @@ public class UserServiceImp implements UserService {
         User user = null;
         boolean check = false;
         char c = s.toLowerCase().charAt(0);
-        if(c >= 'a' && c <= 'z') {
+        if (c >= 'a' && c <= 'z') {
             user = userRepository.getUserByEmail(s);
             check = true;
-        } else if(c >= '0' && c <= '9') {
+        } else if (c >= '0' && c <= '9') {
             user = userRepository.getUserByPhone(s);
             check = false;
         }
         return check;
     }
 
-
     // function automation send email (System handler)
-
 
     @Override
     public boolean sendNotificationEmail() throws MessagingException, UnsupportedEncodingException {
         boolean check = false;
         List<User> lists = userRepository.findAll();
-        for(User user : lists) {
-            if(user.getOfflineAt() != null) {
+        for (User user : lists) {
+            if (user.getOfflineAt() != null) {
                 long dayOff = calculateSecondIn5Minute(user);
-                int monthOff = (int)(dayOff / 2_592_000);
+                int monthOff = (int) (dayOff / 2_592_000);
                 int yearInDB = getPartDate(user.getOfflineAt(), Calendar.YEAR);
                 int monthInDB = getPartDate(user.getOfflineAt(), Calendar.MONTH);
                 int dayInDB = getPartDate(user.getOfflineAt(), Calendar.DATE);
@@ -501,19 +507,19 @@ public class UserServiceImp implements UserService {
                 int dayInNow = getPartDate(new Date(), Calendar.DATE);
                 monthInNow += 1;
 
-                if(dayInNow == dayInDB) {
-                    if(yearInNow == yearInDB) {
-                        if((monthInNow - monthInDB) == 1) {
+                if (dayInNow == dayInDB) {
+                    if (yearInNow == yearInDB) {
+                        if ((monthInNow - monthInDB) == 1) {
                             check = mailOffline(user, monthOff);
                         }
                     } else {
-                        if(monthInNow == 1 && monthInDB == 12) {
+                        if (monthInNow == 1 && monthInDB == 12) {
                             check = mailOffline(user, monthOff);
                         }
                     }
                 }
             }
-            }
+        }
         return check;
     }
 
@@ -521,10 +527,10 @@ public class UserServiceImp implements UserService {
     public boolean sendNotificationEmailHappyBirthDay() throws MessagingException, UnsupportedEncodingException {
         boolean check = false;
         List<User> lists = userRepository.findAll();
-        for(User user : lists) {
-            if(user.getYearOfBirth() != null) {
+        for (User user : lists) {
+            if (user.getYearOfBirth() != null) {
                 boolean happy = checkBirthDay(user);
-                if(happy) {
+                if (happy) {
                     check = emailHappyBirth(user);
                 }
             }
@@ -538,7 +544,7 @@ public class UserServiceImp implements UserService {
     }
 
     public boolean mailOffline(User user, int monthOff) throws MessagingException, UnsupportedEncodingException {
-        if(user.getEmail() == null) {
+        if (user.getEmail() == null) {
             return false;
         }
         try {
@@ -609,14 +615,14 @@ public class UserServiceImp implements UserService {
 
             javaMailSender.send(mimeMessage);
             return true;
-        } catch(Exception e) {
+        } catch (Exception e) {
             log.error("Cannot send mail ", e.toString());
             return false;
         }
     }
 
     public boolean emailHappyBirth(User user) throws MessagingException, UnsupportedEncodingException {
-        if(user.getEmail() == null) {
+        if (user.getEmail() == null) {
             return false;
         }
         try {
@@ -693,10 +699,271 @@ public class UserServiceImp implements UserService {
         int monthInNow = getPartDate(new Date(), Calendar.MONTH);
         int dayInNow = getPartDate(new Date(), Calendar.DATE);
         monthInNow += 1;
-        if(dayInNow == dayInDB && monthInNow == monthInDB && ((yearInNow - yearInDB) >= 1)) {
+        if (dayInNow == dayInDB && monthInNow == monthInDB && ((yearInNow - yearInDB) >= 1)) {
             check = true;
         }
         return check;
+    }
+
+    // Invoice
+
+    @Override
+    public boolean sendInvoice(Order order) {
+        if (order == null) {
+            return false;
+        }
+        try {
+            NumberFormat nb = NumberFormat.getInstance();
+            Payment payment = paymentService.findByOrder(order);
+            SimpleDateFormat spdfm = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
+
+            String mail = "<body style=\"padding: 20px; margin: 0; font-family: Inter, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif; -webkit-font-smoothing: antialiased; background-color: #dcdcdc;\">\n" +
+                    "                        <section class=\"wrapper-invoice\" style=\"display: flex; justify-content: center;\">\n" +
+                    "                          <div class=\"invoice\" style=\"height: auto;\n" +
+                    "                          background: #fff;\n" +
+                    "                          padding: 5vh;\n" +
+                    "                          margin-top: 5vh;\n" +
+                    "                          width: 100%;\n" +
+                    "                          box-sizing: border-box;\n" +
+                    "                          border: 1px solid #dcdcdc;\">\n" +
+                    "                            <div class=\"invoice-information\" style=\"float: right;\n" +
+                    "                            text-align: right;\">\n" +
+                    "                              <p style=\"font-size: 2vh;\n" +
+                    "  color: gray;\"><b style=\"color: #0F172A;\">Invoice #</b> : 1</p>\n" +
+                    "                              <p style=\"font-size: 2vh;\n" +
+                    "  color: gray;\"><b style=\"color: #0F172A;\">Created Date </b>: " + spdfm.format(new Date()) + "</p>\n" +
+                    "                            </div>\n" +
+                    "                            <div class=\"invoice-logo-brand\">               \n" +
+                    "                              <img src= \"https://firebasestorage.googleapis.com/v0/b/diamond-6401b.appspot.com/o/Logo.png?alt=media&token=13f983ed-b3e1-4bbe-83b2-a47edf62c6a6\"     \n" +
+                    "                              alt=\"Logo\" style=\"width: 360px;\">\n" +
+                    "                            </div>\n" +
+                    "                            <div class=\"invoice-head\" style=\"display: flex;\n" +
+                    "  margin-top: 8vh; justify-content: space-between;\" >\n" +
+                    "                              <div class=\"head client-info\" style=\"width: 100%;\n" +
+                    "  box-sizing: border-box;\">\n" +
+                    "                                <p style=\"font-size: 2vh;\n" +
+                    "  color: gray;\">Mã số hoá đơn</p>\n" +
+                    "                                <p style=\"font-size: 2vh;\n" +
+                    "  color: gray;\">Tên khách hàng</p>\n" +
+                    "                                <p style=\"font-size: 2vh;\n" +
+                    "  color: gray;\">Phone</p>\n" +
+                    "                                <p style=\"font-size: 2vh;\n" +
+                    "  color: gray;\">Address</p>\n" +
+                    "  <p style=\"font-size: 2vh;\n" +
+                    "  color: gray;\">Email</p>\n" +
+                    "                              </div>\n" +
+                    "                              <div class=\"head client-data\" style=\"min-width: 200px;\">\n" +
+                    "                                <p style=\"font-size: 2vh;\n" +
+                    "  color: gray;\">" + order.getOrderID() + "</p>\n" +
+                    "                                <p style=\"font-size: 2vh;\n" +
+                    "  color: gray;\">" + order.getUser().getFirstName() + " " + order.getUser().getLastName() + "</p>\n" +
+                    "                                <p style=\"font-size: 2vh;\n" +
+                    "  color: gray;\">" + order.getUser().getPhone() + "</p>\n" +
+                    "                                <p style=\"font-size: 2vh;\n" +
+                    "  color: gray;\">" + order.getUser().getAddress() + "</p>\n" +
+                    "    <p style=\"font-size: 2vh;\n" +
+                    "  color: gray;\">" + order.getEmail() + "</p>\n" +
+                    "                              </div>\n" +
+                    "                            </div>\n" +
+                    "                            <div class=\"invoice-body\" style=\"margin-top: 8vh;\">\n" +
+                    "                              <table class=\"table\" style=\"border-collapse: collapse;\n" +
+                    "                               width: 100%;\">\n" +
+                    "                                <thead>\n" +
+                    "                                  <tr>\n" +
+                    "                                   <th style=\" font-size: 2vh;\n" +
+                    "                                    border: 1px solid #dcdcdc;\n" +
+                    "                                    text-align: left;\n" +
+                    "                                    background-color: #eeeeee;\">No.</th>\n" +
+                    "                                    <th style=\" font-size: 2vh;\n" +
+                    "                                    border: 1px solid #dcdcdc;\n" +
+                    "                                    text-align: left;\n" +
+                    "                                    padding: 1vh;\n" +
+                    "                                    background-color: #eeeeee;\">Item Description</th>\n" +
+                    "                                    <th style=\" font-size: 2vh;\n" +
+                    "                                    border: 1px solid #dcdcdc;\n" +
+                    "                                    text-align: left;\n" +
+                    "                                    padding: 1vh;\n" +
+                    "                                    background-color: #eeeeee;\">Amount</th>\n" +
+                    "                                  </tr>\n" +
+                    "                                </thead>\n" +
+                    "                                <tbody>\n";
+            int no = 1;
+            for (OrderDetail orderDetail : order.getOrderDetails()) {
+
+                if (orderDetail.getDiamond() != null) {
+                    mail +=         "                                   <tr>\n" +
+                                    "                                    <td style=\"font-size: 2vh;\n" +
+                                    "                                    border: 1px solid #dcdcdc;\n" +
+                                    "                                    text-align: left;\n" +
+                                    "                                    padding: 1vh;\n" +
+                                    "                                    background-color: #fff;\">" + no + "</td>\n" +
+                                    "                                    <td style=\"font-size: 2vh;\n" +
+                                    "                                    border: 1px solid #dcdcdc;\n" +
+                                    "                                    text-align: left;\n" +
+                                    "                                    padding: 1vh;\n" +
+                                    "                                    background-color: #fff;\">" + orderDetail.getDiamond().getDiamondName() + "</td>\n" +
+                                    "                                    <td style=\"font-size: 2vh;\n" +
+                                    "                                    border: 1px solid #dcdcdc;\n" +
+                                    "                                    text-align: left;\n" +
+                                    "                                    padding: 1vh;\n" +
+                                    "                                    background-color: #fff;\">" + nb.format(orderDetail.getDiamond().getTotalPrice()) + " VND</td>\n" +
+                                    "                                  </tr>\n";
+                    no++;
+                }
+                if (orderDetail.getProductCustomize() != null) {
+                    mail += "                                  <tr>\n" +
+                            "                                   <td style=\"font-size: 2vh;\n" +
+                            "                                    border: 1px solid #dcdcdc;\n" +
+                            "                                    text-align: left;\n" +
+                            "                                    padding: 1vh;\n" +
+                            "                                    background-color: #fff;\">" + no + "</td>\n" +
+                            "                                    <td style=\"font-size: 2vh;\n" +
+                            "                                    border: 1px solid #dcdcdc;\n" +
+                            "                                    text-align: left;\n" +
+                            "                                    padding: 1vh;\n" +
+                            "                                    background-color: #fff;\">" + orderDetail.getProductCustomize().getProduct().getProductName() + "</td>\n" +
+                            "                                    <td style=\"font-size: 2vh;\n" +
+                            "                                    border: 1px solid #dcdcdc;\n" +
+                            "                                    text-align: left;\n" +
+                            "                                    padding: 1vh;\n" +
+                            "                                    background-color: #fff;\">" + nb.format(orderDetail.getProductCustomize().getProduct().getTotalPrice()) + " VND</td>\n" +
+                            "                                  </tr>\n";
+
+                    if (orderDetail.getProductCustomize().getDiamond() != null) {
+                        mail += "                                  <tr>\n" +
+                                "                                   <td style=\"font-size: 2vh;\n" +
+                                "                                    border: 1px solid #dcdcdc;\n" +
+                                "                                    text-align: left;\n" +
+                                "                                    padding: 1vh;\n" +
+                                "                                    background-color: #fff;\">" + no + "</td>\n" +
+                                "                                    <td style=\"font-size: 2vh;\n" +
+                                "                                    border: 1px solid #dcdcdc;\n" +
+                                "                                    text-align: left;\n" +
+                                "                                    padding: 1vh;\n" +
+                                "                                    background-color: #fff;\">" + orderDetail.getProductCustomize().getDiamond().getDiamondName() + "</td>\n" +
+                                "                                    <td style=\"font-size: 2vh;\n" +
+                                "                                    border: 1px solid #dcdcdc;\n" +
+                                "                                    text-align: left;\n" +
+                                "                                    padding: 1vh;\n" +
+                                "                                    background-color: #fff;\">" + nb.format(orderDetail.getProductCustomize().getDiamond().getTotalPrice()) + " VND</td>\n" +
+                                "                                  </tr>\n";
+                        no++;
+                    }
+                }
+            }
+            mail += "                                  \n" +
+                    "                                </tbody>\n" +
+                    "                              </table>\n" +
+                    "                              <div class=\"flex-table\" style=\"display: flex;\">\n" +
+                    "                                <div class=\"flex-column\" style=\" width: 100%;\n" +
+                    "  box-sizing: border-box;\"></div>\n" +
+                    "                                <div class=\"flex-column\" style=\" width: 100%;\n" +
+                    "  box-sizing: border-box;\">\n" +
+                    "                                  <table class=\"table-subtotal\" style=\"border-collapse: collapse;\n" +
+                    "                                  box-sizing: border-box;\n" +
+                    "                                  width: 100%;\n" +
+                    "                                  margin-top: 2vh;\">\n" +
+                    "                                    <tbody>\n" +
+                    "                                      <tr>\n" +
+                    "                                        <td style=\" font-size: 2vh;\n" +
+                    "                                        border-bottom: 1px solid #dcdcdc;\n" +
+                    "                                        text-align: left;\n" +
+                    "                                        padding: 1vh;\n" +
+                    "                                        background-color: #fff;\">Subtotal</td>\n" +
+                    "                                        <td style=\" font-size: 2vh;\n" +
+                    "                                        border-bottom: 1px solid #dcdcdc;\n" +
+                    "                                        text-align: left;\n" +
+                    "                                        padding: 1vh;\n" +
+                    "                                        background-color: #fff;\">" + nb.format(order.getPrice() + order.getDiscount()) + " VND</td>\n" +
+                    "                                      </tr>\n" +
+                    "                                      <tr>\n" +
+                    "                                        <td style=\" font-size: 2vh;\n" +
+                    "                                        border-bottom: 1px solid #dcdcdc;\n" +
+                    "                                        text-align: left;\n" +
+                    "                                        padding: 1vh;\n" +
+                    "                                        background-color: #fff;\">Discount</td>\n" +
+                    "                                        <td style=\" font-size: 2vh;\n" +
+                    "                                        border-bottom: 1px solid #dcdcdc;\n" +
+                    "                                        text-align: left;\n" +
+                    "                                        padding: 1vh;\n" +
+                    "                                        background-color: #fff;\"><span style=\"color: red; font-size: 20px;\">-</span>" + nb.format(order.getDiscount()) + " VND ( <span style=\"font-size: 20px; color: red;\">-</span> ? points)</td>\n" +
+                    "                                      </tr>\n" +
+                    "                                      <tr>\n" +
+                    "                                        <td style=\" font-size: 2vh;\n" +
+                    "                                        border-bottom: 1px solid #dcdcdc;\n" +
+                    "                                        text-align: left;\n" +
+                    "                                        padding: 1vh;\n" +
+                    "                                        background-color: #fff;\">Tax</td>\n" +
+                    "                                        <td style=\" font-size: 2vh;\n" +
+                    "                                        border-bottom: 1px solid #dcdcdc;\n" +
+                    "                                        text-align: left;\n" +
+                    "                                        padding: 1vh;\n" +
+                    "                                        background-color: #fff;\">0</td>\n" +
+                    "                                      </tr>\n" +
+                    "                                      <tr>\n" +
+                    "                                        <td style=\" font-size: 2vh;\n" +
+                    "                                        border-bottom: 1px solid #dcdcdc;\n" +
+                    "                                        text-align: left;\n" +
+                    "                                        padding: 1vh;\n" +
+                    "                                        background-color: #fff;\">Payment Method</td>\n" +
+                    "                                        <td style=\" font-size: 2vh;\n" +
+                    "                                        border-bottom: 1px solid #dcdcdc;\n" +
+                    "                                        text-align: left;\n" +
+                    "                                        padding: 1vh;\n" +
+                    "                                        background-color: #fff;\">" + payment.getMethodPayment() + "</td>\n" +
+                    "                                      </tr>\n" +
+                    "                                      <tr>\n" +
+                    "                                        <td style=\" font-size: 2vh;\n" +
+                    "                                        border-bottom: 1px solid #dcdcdc;\n" +
+                    "                                        text-align: left;\n" +
+                    "                                        padding: 1vh;\n" +
+                    "                                        background-color: #fff;\">Note</td>\n" +
+                    "                                        <td style=\" font-size: 2vh;\n" +
+                    "                                        border-bottom: 1px solid #dcdcdc;\n" +
+                    "                                        text-align: left;\n" +
+                    "                                        padding: 1vh;\n" +
+                    "                                        background-color: #fff;\">" + order.getNote() + "</td>\n" +
+                    "                                      </tr>\n" +
+                    "                                    </tbody>\n" +
+                    "                                  </table>\n" +
+                    "                                </div>\n" +
+                    "                              </div>\n" +
+                    "                              <div class=\"invoice-total-amount\" style=\"margin-top: 1rem;\">\n" +
+                    "                                <p style=\"font-weight: bold;\n" +
+                    "                                color: #0F172A;\n" +
+                    "                                text-align: right;\n" +
+                    "                                font-size: 22px;\">Total : " + nb.format(order.getPrice()) + " VND</p>\n" +
+                    "                              </div>\n" +
+                    "                            </div>\n" +
+                    "                            <div class=  \"footer  \"     \n" +
+                    "                            style=  \"text-align: center; \"    \n" +
+                    "                            font-size: 14px;    \n" +
+                    "                            color: #777777;    \n" +
+                    "                            margin-top: 20px;>    \n" +
+                    "                           <p>Copyright &copy; 2019, YOUWORK.TODAY INC</p>    \n" +
+                    "                          <h2>Thank you, have a good day .</h2>Group6 Team   \n" +
+                    "                       </div> \n" +
+                    "                          </div>\n" +
+                    "                          \n" +
+                    "                        </section>                       \n" +
+                    "                      </body>";
+
+            String title = "Invoice";
+            String senderName = "Invoice";
+            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
+            helper.setFrom("hoangsonhadiggory@gmail.com", senderName);
+            helper.setTo(order.getEmail());
+            helper.setSubject(title);
+            helper.setText(mail, true);
+
+            javaMailSender.send(mimeMessage);
+            return true;
+
+        } catch (Exception e) {
+            log.error("Error at send invoice {}", e.toString());
+            return false;
+        }
     }
 
 }

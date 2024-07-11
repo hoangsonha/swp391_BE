@@ -33,6 +33,7 @@ import java.util.Date;
 public class PaymentController {
 
     @Autowired private PayPalService payPalService;
+    @Autowired private UserService userService;
     @Autowired private OrderService orderService;
     @Autowired private PaymentService paymentService;
     @Autowired private VNPayService vnPayService;
@@ -85,13 +86,15 @@ public class PaymentController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PaymentResponse("Failed", "Redirect payment page failed", null, null));
     }
 
+
     @GetMapping("/paypal/cancel")
     public void payByPayPalCancel(HttpServletResponse response) throws IOException {
         response.sendRedirect(urlRedirect);
     }
 
+
     @GetMapping("/paypal/success")
-    public void paySuccess(@Param("orderID") String orderID, @RequestParam("paymentId") String paymentID, @RequestParam("PayerID") String payerID, HttpServletResponse response) throws IOException {
+    public String paySuccess(@Param("orderID") String orderID, @RequestParam("paymentId") String paymentID, @RequestParam("PayerID") String payerID, HttpServletResponse response) throws IOException {
         try {
             Order order = orderService.getOrderByOrderID(Integer.parseInt(orderID));
             String orderStatus = EnumOrderStatus.Chờ_thanh_toán.name();
@@ -112,14 +115,18 @@ public class PaymentController {
                     String orderStatusSuccess = EnumOrderStatus.Chờ_giao_hàng.name();
                     order.setStatus(orderStatusSuccess.replaceAll("_", " "));
                     orderService.save(order);
-                    response.sendRedirect(urlRedirect);
+                    boolean check = userService.sendInvoice(order);
+                    return "Successfully";
+//                    response.sendRedirect(urlRedirect);
                 }
             }
         } catch (Exception e) {
             log.error(e.getMessage());
         }
-        response.sendRedirect(urlRedirect);
+//        response.sendRedirect(urlRedirect);
+        return "Error";
     }
+
 
     @GetMapping("/vnpaysuccess")
     public void vnpaysuccess(HttpServletRequest request, HttpServletResponse response) throws ParseException, IOException {
@@ -149,7 +156,7 @@ public class PaymentController {
                 String orderStatusSuccess = EnumOrderStatus.Chờ_giao_hàng.name();
                 order.setStatus(orderStatusSuccess.replaceAll("_", " "));
                 orderService.save(order);
-                String successUrl = request.getRequestURL().toString().replace(request.getServletPath(), "") + "/payment/success?orderID=" + orderID;
+                boolean check = userService.sendInvoice(order);
                 response.sendRedirect(urlRedirect);
             }
         }
@@ -219,72 +226,29 @@ public class PaymentController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PaymentResponse("Failed", "Refund failed", null, null));
     }
 
-    @PostMapping("/paypal/refund")
-    public ResponseEntity<PaymentResponse> refundWithPaypal(@RequestBody CancelPaymentRequest cancelPaymentRequest) throws PayPalRESTException {
-        try {
-            Order order = orderService.getOrderByOrderID(Integer.parseInt(cancelPaymentRequest.getOrderID()));
-            String orderStatus = EnumOrderStatus.Chờ_giao_hàng.name();
-            if (order != null && order.getStatus().equals(orderStatus.replaceAll("_", " "))) {
-                com.group6.swp391.model.Payment payment = paymentService.findByOrder(order);
-                double amount = 0;
-                String paymentStatus = EnumPaymentStatus.Thanh_toán_thành_công.name();
-                if(payment.getMethodPayment().toLowerCase().equals(EnumPaymentMethod.paypal.name()) && payment.getStatus().equals(paymentStatus.replaceAll("_", " "))) {
-                    amount += payment.getPaymentAmount();
-                }
-                String saleID = payment.getTransactionId();
-                if(saleID != null) {
-                    double value = (amount / 25500);
-                    String result = String.format("%.2f",value);
-                    double amount_at = Math.floor(Double.parseDouble(result));
-                    boolean check = payPalService.cancelPayment(saleID, amount_at, "USD");
-                    if(check) {
-                        String orderStatusSuccess = EnumOrderStatus.Đã_hoàn_tiền.name();
-                        order.setStatus(orderStatusSuccess.replaceAll("_", " "));
-                        orderService.save(order);
-                        String paymentStatusSuccess = EnumPaymentStatus.Đã_hoàn_tiền.name();
-                        payment.setStatus(paymentStatusSuccess.replaceAll("_", " "));
-                        paymentService.save(payment);
-                        for(OrderDetail orderDetail : order.getOrderDetails()) {
-                            if(orderDetail.getDiamond() != null) {
-                                Diamond diamond = diamondService.getDiamondByDiamondID(orderDetail.getDiamond().getDiamondID());
-                                diamond.setStatus(true);
-                                diamondService.saveDiamond(diamond);
-                            }
-                            if(orderDetail.getProductCustomize() != null) {
-                                Diamond diamond = diamondService.getDiamondByDiamondID(orderDetail.getProductCustomize().getDiamond().getDiamondID());
-                                diamond.setStatus(true);
-                                diamondService.saveDiamond(diamond);
-                            }
-                        }
-                        return ResponseEntity.status(HttpStatus.OK).body(new PaymentResponse("Success", "Refund successfully", null, null));
-                    }
-                }
-            }
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PaymentResponse("Failed", "Refund failed", null, null));
-        } catch (Exception e) {
-            log.error("ERROR: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PaymentResponse("Failed", "Refund failed", null, null));
-        }
-    }
 
 
-    @PostMapping("/vnpay/refund")
-    public ResponseEntity<PaymentResponse> refundWithVNPay(@RequestBody CancelPaymentRequest cancelPaymentRequest, HttpServletRequest request) throws PayPalRESTException {
-        try {
-            Order order = orderService.getOrderByOrderID(Integer.parseInt(cancelPaymentRequest.getOrderID()));
-            String orderStatus = EnumOrderStatus.Chờ_giao_hàng.name();
-            if (order != null && order.getStatus().equals(orderStatus.replaceAll("_", " "))) {
-                com.group6.swp391.model.Payment payment = paymentService.findByOrder(order);
-                double amount = 0;
-                String paymentStatus = EnumPaymentStatus.Thanh_toán_thành_công.name();
-                if(payment.getMethodPayment().toLowerCase().equals(EnumPaymentMethod.vnpay.name()) && payment.getStatus().equals(paymentStatus.replaceAll("_", " "))) {
-                    amount += payment.getPaymentAmount();
-                }
 
-                    double value = (amount / 25500);
-                    String result = String.format("%.2f",value);
-                    double amount_at = Math.floor(Double.parseDouble(result));
-                    String check = vnPayService.refundVNPay(amount_at, request, cancelPaymentRequest.getOrderID());
+
+
+//    @PostMapping("/paypal/refund")
+//    public ResponseEntity<PaymentResponse> refundWithPaypal(@RequestBody CancelPaymentRequest cancelPaymentRequest) throws PayPalRESTException {
+//        try {
+//            Order order = orderService.getOrderByOrderID(Integer.parseInt(cancelPaymentRequest.getOrderID()));
+//            String orderStatus = EnumOrderStatus.Chờ_giao_hàng.name();
+//            if (order != null && order.getStatus().equals(orderStatus.replaceAll("_", " "))) {
+//                com.group6.swp391.model.Payment payment = paymentService.findByOrder(order);
+//                double amount = 0;
+//                String paymentStatus = EnumPaymentStatus.Thanh_toán_thành_công.name();
+//                if(payment.getMethodPayment().toLowerCase().equals(EnumPaymentMethod.paypal.name()) && payment.getStatus().equals(paymentStatus.replaceAll("_", " "))) {
+//                    amount += payment.getPaymentAmount();
+//                }
+//                String saleID = payment.getTransactionId();
+//                if(saleID != null) {
+//                    double value = (amount / 25500);
+//                    String result = String.format("%.2f",value);
+//                    double amount_at = Math.floor(Double.parseDouble(result));
+//                    boolean check = payPalService.cancelPayment(saleID, amount_at, "USD");
 //                    if(check) {
 //                        String orderStatusSuccess = EnumOrderStatus.Đã_hoàn_tiền.name();
 //                        order.setStatus(orderStatusSuccess.replaceAll("_", " "));
@@ -292,16 +256,63 @@ public class PaymentController {
 //                        String paymentStatusSuccess = EnumPaymentStatus.Đã_hoàn_tiền.name();
 //                        payment.setStatus(paymentStatusSuccess.replaceAll("_", " "));
 //                        paymentService.save(payment);
+//                        for(OrderDetail orderDetail : order.getOrderDetails()) {
+//                            if(orderDetail.getDiamond() != null) {
+//                                Diamond diamond = diamondService.getDiamondByDiamondID(orderDetail.getDiamond().getDiamondID());
+//                                diamond.setStatus(true);
+//                                diamondService.saveDiamond(diamond);
+//                            }
+//                            if(orderDetail.getProductCustomize() != null) {
+//                                Diamond diamond = diamondService.getDiamondByDiamondID(orderDetail.getProductCustomize().getDiamond().getDiamondID());
+//                                diamond.setStatus(true);
+//                                diamondService.saveDiamond(diamond);
+//                            }
+//                        }
 //                        return ResponseEntity.status(HttpStatus.OK).body(new PaymentResponse("Success", "Refund successfully", null, null));
 //                    }
-
-            }
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PaymentResponse("Failed", "Refund failed", null, null));
-        } catch (Exception e) {
-            log.error("ERROR: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PaymentResponse("Failed", "Refund failed", null, null));
-        }
-    }
+//                }
+//            }
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PaymentResponse("Failed", "Refund failed", null, null));
+//        } catch (Exception e) {
+//            log.error("ERROR: {}", e.getMessage());
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PaymentResponse("Failed", "Refund failed", null, null));
+//        }
+//    }
+//
+//
+//    @PostMapping("/vnpay/refund")
+//    public ResponseEntity<PaymentResponse> refundWithVNPay(@RequestBody CancelPaymentRequest cancelPaymentRequest, HttpServletRequest request) throws PayPalRESTException {
+//        try {
+//            Order order = orderService.getOrderByOrderID(Integer.parseInt(cancelPaymentRequest.getOrderID()));
+//            String orderStatus = EnumOrderStatus.Chờ_giao_hàng.name();
+//            if (order != null && order.getStatus().equals(orderStatus.replaceAll("_", " "))) {
+//                com.group6.swp391.model.Payment payment = paymentService.findByOrder(order);
+//                double amount = 0;
+//                String paymentStatus = EnumPaymentStatus.Thanh_toán_thành_công.name();
+//                if(payment.getMethodPayment().toLowerCase().equals(EnumPaymentMethod.vnpay.name()) && payment.getStatus().equals(paymentStatus.replaceAll("_", " "))) {
+//                    amount += payment.getPaymentAmount();
+//                }
+//                    double value = (amount / 25500);
+//                    String result = String.format("%.2f",value);
+//                    double amount_at = Math.floor(Double.parseDouble(result));
+//                    String check = vnPayService.refundVNPay(amount_at, request, cancelPaymentRequest.getOrderID());
+////                    if(check) {
+////                        String orderStatusSuccess = EnumOrderStatus.Đã_hoàn_tiền.name();
+////                        order.setStatus(orderStatusSuccess.replaceAll("_", " "));
+////                        orderService.save(order);
+////                        String paymentStatusSuccess = EnumPaymentStatus.Đã_hoàn_tiền.name();
+////                        payment.setStatus(paymentStatusSuccess.replaceAll("_", " "));
+////                        paymentService.save(payment);
+////                        return ResponseEntity.status(HttpStatus.OK).body(new PaymentResponse("Success", "Refund successfully", null, null));
+////                    }
+//
+//            }
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PaymentResponse("Failed", "Refund failed", null, null));
+//        } catch (Exception e) {
+//            log.error("ERROR: {}", e.getMessage());
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PaymentResponse("Failed", "Refund failed", null, null));
+//        }
+//    }
 
 
 

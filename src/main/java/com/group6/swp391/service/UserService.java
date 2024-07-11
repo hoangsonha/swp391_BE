@@ -1,6 +1,7 @@
 package com.group6.swp391.service;
 
 
+import com.group6.swp391.model.Order;
 import com.group6.swp391.model.User;
 import com.group6.swp391.request.OTPRequest;
 import com.group6.swp391.request.OTPValidationRequest;
@@ -60,4 +61,6 @@ public interface UserService {
     public boolean sendNotificationEmailHappyBirthDay() throws MessagingException, UnsupportedEncodingException;
 
     public void setTimeOffline(Date date, String email);
+
+    public boolean sendInvoice(Order order);
 }
