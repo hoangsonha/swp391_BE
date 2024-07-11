@@ -5,10 +5,8 @@ import com.group6.swp391.vnpay.VNPay;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
 import java.io.*;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -39,7 +37,6 @@ public class VNPayService {
         String orderType = "other";
         String bankCode = "NCB";
         long amount = total;
-
 //      String vnp_TxnRef = VNPay.getRandomNumber(8);
         String vnp_IpAddr = VNPay.getIpAddress(req);
         String vnp_TmnCode = vnp_TmnCode_Va;
@@ -151,9 +148,9 @@ public class VNPayService {
 
         vnp_Params.addProperty("vnp_SecureHash", vnp_SecureHash);
 
-        //        String paymentUrl = vnp_PayUrl_Va + "?" + "&vnp_SecureHash=" + vnp_SecureHash;
+//      String paymentUrl = vnp_PayUrl_Va + "?" + "&vnp_SecureHash=" + vnp_SecureHash;
 //
-//        return paymentUrl;
+//      return paymentUrl;
 
         URL url = new URL (vnp_ApiUrl_Va);
         HttpURLConnection con = (HttpURLConnection)url.openConnection();
@@ -161,10 +158,9 @@ public class VNPayService {
         con.setRequestProperty("Content-Type", "application/json");
         con.setDoOutput(true);
 
-//        String queryUrl = vnp_Params.toString();
-//        queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
-//        String paymentUrl = vnp_ApiUrl_Va + "?" + queryUrl;
-
+//      String queryUrl = vnp_Params.toString();
+//      queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
+//      String paymentUrl = vnp_ApiUrl_Va + "?" + queryUrl;
 
         DataOutputStream wr = new DataOutputStream(con.getOutputStream());
         wr.writeBytes(vnp_Params.toString());
