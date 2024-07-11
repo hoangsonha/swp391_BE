@@ -14,10 +14,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 
 @Component
 @Slf4j
@@ -25,6 +27,16 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired private JWTToken jwtToken;
     @Autowired private CustomUserDetailService customUserDetailService;
+
+//    private final List<String> NON_USER = List.of(
+//            "/swagger-ui/**",
+//            "/v3/**",
+//            "/swagger-resources/**",
+//            "/public/**",
+//            "/swp391/api/collections/**",
+//            "/oauth2/**",
+//            "/swp391/api/report/**"
+//    );
 
     public String getToken(HttpServletRequest request) {
         String s = request.getHeader("Authorization");
@@ -37,6 +49,10 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
         try {
+//            if(isAuthentication(request.getRequestURI())) {
+//                filterChain.doFilter(request, response);
+//                return;
+//            }
             String bearerToken = getToken(request);
             if(Strings.hasText(bearerToken) && jwtToken.validate(bearerToken)) {
                 String email = jwtToken.getEmailFromJwt(bearerToken);
@@ -54,4 +70,9 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         }
         filterChain.doFilter(request, response);
     }
+
+//    private boolean isAuthentication(String uri){
+//        AntPathMatcher pathcMatcher = new AntPathMatcher();
+//        return NON_USER.stream().anyMatch(pattern -> pathcMatcher.match(pattern,uri));
+//    }
 }

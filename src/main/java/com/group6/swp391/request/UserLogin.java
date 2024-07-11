@@ -1,5 +1,6 @@
 package com.group6.swp391.request;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -13,6 +14,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserLogin {
+    @Email(message = "Email không hợp lệ")
     @NotNull(message = "Email không hợp lệ")
     @NotBlank(message = "Email không hợp lệ")
     @Size(max = 100, min = 10, message = "Email phải từ 10 tới 100 kí tự bao gồm cả @gmail.com")

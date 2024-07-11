@@ -11,6 +11,7 @@ import com.group6.swp391.response.TokenResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -27,6 +28,9 @@ public class CustomOAuth2AuthenticationSuccessHandler extends SimpleUrlAuthentic
     @Autowired private RoleRepository roleRepository;
     @Autowired private JWTToken jwtToken;
 
+    @Value("${frontend.url}")
+    private String urlRedirect;
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
 //      this.setAlwaysUseDefaultTargetUrl(true);
@@ -34,25 +38,23 @@ public class CustomOAuth2AuthenticationSuccessHandler extends SimpleUrlAuthentic
         User user = null;
         if(authentication instanceof OAuth2AuthenticationToken) {
             OAuth2User oauth2User = ((OAuth2AuthenticationToken) authentication).getPrincipal();
-            String name = oauth2User.getName();
             user = userRepository.getUserByEmail(oauth2User.getAttribute("email").toString());
             if(user!=null){
                 String token = jwtToken.generatedToken(CustomUserDetail.mapUserToUserDetail(user));
-                //more process you have to do in your logic
                 response.getWriter().write(new ObjectMapper().writeValueAsString(new TokenResponse("OK", "Login successfully", token)));
                 response.getWriter().flush();
             } else {
                 String randomString = UUID.randomUUID().toString();
                 Role role = roleRepository.getRoleByRoleName(EnumRoleName.ROLE_USER);
-
-                BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
                 user = new User(null, oauth2User.getAttribute("name"), oauth2User.getAttribute("email"), null, null, null, null, randomString, true, true, role, 0, null, null, null);
                 userRepository.save(user);
                 CustomUserDetail customUserDetail = CustomUserDetail.mapUserToUserDetail(user);
                 String token = jwtToken.generatedToken(customUserDetail);
+                response.sendRedirect(urlRedirect);
                 response.getWriter().write(new ObjectMapper().writeValueAsString(new TokenResponse("Success", "Login account successfully", token)));
             }
         } else {
+            response.sendRedirect(urlRedirect);
             response.getWriter().write(new ObjectMapper().writeValueAsString(new TokenResponse("Failed", "Login account failed", null)));
         }
     }

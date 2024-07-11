@@ -99,10 +99,11 @@ public class MainController {
                 Authentication authentication = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
                 CustomUserDetail userDetails = (CustomUserDetail) authentication.getPrincipal();
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+                //SecurityContextHolder.getContext().getAuthentication().getPrincipal();
                 String s = jwtToken.generatedToken(userDetails);
                 return ResponseEntity.status(HttpStatus.OK).body(new TokenResponse("Success", "Login successfully", s));
             } else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new TokenResponse("Failed", "Login failed", null));
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new TokenResponse("Failed", "Login failed", null));
             }
         } catch(Exception e) {
             log.error("Cannot login : {}", e.toString());
@@ -126,13 +127,13 @@ public class MainController {
                         } else userService.setQuantityLoginFailed((quantityLoginFailed + 1), userLogin.getEmail());
                         int remainingAttempt = (5-quantityLoginFailed);
                         if(remainingAttempt == 0) {
-                            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new TokenResponse("Failed", "your account is locked. Please contact to our admin to unlock", null));
+                            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new TokenResponse("Failed", "your account is locked. Please contact to our admin to unlock", null));
                         }
-                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new TokenResponse("Failed", "You have " + remainingAttempt + " password attempts left before your account is locked", null));
-                    } else return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new TokenResponse("Failed", "your account is locked. Please contact to our admin to unlock", null));
-                } else return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new TokenResponse("Failed", "your account is not active. Please check your email for verify account", null));
+                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new TokenResponse("Failed", "You have " + remainingAttempt + " password attempts left before your account is locked", null));
+                    } else return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new TokenResponse("Failed", "your account is locked. Please contact to our admin to unlock", null));
+                } else return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new TokenResponse("Failed", "your account is not active. Please check your email for verify account", null));
             } else
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new TokenResponse("Failed", "Your Email isn't exist. Please register it", null));
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new TokenResponse("Failed", "Your Email isn't exist. Please register it", null));
         }
     }
 

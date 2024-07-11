@@ -49,7 +49,8 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests((auth) ->
-                auth.requestMatchers("/swp391/api/admin/**").permitAll()
+                auth
+//                        requestMatchers("/**").permitAll()
                         .requestMatchers("/swp391/api/delivery/**").permitAll()
                         .requestMatchers("/swp391/api/user/**").permitAll()
                         .requestMatchers("/swp391/api/staff/**").permitAll()
@@ -78,7 +79,7 @@ public class WebSecurityConfig {
 //                  .oauth2Login(oauth2 -> oauth2.successHandler(customOAuth2AuthenticationSuccessHandler));
 
                 .oauth2Login(oauth2 -> {
-//                    oauth2.loginPage("/public/login").permitAll();
+                    oauth2.loginPage("/public/login").permitAll();
                     oauth2.successHandler(customOAuth2AuthenticationSuccessHandler);
                 });
 

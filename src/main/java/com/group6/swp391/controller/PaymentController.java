@@ -60,11 +60,11 @@ public class PaymentController {
                                 return ResponseEntity.status(HttpStatus.OK).body(new PaymentResponse("Success", "Redirect payment page successfully", null, links.getHref()));
                             }
                         }
-                    }
+                    } else return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new PaymentResponse("Failed", "Redirect payment page failed", null, null));
                 } catch(Exception e) {
                     log.error("Error at paypal payment {}", e.getMessage());
+                    return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(new PaymentResponse("Failed", "Redirect payment page failed", null, null));
                 }
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PaymentResponse("Failed", "Redirect payment page failed", null, null));
             } else if(paymentRequest.getPaymentMethod().equals("vnpay") && EnumPaymentMethod.checkExistPaymentMethod(paymentRequest.getPaymentMethod())) {
                 try {
                     Order order = orderService.getOrderByOrderID(Integer.parseInt(paymentRequest.getOrderID()));
@@ -77,9 +77,9 @@ public class PaymentController {
                     }
                 } catch (Exception e) {
                     log.error("Error at VNPay payment: {}", e.toString());
+                    return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(new PaymentResponse("Failed", "Redirect payment page failed", null, null));
                 }
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PaymentResponse("Failed", "Redirect payment page failed", null, null));
-            }
+            } else return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PaymentResponse("Failed", "Redirect payment page failed", null, null));
         } catch(Exception e) {
             log.error("Error at checkout {}", e.getMessage());
         }
@@ -94,7 +94,7 @@ public class PaymentController {
 
 
     @GetMapping("/paypal/success")
-    public String paySuccess(@Param("orderID") String orderID, @RequestParam("paymentId") String paymentID, @RequestParam("PayerID") String payerID, HttpServletResponse response) throws IOException {
+    public ResponseEntity<PaymentResponse> paySuccess(@Param("orderID") String orderID, @RequestParam("paymentId") String paymentID, @RequestParam("PayerID") String payerID, HttpServletResponse response) throws IOException {
         try {
             Order order = orderService.getOrderByOrderID(Integer.parseInt(orderID));
             String orderStatus = EnumOrderStatus.Chờ_thanh_toán.name();
@@ -116,20 +116,20 @@ public class PaymentController {
                     order.setStatus(orderStatusSuccess.replaceAll("_", " "));
                     orderService.save(order);
                     boolean check = userService.sendInvoice(order);
-                    return "Successfully";
-//                    response.sendRedirect(urlRedirect);
+                    response.sendRedirect(urlRedirect);
+                    return ResponseEntity.status(HttpStatus.OK).body(new PaymentResponse("Success", "Payment paypal successfully", null, null));
                 }
             }
         } catch (Exception e) {
             log.error(e.getMessage());
         }
-//        response.sendRedirect(urlRedirect);
-        return "Error";
+        response.sendRedirect(urlRedirect);
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(new PaymentResponse("Failed", "Payment paypal failed", null, null));
     }
 
 
     @GetMapping("/vnpaysuccess")
-    public void vnpaysuccess(HttpServletRequest request, HttpServletResponse response) throws ParseException, IOException {
+    public ResponseEntity<PaymentResponse> vnpaysuccess(HttpServletRequest request, HttpServletResponse response) throws ParseException, IOException {
         String responseCode = request.getParameter("vnp_ResponseCode"); // lay qua url
         String orderID = request.getParameter("vnp_TxnRef");
         String dateAt = request.getParameter("vnp_PayDate");
@@ -158,9 +158,11 @@ public class PaymentController {
                 orderService.save(order);
                 boolean check = userService.sendInvoice(order);
                 response.sendRedirect(urlRedirect);
+                return ResponseEntity.status(HttpStatus.OK).body(new PaymentResponse("Success", "Payment VNPay successfully", null, null));
             }
         }
         response.sendRedirect(urlRedirect);
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(new PaymentResponse("Failed", "Payment paypal failed", null, null));
     }
 
 
@@ -218,8 +220,8 @@ public class PaymentController {
 //                        paymentService.save(payment);
 //                        return ResponseEntity.status(HttpStatus.OK).body(new PaymentResponse("Success", "Refund successfully", null, null));
 //                    }
-                }
-            }
+                } else return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PaymentResponse("Failed", "Refund failed", null, null));
+            } else return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PaymentResponse("Failed", "Refund failed", null, null));
         } catch(Exception e) {
             log.error(e.getMessage());
         }

@@ -25,7 +25,7 @@ public class User extends BaseEntity {
     private String email;
     @Column(name = "password", length = 100, nullable = true)
     private String password;
-    @Column(name = "phone", length = 15)
+    @Column(name = "phone", length = 15, unique = true)
     private String phone;
     @Column(name = "address", columnDefinition = "varchar(300)")
     private String address;
@@ -102,6 +102,18 @@ public class User extends BaseEntity {
         this.gender = gender;
         this.yearOfBirth = yearOfBirth;
         this.timeLoginFailed = timeLoginFailed;
+    }
+
+    public User(int userID, String email, String firstName, String lastName, String address, String phone, boolean enabled, boolean nonLocked, String roleName) {
+        this.userID = userID;
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.address = address;
+        this.phone = phone;
+        this.enabled = enabled;
+        this.nonLocked = nonLocked;
+        this.roleName = roleName;
     }
 
 }

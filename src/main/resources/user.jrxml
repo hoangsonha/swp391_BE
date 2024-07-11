@@ -11,7 +11,7 @@
         <conditionExpression><![CDATA[$V{REPORT_COUNT}%2 == 0]]></conditionExpression>
     </conditionalStyle>
 </style>
-<query language="SQL"><![CDATA[SELECT userid, email, first_name, last_name, address, phone, enabled, non_locked FROM user]]></query>
+<!--<query language="SQL"><![CDATA[SELECT userid, email, first_name, last_name, address, phone, enabled, non_locked FROM user]]></query>-->
 <field name="userID" class="java.lang.Integer">
 
 </field>
@@ -36,9 +36,9 @@
 <field name="nonLocked" class="java.lang.Boolean">
 
 </field>
-<!--<field name="roleName" class="java.lang.String">-->
+<field name="roleName" class="java.lang.String">
 
-<!--</field>-->
+</field>
 <background splitType="Stretch"/>
 <title height="106" splitType="Stretch">
     <element kind="frame" uuid="d8d9e644-3a32-491d-97cb-a277aff17133" mode="Opaque" x="0" y="0" width="801" height="66" backcolor="#000000">
@@ -98,39 +98,39 @@
 <detail>
     <band height="18" splitType="Stretch">
         <element kind="frame" uuid="34a2ae4b-4055-476b-8676-d499f6af510b" mode="Opaque" x="0" y="0" width="797" height="18" style="Row">
-            <element kind="textField" uuid="1414559e-6659-4610-8245-d705c39282a2" positionType="Float" x="0" y="0" width="50" height="18" fontSize="14.0" textAdjust="StretchHeight" style="Detail">
+            <element kind="textField" uuid="1414559e-6659-4610-8245-d705c39282a2" positionType="Float" x="0" y="0" width="50" height="18" fontSize="14.0" hTextAlign="Center" textAdjust="StretchHeight" style="Detail">
                 <expression><![CDATA[$F{userID}]]></expression>
                 <property name="com.jaspersoft.studio.spreadsheet.connectionID" value="1515738c-eda8-4fc3-8f15-28da60be4e4f"/>
             </element>
-            <element kind="textField" uuid="60567d06-387c-4fc2-9437-ea42ee670d47" positionType="Float" x="50" y="0" width="148" height="18" fontSize="14.0" textAdjust="StretchHeight" style="Detail">
+            <element kind="textField" uuid="60567d06-387c-4fc2-9437-ea42ee670d47" positionType="Float" x="50" y="0" width="148" height="18" fontSize="14.0" hTextAlign="Center" textAdjust="StretchHeight" style="Detail">
                 <expression><![CDATA[$F{email}]]></expression>
                 <property name="com.jaspersoft.studio.spreadsheet.connectionID" value="1d29a8d0-fefe-4e9a-b6dd-b3c8531bb006"/>
             </element>
-            <element kind="textField" uuid="117be570-801d-451b-8036-a7875a490779" positionType="Float" x="199" y="0" width="80" height="18" fontSize="14.0" textAdjust="StretchHeight" style="Detail">
+            <element kind="textField" uuid="117be570-801d-451b-8036-a7875a490779" positionType="Float" x="199" y="0" width="80" height="18" fontSize="14.0" hTextAlign="Center" textAdjust="StretchHeight" style="Detail">
                 <expression><![CDATA[$F{firstName}]]></expression>
                 <property name="com.jaspersoft.studio.spreadsheet.connectionID" value="61b22074-d5d8-458c-afdc-c0c9c7d5462e"/>
             </element>
-            <element kind="textField" uuid="72c6bf24-4671-450d-bfff-5ba0c5e3c636" positionType="Float" x="279" y="0" width="81" height="18" fontSize="14.0" textAdjust="StretchHeight" style="Detail">
+            <element kind="textField" uuid="72c6bf24-4671-450d-bfff-5ba0c5e3c636" positionType="Float" x="279" y="0" width="81" height="18" fontSize="14.0" hTextAlign="Center" textAdjust="StretchHeight" style="Detail">
                 <expression><![CDATA[$F{lastName}]]></expression>
                 <property name="com.jaspersoft.studio.spreadsheet.connectionID" value="c4554ac2-6940-4daf-95ff-0ff946fa71d0"/>
             </element>
-            <element kind="textField" uuid="a2e63d77-73ad-4ec1-ab86-c0e614ccc710" positionType="Float" x="500" y="0" width="86" height="18" fontSize="14.0" textAdjust="StretchHeight" style="Detail">
+            <element kind="textField" uuid="a2e63d77-73ad-4ec1-ab86-c0e614ccc710" positionType="Float" x="500" y="0" width="86" height="18" fontSize="14.0" hTextAlign="Center" textAdjust="StretchHeight" style="Detail">
                 <expression><![CDATA[$F{address}]]></expression>
                 <property name="com.jaspersoft.studio.spreadsheet.connectionID" value="461845ae-8709-4300-a2bf-e8a328fc6be6"/>
             </element>
-            <element kind="textField" uuid="1240e297-5e7d-4372-8b30-3f1e88ffa517" positionType="Float" x="360" y="0" width="140" height="18" fontSize="14.0" textAdjust="StretchHeight" style="Detail">
+            <element kind="textField" uuid="1240e297-5e7d-4372-8b30-3f1e88ffa517" positionType="Float" x="360" y="0" width="140" height="18" fontSize="14.0" hTextAlign="Center" textAdjust="StretchHeight" style="Detail">
                 <expression><![CDATA[$F{phone}]]></expression>
                 <property name="com.jaspersoft.studio.spreadsheet.connectionID" value="c4554ac2-6940-4daf-95ff-0ff946fa71d0"/>
             </element>
-            <element kind="textField" uuid="79e32ae8-8ee0-42a4-837f-ef6218466777" positionType="Float" x="643" y="0" width="77" height="18" fontSize="14.0" textAdjust="StretchHeight" style="Detail">
+            <element kind="textField" uuid="79e32ae8-8ee0-42a4-837f-ef6218466777" positionType="Float" x="643" y="0" width="77" height="18" fontSize="14.0" hTextAlign="Center" textAdjust="StretchHeight" style="Detail">
                 <expression><![CDATA[$F{enabled}]]></expression>
                 <property name="com.jaspersoft.studio.spreadsheet.connectionID" value="461845ae-8709-4300-a2bf-e8a328fc6be6"/>
             </element>
-            <element kind="textField" uuid="9524577c-612d-4426-8be4-7a3d262fa0ee" positionType="Float" x="587" y="0" width="56" height="18" fontSize="14.0" textAdjust="StretchHeight" style="Detail">
+            <element kind="textField" uuid="9524577c-612d-4426-8be4-7a3d262fa0ee" positionType="Float" x="587" y="0" width="56" height="18" fontSize="14.0" hTextAlign="Center" textAdjust="StretchHeight" style="Detail">
                 <expression><![CDATA[$F{nonLocked}]]></expression>
                 <property name="com.jaspersoft.studio.spreadsheet.connectionID" value="461845ae-8709-4300-a2bf-e8a328fc6be6"/>
             </element>
-<!--            <element kind="textField" uuid="ab65b4ac-78e0-4af2-94fe-6a2014c58c53" positionType="Float" x="720" y="0" width="81" height="18" fontSize="14.0" textAdjust="StretchHeight" style="Detail">-->
+<!--            <element kind="textField" uuid="ab65b4ac-78e0-4af2-94fe-6a2014c58c53" positionType="Float" x="720" y="0" width="81" height="18" fontSize="14.0" hTextAlign="Center" textAdjust="StretchHeight" style="Detail">-->
 <!--                <expression><![CDATA[$F{roleName}]]></expression>-->
 <!--                <property name="com.jaspersoft.studio.spreadsheet.connectionID" value="461845ae-8709-4300-a2bf-e8a328fc6be6"/>-->
 <!--            </element>-->

@@ -92,6 +92,7 @@ public class AdminController {
                 randomString, active, true, role, 0, null, null, null);
         if(userService.getUserByEmail(adminRegister.getEmail()) != null || adminRegister.getEmail() == null) {
             check = false;
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Create account failed", null));
         }
         if(check) {
             userService.save(user);
@@ -127,9 +128,9 @@ public class AdminController {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/delete/{id}")
     public ResponseEntity<ObjectResponse> adminDeleteAccount(@PathVariable("id") int id) {
-        boolean check = userService.deleteUser(id);
-        return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Delete account successfully", null))
-                : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Delete account failed", null));
+        User user = userService.getUserByID(id);
+        userService.lockedUserByEmail(user.getEmail());
+        return  ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Delete account successfully", null));
     }
 
 }

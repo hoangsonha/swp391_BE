@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @SpringBootTest
@@ -28,19 +29,26 @@ class Swp391ApplicationTests {
     @Test
     void contextLoads() {
 
-        List<User> listsUser = userRepository.findAll();
-        if(listsUser.size() > 0) {
-            for(User user : listsUser) {
-                if(user.getRole() != null) {
-                    user.setRoleName(user.getRole().getRoleName().name());
-                }
-            }
-        }
-
-        for(User l : listsUser) {
-            System.out.println(l.getRoleName());
-        }
-
+//        List<User> listsUser = userRepository.findAll();
+//        if(listsUser.size() > 0) {
+//            for(User user : listsUser) {
+//                if(user.getRole() != null) {
+//                    user.setRoleName(user.getRole().getRoleName().name());
+//                }
+//            }
+//        }
+//
+//
+//        List<User> listsUserReport = new ArrayList<>();
+//        for(User user : listsUser) {
+//            User user_report = new User(user.getUserID(), user.getEmail(), user.getFirstName(), user.getLastName(), user.getAddress(), user.getPhone(), user.isEnabled(), user.isNonLocked(), user.getRoleName());
+//            listsUserReport.add(user_report);
+//        }
+//
+//
+//        for(User user : listsUserReport) {
+//            System.out.println(user.getRoleName() + ", " + user);
+//        }
 
 
 //        String orderStatus = EnumOrderStatus.Chờ_thanh_toán.name();
