@@ -1,4 +1,3 @@
- <!-- Created with Jaspersoft Studio version 7.0.0.final using JasperReports Library version 7.0.0-b478feaa9aab4375eba71de77b4ca138ad2f62aa  -->
 <jasperReport name="ggg" language="java" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="7a5c9b49-9dc5-422a-ac69-e92cf61ef530">
 <property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 <property name="com.jaspersoft.studio.data.defaultdataadapter" value="Sample DB"/>

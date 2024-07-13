@@ -64,5 +64,4 @@ public class CustomOAuth2AuthenticationSuccessHandler extends SimpleUrlAuthentic
     }
 
 
-
 }
