@@ -23,22 +23,13 @@ public class ReportController {
         String headerValue = "attachment; filename=UserExport.html";
         if(reportFormat.equals("pdf")) {
             headerValue = "attachment; filename=UserExport.pdf";
-            response.setHeader(headerKey, headerValue);
-            reportService.exportReport(response, reportFormat);
         } else if(reportFormat.equals("html")) {
-            response.setHeader(headerKey, headerValue);
-            reportService.exportReport(response, reportFormat);
+            headerValue = "attachment; filename=UserExport.html";
+        } else if(reportFormat.equals("excel")) {
+            headerValue = "attachment; filename=UserExport.xlsx";
         }
-    }
-
-
-    @GetMapping("/user/excel")
-    public void generateExcelReport(HttpServletResponse response) throws IOException {
-        response.setContentType("application/octet-stream");
-        String headerKey = "Content-Disposition";
-        String headerValue = "attachment; filename=UserExport.xlsx";
         response.setHeader(headerKey, headerValue);
-        reportService.exportExcel(response);
+        reportService.exportReport(response, reportFormat);
     }
 
 }
