@@ -1,6 +1,7 @@
 package com.group6.swp391;
 
 //import com.group6.swp391.cart.Cart;
+import com.group6.swp391.enums.EnumExportFile;
 import com.group6.swp391.enums.EnumOrderStatus;
 import com.group6.swp391.enums.EnumPaymentStatus;
 import com.group6.swp391.model.User;
@@ -28,6 +29,12 @@ class Swp391ApplicationTests {
 
     @Test
     void contextLoads() {
+
+//        String s = "EXCEL";
+//
+//        boolean check = EnumExportFile.checkExistExportFile(s);
+//
+//        System.out.println(check);
 
 //        List<User> listsUser = userRepository.findAll();
 //        if(listsUser.size() > 0) {

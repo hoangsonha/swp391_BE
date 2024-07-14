@@ -1,5 +1,6 @@
 package com.group6.swp391.controller;
 
+import com.group6.swp391.enums.EnumExportFile;
 import com.group6.swp391.service.ReportService;
 import jakarta.servlet.http.HttpServletResponse;
 import net.sf.jasperreports.engine.JRException;
@@ -16,20 +17,24 @@ import java.sql.SQLException;
 public class ReportController {
     @Autowired private ReportService reportService;
 
+
     @GetMapping("/user/{reportFormat}")
     public void getReportUser(@PathVariable String reportFormat, HttpServletResponse response) throws JRException, IOException, SQLException, NoSuchFieldException {
-        response.setContentType("application/octet-stream");
-        String headerKey = "Content-Disposition";
-        String headerValue = "attachment; filename=UserExport.html";
-        if(reportFormat.equals("pdf")) {
-            headerValue = "attachment; filename=UserExport.pdf";
-        } else if(reportFormat.equals("html")) {
-            headerValue = "attachment; filename=UserExport.html";
-        } else if(reportFormat.equals("excel")) {
-            headerValue = "attachment; filename=UserExport.xlsx";
+        boolean check = EnumExportFile.checkExistExportFile(reportFormat);
+        if(check) {
+            response.setContentType("application/octet-stream");
+            String headerKey = "Content-Disposition";
+            String headerValue = "attachment; filename=UserExport.html";
+            if(reportFormat.equals("pdf")) {
+                headerValue = "attachment; filename=UserExport.pdf";
+            } else if(reportFormat.equals("html")) {
+                headerValue = "attachment; filename=UserExport.html";
+            } else if(reportFormat.equals("excel")) {
+                headerValue = "attachment; filename=UserExport.xlsx";
+            }
+            response.setHeader(headerKey, headerValue);
+            reportService.exportReport(response, reportFormat);
         }
-        response.setHeader(headerKey, headerValue);
-        reportService.exportReport(response, reportFormat);
     }
 
 }

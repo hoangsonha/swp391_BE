@@ -7,14 +7,14 @@ public enum EnumOrderStatus {
     Chờ_giao_hàng,
     Đã_hoàn_tiền;
 
-    public static boolean checkExistOrderStatus(String s) {
-        try {
-            if(EnumOrderStatus.valueOf(s.toLowerCase()) != null) {
-                return true;
-            }
-        } catch(Exception e) {
-        }
-        return false;
-    }
+//    public static boolean checkExistOrderStatus(String s) {
+//        try {
+//            if(EnumOrderStatus.valueOf(s.toLowerCase()) != null) {
+//                return true;
+//            }
+//        } catch(Exception e) {
+//        }
+//        return false;
+//    }
 
 }

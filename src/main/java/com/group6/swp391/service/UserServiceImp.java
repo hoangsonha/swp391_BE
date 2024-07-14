@@ -17,6 +17,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -50,7 +51,7 @@ public class UserServiceImp implements UserService {
     private JavaMailSender javaMailSender;
     @Autowired
     private RestTemplate restTemplate;
-
+    @Autowired private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     // CRUD
 
@@ -316,10 +317,10 @@ public class UserServiceImp implements UserService {
         boolean check = false;
         char c = emailOrPhone.toLowerCase().charAt(0);
         if (c >= 'a' && c <= 'z') {
-            userRepository.setPasswordByEmail(newPassword, emailOrPhone);
+            userRepository.setPasswordByEmail(bCryptPasswordEncoder.encode(newPassword), emailOrPhone);
             check = true;
         } else if (c >= '0' && c <= '9') {
-            userRepository.setPasswordByPhone(newPassword, emailOrPhone);
+            userRepository.setPasswordByPhone(bCryptPasswordEncoder.encode(newPassword), emailOrPhone);
             check = true;
         }
         return check;
