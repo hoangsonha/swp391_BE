@@ -30,13 +30,13 @@ public class PointsServiceImp implements PointsService {
                 throw new RuntimeException("User Or Order not null");
             }
             Points points = pointsRepository.findByOrderId(orderId);
-            if(userExisting != null){
+            if(points != null){
                 points.setPoint(orderExisting.getPrice()/100000000);
             } else {
-                Points newPoints = new Points();
-                newPoints.setPoint(orderExisting.getPrice()/100000000);
-                newPoints.setUser(userExisting);
-                newPoints.setOrder(orderExisting);
+                points = new Points();
+                points.setPoint(orderExisting.getPrice()/100000000);
+                points.setUser(userExisting);
+                points.setOrder(orderExisting);
             }
             pointsRepository.save(points);
         } catch (Exception e) {
@@ -55,15 +55,15 @@ public class PointsServiceImp implements PointsService {
         if (order == null) {
             throw new RuntimeException("Order Not Found");
         }
-        Points points = pointsRepository.findByUser(userId);
+        Points points = pointsRepository.findByOrderId(order.getOrderID());
         if(points == null){
-            throw new RuntimeException("Points Not Found");
+            points = new Points();
+            points.setUser(user);
+            points.setOrder(order);
+            points.setUsedPoints(userPoint);
         }
-        Points usedPoints = new Points();
-        usedPoints.setUser(user);
-        usedPoints.setOrder(order);
-        usedPoints.setUsedPoints(userPoint);
-        return pointsRepository.save(usedPoints);
+        points.setUsedPoints(userPoint);
+        return pointsRepository.save(points);
     }
 
     @Override

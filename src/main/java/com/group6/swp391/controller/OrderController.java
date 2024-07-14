@@ -28,10 +28,8 @@ public class OrderController {
     @Autowired PointsService pointsService;
     @Autowired WarrantyCardService warrantyCardService;
     @Autowired ProductCustomizeService productCustomizeService;
-    @Autowired
-    private ProductCustomizeServiceImp productCustomizeServiceImp;
-    @Autowired
-    private OrderServiceImp orderServiceImp;
+    @Autowired ProductCustomizeServiceImp productCustomizeServiceImp;
+    @Autowired OrderServiceImp orderServiceImp;
 
     @DeleteMapping("/delete_order/{id}")
     public ResponseEntity<?> deleteOrder(@PathVariable int id, @RequestBody ConfirmOrderRequest confirmOrderRequest) {
