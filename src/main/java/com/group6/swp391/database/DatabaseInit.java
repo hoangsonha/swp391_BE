@@ -1,5 +1,8 @@
 package com.group6.swp391.database;
 
+import com.group6.swp391.enums.EnumRoleName;
+import com.group6.swp391.model.Role;
+import com.group6.swp391.model.User;
 import com.group6.swp391.repository.RoleRepository;
 import com.group6.swp391.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,9 +33,9 @@ public class DatabaseInit {
 //                roleRepository.save(role_user);
 //
 //
-//                Role role = roleRepository.getRoleByRoleName(EnumRoleName.ROLE_ADMIN);
+//                Role role = roleRepository.getRoleByRoleName(EnumRoleName.ROLE_USER);
 //
-//                User user = new User("Hoang", "Son", "hahsse16042922@gmail.com", bCryptPasswordEncoder.encode("1"), "0334386995", "Lê Văn Việt", "itachi.jpg", "abcxyz", true, true, role, 0 , null);
+//                User user = new User("Hoang", "Son", "", bCryptPasswordEncoder.encode("1");
 //
 //                userRepository.save(user);
             }

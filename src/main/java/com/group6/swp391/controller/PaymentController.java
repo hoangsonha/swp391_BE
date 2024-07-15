@@ -43,7 +43,7 @@ public class PaymentController {
     @Value("${frontend.url}")
     private String urlRedirect;
 
-    @PreAuthorize("hasRole('USER')")
+//    @PreAuthorize("hasRole('USER')")
     @PostMapping("/checkout")
     public ResponseEntity<PaymentResponse> pay(@RequestBody PaymentRequest paymentRequest, HttpServletRequest request, HttpServletResponse response) {
         try {
@@ -87,13 +87,13 @@ public class PaymentController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PaymentResponse("Failed", "Redirect payment page failed", null, null));
     }
 
-    @PreAuthorize("hasRole('USER')")
+//    @PreAuthorize("hasRole('USER')")
     @GetMapping("/paypal/cancel")
     public void payByPayPalCancel(HttpServletResponse response) throws IOException {
         response.sendRedirect(urlRedirect);
     }
 
-    @PreAuthorize("hasRole('USER')")
+//    @PreAuthorize("hasRole('USER')")
     @GetMapping("/paypal/success")
     public ResponseEntity<PaymentResponse> paySuccess(@Param("orderID") String orderID, @RequestParam("paymentId") String paymentID, @RequestParam("PayerID") String payerID, HttpServletResponse response) throws IOException {
         try {
@@ -128,7 +128,7 @@ public class PaymentController {
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(new PaymentResponse("Failed", "Payment paypal failed", null, null));
     }
 
-    @PreAuthorize("hasRole('USER')")
+//    @PreAuthorize("hasRole('USER')")
     @GetMapping("/vnpaysuccess")
     public ResponseEntity<PaymentResponse> vnpaysuccess(HttpServletRequest request, HttpServletResponse response) throws ParseException, IOException {
         String responseCode = request.getParameter("vnp_ResponseCode"); // lay qua url

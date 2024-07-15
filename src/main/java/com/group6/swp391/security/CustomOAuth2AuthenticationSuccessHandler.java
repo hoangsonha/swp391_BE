@@ -42,9 +42,8 @@ public class CustomOAuth2AuthenticationSuccessHandler extends SimpleUrlAuthentic
             if(user!=null){
                 String token = jwtToken.generatedToken(CustomUserDetail.mapUserToUserDetail(user));
 
-                response.setHeader("Authorization", "Bearer " + token);
-                response.sendRedirect(urlRedirect);
-                response.getWriter().write(new ObjectMapper().writeValueAsString(new TokenResponse("OK", "Login successfully", token)));
+                String urlToken = urlRedirect + "?token=" + token;
+                response.sendRedirect(urlToken);
             } else {
                 String randomString = UUID.randomUUID().toString();
                 Role role = roleRepository.getRoleByRoleName(EnumRoleName.ROLE_USER);
@@ -53,13 +52,11 @@ public class CustomOAuth2AuthenticationSuccessHandler extends SimpleUrlAuthentic
                 CustomUserDetail customUserDetail = CustomUserDetail.mapUserToUserDetail(user);
                 String token = jwtToken.generatedToken(customUserDetail);
 
-                response.setHeader("Authorization", "Bearer " + token);
-                response.sendRedirect(urlRedirect);
-                response.getWriter().write(new ObjectMapper().writeValueAsString(new TokenResponse("Success", "Login account successfully", token)));
+                String urlToken = urlRedirect + "?token=" + token;
+                response.sendRedirect(urlToken);
             }
         } else {
             response.sendRedirect(urlRedirect);
-            response.getWriter().write(new ObjectMapper().writeValueAsString(new TokenResponse("Failed", "Login account failed", null)));
         }
     }
 

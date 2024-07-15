@@ -16,4 +16,5 @@ public class ListToken {
     public boolean isListToken(String token) {
         return listToken.contains(token);
     }
+
 }
