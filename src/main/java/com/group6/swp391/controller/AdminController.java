@@ -36,11 +36,8 @@ public class AdminController {
     public ResponseEntity<ObjectResponse> getAllUser() {
         List<User> lists = userService.findAll("admin");
         boolean check = false;
-        if(lists !=null) {
-            if(lists.size() > 0) {
-                check = true;
-            }
-        }
+        if(lists !=null) if(lists.size() > 0) check = true;
+
         return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Get all users successfully", lists))
                 : ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ObjectResponse("Failed", "Get_all users failed", lists));
     }
@@ -50,11 +47,8 @@ public class AdminController {
     public ResponseEntity<ObjectResponse> getAllRole() {
         List<Role> lists = roleService.getAllRoles();
         boolean check = false;
-        if(lists !=null) {
-            if(lists.size() > 0) {
-                check = true;
-            }
-        }
+        if(lists !=null) if(lists.size() > 0) check = true;
+
         return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Get all role successfully", lists))
                 : ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ObjectResponse("Failed", "Get_all role failed", lists));
     }
@@ -86,20 +80,17 @@ public class AdminController {
             }
         }
         boolean check = true;
-        boolean active = false;
         User user = new User(adminRegister.getFirstName(), adminRegister.getLastName(), adminRegister.getEmail(),
                 bCryptPasswordEncoder.encode(adminRegister.getPassword()), adminRegister.getPhone(), adminRegister.getAddress(), adminRegister.getAvata(),
-                randomString, active, true, role, 0, null, null, null);
+                randomString, false, true, role, 0, null, null, null);
         if(userService.getUserByEmail(adminRegister.getEmail()) != null || adminRegister.getEmail() == null) {
             check = false;
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Create account failed", null));
         }
         if(check) {
             userService.save(user);
-            if(!active) {
-                String siteUrl = request.getRequestURL().toString().replace(request.getServletPath(), "");
-                check = userService.sendVerificationEmail(user, siteUrl);
-            }
+            String siteUrl = request.getRequestURL().toString().replace(request.getServletPath(), "");
+            check = userService.sendVerificationEmail(user, siteUrl);
         }
         return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Create account successfully", user))
                 : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Create account failed", null));

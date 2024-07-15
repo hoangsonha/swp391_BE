@@ -17,9 +17,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -28,6 +26,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.UnsupportedEncodingException;
 import java.text.NumberFormat;
@@ -105,16 +104,6 @@ public class UserServiceImp implements UserService {
         User user = userRepository.getUserByUserID(id);
         if (user != null && !user.isNonLocked()) {
             userRepository.unLocked(id);
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean deleteUser(int id) {
-        User user = userRepository.getUserByUserID(id);
-        if (user != null) {
-            userRepository.deleteById(id);
             return true;
         }
         return false;
@@ -243,6 +232,45 @@ public class UserServiceImp implements UserService {
         // gửi object tới url này rồi trả về đối tượng .class
         return response.isSuccess();
     }
+
+//    public boolean loginGoogle(String code) {
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+//
+////        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+////        map.add("code", code);
+////        map.add("client_id", "478830836024-e2fa5s2erqeal7bupi7tim4ap64d0cha.apps.googleusercontent.com");
+////        map.add("client_secret", "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");
+////        map.add("redirect_uri", "http://localhost:8080/login/oauth2/code/google/");
+////        map.add("grant_type", "authorization_code");
+//
+//         String TOKEN_URL = "https://oauth2.googleapis.com/token";
+//        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(TOKEN_URL)
+//                .queryParam("code", code)
+//                .queryParam("client_id", "478830836024-e2fa5s2erqeal7bupi7tim4ap64d0cha.apps.googleusercontent.com")
+//                .queryParam("client_secret", "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")
+//                .queryParam("redirect_uri", "http://localhost:8080/login/oauth2/code/google/")
+//                .queryParam("grant_type", "authorization_code");
+//
+//        HttpEntity<String> entity = new HttpEntity<>(headers);
+//        ResponseEntity<Map> response = restTemplate.exchange(
+//                builder.toUriString(),
+//                HttpMethod.POST,
+//                entity,
+//                Map.class
+//        );
+//
+//        if (response.getStatusCode().is2xxSuccessful()) {
+//            Map<String, String> responseBody = response.getBody();
+//            String accessToken = responseBody.get("access_token");
+//            System.out.println("Access Token: " + accessToken);
+//            // Redirect to homepage or another endpoint
+//            return true;
+//        } else {
+//            // Handle error
+//            return false;
+//        }
+//    }
 
 
     // function set password
@@ -378,7 +406,7 @@ public class UserServiceImp implements UserService {
             String otp = generatedNumber();
             String content = "Dear Customer, Absolutely do not provide this authentication Code to anyone. Enter OTP code" + otp + " to reset the password";
             String sender = "07eda63bd942bf35";
-            SpeedSMSAPI api = new SpeedSMSAPI("Your token");
+            SpeedSMSAPI api = new SpeedSMSAPI("BeAfmVJjdj9CrAhg7oU49zqMpC9pV83r");
             String result = api.sendSMS(phoneOrEmail, content, type, sender);
             otpMap.put(phoneOrEmail, otp);
             return true;
@@ -976,6 +1004,8 @@ public class UserServiceImp implements UserService {
             return false;
         }
     }
+
+    // crawlData
 
     @Override
     public boolean crawlData() throws InterruptedException {

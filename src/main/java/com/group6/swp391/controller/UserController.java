@@ -31,26 +31,6 @@ public class UserController {
     @Autowired private RoleService roleService;
     @Autowired private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    @PostMapping("/register")
-    public ResponseEntity<ObjectResponse> userRegister(@Valid @RequestBody UserRegister userRegister, HttpServletRequest request) throws MessagingException, UnsupportedEncodingException {
-        Role role = roleService.getRoleByRoleName(EnumRoleName.ROLE_USER);
-
-        String randomString = UUID.randomUUID().toString();
-        boolean check = true;
-
-        User user = new User(null, null, userRegister.getEmail(), bCryptPasswordEncoder.encode(userRegister.getPassword()), null, null, null, randomString, false, true, role, 0, null, null, null);
-        if(userRegister == null || userService.getUserByEmail(userRegister.getEmail()) != null) {
-            check = false;
-        }
-        if(check) {
-            userService.save(user);
-            String siteUrl = request.getRequestURL().toString().replace(request.getServletPath(), "");
-            // http://localhost:8080
-            check = userService.sendVerificationEmail(user, siteUrl);
-        }
-        return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Create account successfully", user))
-                :ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Create account failed", user));
-    }
 
     @PreAuthorize("hasRole('USER')")
     @PostMapping("/update/{id}")

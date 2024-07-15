@@ -15,10 +15,9 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.web.client.RestTemplate;
+
 
 @Configuration
 @EnableWebSecurity
@@ -79,8 +78,8 @@ public class WebSecurityConfig {
 //                  .oauth2Login(oauth2 -> oauth2.successHandler(customOAuth2AuthenticationSuccessHandler));
 
                 .oauth2Login(oauth2 -> {
-                    oauth2.loginPage("/public/login").permitAll();
-                    oauth2.successHandler(customOAuth2AuthenticationSuccessHandler);
+//                    oauth2.loginPage("/public/login").permitAll();
+//                    oauth2.successHandler(customOAuth2AuthenticationSuccessHandler);
                 });
 
 

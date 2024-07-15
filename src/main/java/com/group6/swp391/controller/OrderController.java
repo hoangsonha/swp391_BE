@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -301,6 +302,7 @@ public class OrderController {
         }
     }
 
+    @PreAuthorize("hasRole('USER')")
     @PostMapping("/submit_order")
     public ResponseEntity<?> submitOrder(@RequestBody @Valid OrderRequest orderRequest) {
         try {

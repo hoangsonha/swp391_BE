@@ -5,6 +5,7 @@ import com.group6.swp391.service.ReportService;
 import jakarta.servlet.http.HttpServletResponse;
 import net.sf.jasperreports.engine.JRException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.FileNotFoundException;
@@ -17,7 +18,7 @@ import java.sql.SQLException;
 public class ReportController {
     @Autowired private ReportService reportService;
 
-
+    @PreAuthorize("hasRole('ADMIN') or hasRole('STAFF') ")
     @GetMapping("/user/{reportFormat}")
     public void getReportUser(@PathVariable String reportFormat, HttpServletResponse response) throws JRException, IOException, SQLException, NoSuchFieldException {
         boolean check = EnumExportFile.checkExistExportFile(reportFormat);

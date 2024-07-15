@@ -167,7 +167,7 @@ public class PaymentController {
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(new PaymentResponse("Failed", "Payment paypal failed", null, null));
     }
 
-
+    @PreAuthorize("hasRole('USER')")
     @PostMapping("/refund")
     public ResponseEntity<PaymentResponse> refund(@RequestBody CancelPaymentRequest cancelPaymentRequest, HttpServletRequest request) {
         try {

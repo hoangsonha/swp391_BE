@@ -21,24 +21,24 @@ public class User extends BaseEntity {
     private String firstName;
     @Column(name = "last_name", columnDefinition = "nvarchar(20)")
     private String lastName;
-    @Column(name = "email", nullable = false, length = 100, unique = true)
+    @Column(name = "email", nullable = false, unique = true, columnDefinition = "nvarchar(200)")
     private String email;
-    @Column(name = "password", length = 100, nullable = true)
+    @Column(name = "password", columnDefinition = "varchar(200)", nullable = true)
     private String password;
-    @Column(name = "phone", length = 15, unique = true)
+    @Column(name = "phone", columnDefinition = "varchar(10)", unique = true)
     private String phone;
     @Column(name = "address", columnDefinition = "varchar(300)")
     private String address;
-    @Column(name = "avata")
+    @Column(name = "avata", columnDefinition = "varchar(200)")
     private String avata;
-    @Column(name = "code_verify", nullable = false)
+    @Column(name = "code_verify", nullable = false, columnDefinition = "varchar(100)")
     private String codeVerify;
     private boolean enabled;
 
     @Column(name = "non_locked")
     private boolean nonLocked;
 
-    @Column(name= "gender")
+    @Column(name= "gender", columnDefinition = "varchar(10)")
     @Enumerated(EnumType.STRING)
     private EnumGenderName gender;
 

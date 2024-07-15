@@ -21,16 +21,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.repository.query.Param;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -193,4 +196,27 @@ public class MainController {
     }
 
 
+
+
+
+
+
+
+//    private static final String USERINFO_URL = "https://www.googleapis.com/oauth2/v2/userinfo";
+//
+//    @GetMapping("/userinfo")
+//    public String getUserInfo(@RequestParam("access_token") String accessToken) {
+//        RestTemplate restTemplate = new RestTemplate();
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
+//
+//        HttpEntity<String> entity = new HttpEntity<>(headers);
+//        ResponseEntity<String> response = restTemplate.exchange(
+//                USERINFO_URL,
+//                HttpMethod.GET,
+//                entity,
+//                String.class
+//        );
+//        return response.getBody();
+//    }
 }

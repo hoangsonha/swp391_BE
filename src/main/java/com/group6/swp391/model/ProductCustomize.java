@@ -16,7 +16,7 @@ import lombok.*;
 public class ProductCustomize {
     //thang nay sinh ra sau khi nhan addcart
     @Id
-    @Column(name = "product_customize_id")
+    @Column(name = "product_customize_id", columnDefinition = "varchar(50)")
     private String prodcutCustomId;
 
     @ManyToOne

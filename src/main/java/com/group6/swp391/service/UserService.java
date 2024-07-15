@@ -32,8 +32,6 @@ public interface UserService {
 
     public boolean unLockedUser(int id);
 
-    public boolean deleteUser(int id);
-
     public boolean verifyRecaptcha(String gRecaptchaResponse);
 
     public boolean sendSMS(OTPRequest otpRequest);
