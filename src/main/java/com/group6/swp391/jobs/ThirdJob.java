@@ -1,7 +1,7 @@
 package com.group6.swp391.jobs;
 
+import com.group6.swp391.model.CrawledDataProperties;
 import com.group6.swp391.service.UserService;
-import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -9,25 +9,27 @@ import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.UnsupportedEncodingException;
-
 @Component
 @Slf4j
-public class SecondJob implements Job {
+public class ThirdJob implements Job {
 
     @Autowired
     private UserService userService;
 
+    @Autowired private CrawledDataProperties price;
+
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         try {
-            boolean check = userService.sendNotificationEmailHappyBirthDay();
-            if(check)
-                System.out.println("Mail happy birthday sent");
-             else
-                System.out.println("Error mail happy birthday sent");
+            boolean check = userService.crawlData();
+            if(check) {
+                System.out.println("Crawl Data successfully");
+                System.out.println("Data cao ve la : " + price.getDola());
+            }
+            else
+                System.out.println("Crawl Data failed");
         } catch (Exception e) {
-            log.error("Can not send mail : {}", e.getMessage());
+            log.error("Can not crawl data : {}", e.getMessage());
         }
     }
 }

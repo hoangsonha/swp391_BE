@@ -11,6 +11,7 @@ import com.paypal.base.rest.APIContext;
 import com.paypal.base.rest.PayPalRESTException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,8 @@ import java.util.List;
 public class PayPalService {
     @Autowired private APIContext apiContext;
     @Autowired private UserRepository userRepository;
+
+    @Autowired private CrawledDataProperties priceInDola;
 
     public Payment createPayment(Order order,
                                  EnumPayPalPaymentMethod method,
@@ -130,7 +133,7 @@ public class PayPalService {
     }
 
     public double priceToUSD(double price) {
-        double value = (price / 25500);
+        double value = (price / Double.parseDouble(priceInDola.getDola()));
         String s = String.format("%.2f",value);
         return Math.floor(Double.parseDouble(s));
     }

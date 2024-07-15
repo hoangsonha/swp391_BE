@@ -10,6 +10,11 @@ import com.group6.swp391.sms.SpeedSMSAPI;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -21,6 +26,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.UnsupportedEncodingException;
@@ -52,6 +58,10 @@ public class UserServiceImp implements UserService {
     @Autowired
     private RestTemplate restTemplate;
     @Autowired private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    @Autowired private CrawledDataProperties crawledDataProperties;
+
+    private WebDriver webDriver;
 
     // CRUD
 
@@ -965,6 +975,38 @@ public class UserServiceImp implements UserService {
             log.error("Error at send invoice {}", e.toString());
             return false;
         }
+    }
+
+    @Override
+    public boolean crawlData() throws InterruptedException {
+        ChromeOptions op = new ChromeOptions();
+//        op.addArguments("--incognito");
+//        op.addArguments("--lang=ja-JP");
+        webDriver = new ChromeDriver(op);
+        webDriver.manage().window().maximize();
+        Thread.sleep(5000);
+
+        webDriver.get("https://google.com");
+        Thread.sleep(5000);
+
+        WebElement element = webDriver.findElement(By.id("APjFqb"));
+        element.sendKeys("giá dola ngày hôm nay");
+        element.submit();
+
+        Thread.sleep(5000);
+        WebElement element_price = webDriver.findElement(By.xpath("//span[@class='DFlfde SwHCTb']"));
+
+        String[] split = element_price.getText().split(",");
+        String price = split[0];
+
+        Thread.sleep(5000);
+        webDriver.quit();
+
+        crawledDataProperties.setDola(price);
+        if(crawledDataProperties.getDola() != null && StringUtils.hasText(crawledDataProperties.getDola())) {
+            return true;
+        }
+        return false;
     }
 
 }

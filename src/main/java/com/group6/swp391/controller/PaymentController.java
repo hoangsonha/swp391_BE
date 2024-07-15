@@ -1,6 +1,7 @@
 package com.group6.swp391.controller;
 
 import com.group6.swp391.enums.*;
+import com.group6.swp391.model.CrawledDataProperties;
 import com.group6.swp391.model.Diamond;
 import com.group6.swp391.model.Order;
 import com.group6.swp391.model.OrderDetail;
@@ -39,11 +40,12 @@ public class PaymentController {
     @Autowired private PaymentService paymentService;
     @Autowired private VNPayService vnPayService;
     @Autowired private DiamondService diamondService;
+    @Autowired private CrawledDataProperties dola;
 
     @Value("${frontend.url}")
     private String urlRedirect;
 
-//    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('USER')")
     @PostMapping("/checkout")
     public ResponseEntity<PaymentResponse> pay(@RequestBody PaymentRequest paymentRequest, HttpServletRequest request, HttpServletResponse response) {
         try {
@@ -72,7 +74,7 @@ public class PaymentController {
                     String orderStatus = EnumOrderStatus.Chờ_thanh_toán.name();
                     if(order.getStatus().equals(orderStatus.replaceAll("_", " ")) && order != null) {
                         long amount = (long) (order.getPrice()*100);
-                        long haveToPay = (amount / 25000);
+                        long haveToPay = (amount / Long.parseLong(String.valueOf(dola)));
                         String link = vnPayService.getVNPay(haveToPay, request, paymentRequest.getOrderID());
                         return ResponseEntity.status(HttpStatus.OK).body(new PaymentResponse("Success", "Redirect payment page successfully", null, link));
                     }
@@ -87,13 +89,13 @@ public class PaymentController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PaymentResponse("Failed", "Redirect payment page failed", null, null));
     }
 
-//    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/paypal/cancel")
     public void payByPayPalCancel(HttpServletResponse response) throws IOException {
         response.sendRedirect(urlRedirect);
     }
 
-//    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/paypal/success")
     public ResponseEntity<PaymentResponse> paySuccess(@Param("orderID") String orderID, @RequestParam("paymentId") String paymentID, @RequestParam("PayerID") String payerID, HttpServletResponse response) throws IOException {
         try {
@@ -128,7 +130,7 @@ public class PaymentController {
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(new PaymentResponse("Failed", "Payment paypal failed", null, null));
     }
 
-//    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/vnpaysuccess")
     public ResponseEntity<PaymentResponse> vnpaysuccess(HttpServletRequest request, HttpServletResponse response) throws ParseException, IOException {
         String responseCode = request.getParameter("vnp_ResponseCode"); // lay qua url
@@ -180,7 +182,7 @@ public class PaymentController {
                     amount += payment.getPaymentAmount();
                     String saleID = payment.getTransactionId();
                     if(saleID != null) {
-                        double value = (amount / 25500);
+                        double value = (amount / Long.parseLong(String.valueOf(dola)));
                         String result = String.format("%.2f",value);
                         double amount_at = Math.floor(Double.parseDouble(result));
                         boolean check = payPalService.cancelPayment(saleID, amount_at, "USD");
@@ -208,7 +210,7 @@ public class PaymentController {
                     }
                 } else if(payment.getMethodPayment().toLowerCase().equals(EnumPaymentMethod.vnpay.name()) && payment.getStatus().equals(paymentStatus.replaceAll("_", " "))) {
                     amount += payment.getPaymentAmount();
-                    double value = (amount / 25500);
+                    double value = (amount / Long.parseLong(String.valueOf(dola)));
                     String result = String.format("%.2f",value);
                     double amount_at = Math.floor(Double.parseDouble(result));
                     String check = vnPayService.refundVNPay(amount_at, request, cancelPaymentRequest.getOrderID());

@@ -85,11 +85,11 @@
         <text><![CDATA[Enabled]]></text>
         <property name="com.jaspersoft.studio.spreadsheet.connectionID" value="461845ae-8709-4300-a2bf-e8a328fc6be6"/>
     </element>
-    <element kind="staticText" uuid="7b19b577-21fb-4c04-aab1-a01b2bf89697" x="645" y="2" width="75" height="18" forecolor="#000000" bold="true" hTextAlign="Center" style="Column header">
-        <text><![CDATA[Non-Locked]]></text>
+    <element kind="staticText" uuid="7b19b577-21fb-4c04-aab1-a01b2bf89697" x="665" y="2" width="78" height="18" forecolor="#000000" bold="true" hTextAlign="Center" style="Column header">
+        <text><![CDATA[NonLocked]]></text>
         <property name="com.jaspersoft.studio.spreadsheet.connectionID" value="461845ae-8709-4300-a2bf-e8a328fc6be6"/>
     </element>
-    <element kind="staticText" uuid="1868db34-c224-4031-ad07-2da01d583876" x="720" y="3" width="81" height="18" forecolor="#000000" bold="true" hTextAlign="Center" style="Column header">
+    <element kind="staticText" uuid="1868db34-c224-4031-ad07-2da01d583876" x="700" y="3" width="78" height="18" forecolor="#000000" bold="true" hTextAlign="Center" style="Column header">
         <text><![CDATA[Other]]></text>
         <property name="com.jaspersoft.studio.spreadsheet.connectionID" value="461845ae-8709-4300-a2bf-e8a328fc6be6"/>
     </element>
