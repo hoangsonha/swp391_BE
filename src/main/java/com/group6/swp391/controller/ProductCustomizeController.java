@@ -12,6 +12,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,7 +30,13 @@ public class ProductCustomizeController {
     @Autowired CartServiceImp cartServiceImp;
     @Autowired CollectionService collectionService;
 
-
+    /**
+     * method tao customize
+     * nhan ve doi tuong custmoize va tien hang add cart
+     * @param args userId, CustomizeRequest
+     * @return message success or fail
+     */
+    @PreAuthorize("hasRole('USER')")
     @PostMapping("/create_customizeProduct/{userId}")
     public ResponseEntity<?> createProductCustome(@PathVariable("userId") int userId,
                                                   @RequestBody @Valid CustomizeRequest customizeRequest) {
@@ -59,6 +66,12 @@ public class ProductCustomizeController {
         }
     }
 
+    /**
+     * method tao customize danh cho ADMIN or Staff
+     * nhan ve doi tuong custmoize
+     * @param args CustomizeRequest
+     * @return message success or fail
+     */
     @PostMapping("/create_productcustomize_collection")
     public ResponseEntity<ObjectResponse> createWithCollection(@RequestBody CustomizeRequest customizeRequest) {
         try {
@@ -91,6 +104,11 @@ public class ProductCustomizeController {
         }
     }
 
+    /**
+     * method tim kim mot customize
+     * @param args productcustomizeId
+     * @return productcustomize
+     */
     @GetMapping("/productcustomeize_id/{id}")
     public ResponseEntity<ProductCustomize> getProductCustomById(@PathVariable("id") String id) {
         try {
@@ -104,6 +122,11 @@ public class ProductCustomizeController {
         }
     }
 
+    /**
+     * method delete customize
+     * @param args productcustomizeId
+     * @return message success or fail
+     */
     @DeleteMapping("/delete/{productcustomize_id}")
     public ResponseEntity<String> deleteProductCustomById(@PathVariable("productcustomize_id") String id) {
         try {
@@ -119,6 +142,11 @@ public class ProductCustomizeController {
         }
     }
 
+    /**
+     * method update customize
+     * @param args productcustomizeId
+     * @return message success or fail
+     */
     @PutMapping("update/{productcustomize_id}")
     public ResponseEntity<?> updateProductCustome(@RequestBody ProductCustomize productCustomize,
                                                   @PathVariable("productcustomize_id") String id) {
@@ -139,6 +167,11 @@ public class ProductCustomizeController {
         }
     }
 
+    /**
+     * method get all customize
+     * @param args
+     * @return list customize
+     */
     @GetMapping("/all_productcustomize")
     public ResponseEntity<List<ProductCustomize>> getAllProductCustomize() {
         try {
@@ -152,17 +185,4 @@ public class ProductCustomizeController {
             return ResponseEntity.badRequest().body(null);
         }
     }
-
-//    public ResponseEntity<?> detachedProductCustomize(@PathVariable("productcustmoize_id") String id) {
-//        try {
-//            ProductCustomize productCustomize = productCustomizeServiceImp.getProductCustomizeById(id);
-//            if(productCustomize == null) {
-//                return ResponseEntity.badRequest().body("Productcustomize does not exist");
-//            }
-//            productCustomizeServiceImp.deleteProductCustomize(id);
-//            productServiceImp.updateProduct();
-//        } catch (Exception e) {
-//            return ResponseEntity.badRequest().body(e.getMessage());
-//        }
-//    }
 }

@@ -17,7 +17,11 @@ public class CategoryController {
 
     @Autowired
     CategoryService categoryService;
-
+    /**
+     * Method create new category
+     * @param args category
+     * @return success or fail
+     */
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/create_category")
     public ResponseEntity<String> createCategory(@RequestBody Category category) {
@@ -33,6 +37,11 @@ public class CategoryController {
         }
     }
 
+    /**
+     * Method all category in data
+     * @param args
+     * @return List catrgory
+     */
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/all_categories")
     public ResponseEntity<?> getAllCategories() {
@@ -49,6 +58,11 @@ public class CategoryController {
         }
     }
 
+    /**
+     * Method tìm kiem category by categoryId
+     * @param args categoryId
+     * @return category
+     */
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/categoryId/{categoryId}")
     public ResponseEntity<?> getCategoryById(@PathVariable("categoryId") int categoryId) {
@@ -60,6 +74,11 @@ public class CategoryController {
         }
     }
 
+    /**
+     * Method tìm kiem category by categoryName
+     * @param args categoryId
+     * @return List<category>
+     */
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/categoryAllName/{categoryName}")
     public ResponseEntity<?> getCategoryByName(@PathVariable String categoryName) {
@@ -77,6 +96,11 @@ public class CategoryController {
         }
     }
 
+    /**
+     * Method tìm kiem category by categoryName
+     * @param args categoryName
+     * @return Category
+     */
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/categoryName/{categoryName}")
     public ResponseEntity<Category> getByName(@PathVariable String categoryName) {
@@ -97,6 +121,11 @@ public class CategoryController {
         }
     }
 
+    /**
+     * Method update category
+     * @param args categoryId and category
+     * @return success or fail
+     */
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("update_category/{categoryId}")
     public ResponseEntity<?> updateCategory(@PathVariable("categoryId") int id,

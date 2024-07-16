@@ -26,12 +26,22 @@ public class DashboardController {
     @Autowired OrderService orderService;
     @Autowired DashboardService dashboardService;
 
+    /**
+     * Method format number 0.00
+     * @param args number <double>
+     * @return number with format 0.00
+     */
     private String formatNumberDouble(Double number) {
         DecimalFormat df = new DecimalFormat("#,##0.00");
         String formattedNumber = df.format(number);
         return formattedNumber;
     }
 
+    /**
+     * Method calculate total currentDate
+     * @param args no
+     * @return total in date
+     */
     private Double totalCurrentDate() {
         try {
             LocalDate currentDate = LocalDate.now();
@@ -48,6 +58,11 @@ public class DashboardController {
         return null;
     }
 
+    /**
+     * Method calculate total date before
+     * @param args no
+     * @return total in date before
+     */
     private Double totalBegoreDate() {
         try {
             LocalDate currentDate = LocalDate.now();
@@ -65,6 +80,11 @@ public class DashboardController {
         return null;
     }
 
+    /**
+     * Method compare total between two date
+     * @param args no
+     * @return value compare between two date with format 0.00
+     */
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/compare_total_date")
     public ResponseEntity<ObjectResponse> campareBetweenPrevAndCurrentDate() {
@@ -76,13 +96,17 @@ public class DashboardController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "no data", 0.0));
             }
             String numberFormat = formatNumberDouble(total);
-            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Get value compare between two month", numberFormat));
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Get value compare between two date", numberFormat));
         } catch (Exception e) {
             return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "failed", e.getMessage()));
         }
     }
 
-    // tong doanh thu trong ngay
+    /**
+     * Method total revenue date
+     * @param args no
+     * @return total int date
+     */
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/total_revenue_date")
     public ResponseEntity<ObjectResponse> totalRevenueToday() {
@@ -101,7 +125,11 @@ public class DashboardController {
         }
     }
 
-    //tong loi nhuan tu luc kinh doanh
+    /**
+     * Method total revenue in store
+     * @param args no
+     * @return total
+     */
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/total_revenue_store")
     public ResponseEntity<ObjectResponse> totelRevenue() {
@@ -121,7 +149,12 @@ public class DashboardController {
         }
     }
 
-    //tong doanh thu tung thang theo bieu do
+    /**
+     * Method tinh tong doanh thu tung thang
+     * api nay su dung cho bieu do the hien qua tung thang
+     * @param args no
+     * @return total tung thang
+     */
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/total_revenue")
     public ResponseEntity<ObjectResponse> getTotalRevenue() {
@@ -138,7 +171,12 @@ public class DashboardController {
         }
     }
 
-    //tong doanh thu kim cuong cua tung thanng theo bieu do
+    /**
+     * Method tinh tong doanh thu tung thang cua kim cuong
+     * api nay su dung cho bieu do the hien qua tung thang
+     * @param args no
+     * @return total tung thang cua kim cuong
+     */
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/total_revenue_diamond")
     public ResponseEntity<ObjectResponse> gettotalDiamondRevenue() {
@@ -155,7 +193,12 @@ public class DashboardController {
         }
     }
 
-    // tong doanh thu cua customize cua tung thang theo bieu do
+    /**
+     * Method tong doanh thu cua customize cua tung thang theo bieu do
+     * api nay su dung cho bieu do the hien qua tung thang
+     * @param args no
+     * @return total tung thang cua product customize
+     */
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/total_revenue_productcustomize")
     public ResponseEntity<ObjectResponse> gettotalProductCustomizeRevenue() {
@@ -172,7 +215,11 @@ public class DashboardController {
         }
     }
 
-    //list order dang doi xac nhan
+    /**
+     * Method tra ve tat cua cac order voi status dang doi xac nhan
+     * @param args no
+     * @return list<newOrder>
+     */
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/listneworder")
     public ResponseEntity<ObjectResponse> listNewOrder() {
@@ -188,7 +235,12 @@ public class DashboardController {
         }
     }
 
-    // list order bi huy
+    /**
+     * Method tra ve tat cua cac order voi status bi huy
+     * duoc tong ket trong mot thang
+     * @param args no
+     * @return list order bi huy
+     */
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/listorderfailed")
     public ResponseEntity<ObjectResponse> listOrderFailed() {
@@ -204,7 +256,12 @@ public class DashboardController {
         }
     }
 
-    //list order bij trar lai trong thang
+    /**
+     * Method tra ve tat cua cac order voi status hoan trar
+     * duoc tong ket trong mot thang
+     * @param args no
+     * @return list order hoan trar
+     */
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/listorderreturn")
     public ResponseEntity<ObjectResponse> listOrderReturn() {
@@ -220,7 +277,12 @@ public class DashboardController {
         }
     }
 
-    // list order duoc giao thanh cong trong thang
+    /**
+     * Method tra ve tat cua cac order voi status da giao
+     * duoc tong ket trong mot thang
+     * @param args no
+     * @return list order da giao
+     */
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/listordersuccessfully")
     public ResponseEntity<ObjectResponse> listOrderSuccessfully() {
@@ -236,7 +298,12 @@ public class DashboardController {
         }
     }
 
-    // so luong user moi
+    /**
+     * Method so luong user moi dang ki
+     * duoc tong ket trong mot thang
+     * @param args no
+     * @return so luong user moi
+     */
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/newuser")
     public ResponseEntity<ObjectResponse> newUser() {
@@ -253,7 +320,12 @@ public class DashboardController {
         }
     }
 
-    // so sanh loi nhuan giua 2 thansg
+    /**
+     * Method so sanh tong doanh thu giua hai thang
+     * so sanh thang truoc va thang hien tai
+     * @param args no
+     * @return gia tri chenh lech giua thang truoc va sau format 0.00
+     */
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/compare_month")
     public ResponseEntity<ObjectResponse> compareBetweenTwoMonth() {
@@ -271,7 +343,12 @@ public class DashboardController {
         }
     }
 
-    //xem san pham moi duoc them vao
+    /**
+     * Method san pham moi duoc them vao
+     * tong ket trong mot thang
+     * @param args no
+     * @return list new product, new diamond
+     */
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/recently-created")
     public ResponseEntity<ObjectResponse> newProductAndDiamond() {

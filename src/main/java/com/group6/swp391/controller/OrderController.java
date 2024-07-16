@@ -42,6 +42,11 @@ public class OrderController {
         }
     }
 
+    /**
+     * Method tinh tong so don hang moi voi trang thai dang doi xac nhan
+     * @param args
+     * @return number
+     */
     @GetMapping("/orderpending")
     public ResponseEntity<Integer> countOrderPending() {
         try {
@@ -56,6 +61,11 @@ public class OrderController {
         }
     }
 
+    /**
+     * Method tinh tong so don hang voi trang thai dang doi thanh toan
+     * @param args
+     * @return number
+     */
     @GetMapping("/orderWaitPay/{user_id}")
     public ResponseEntity<Integer> countOrderWaitPay(@PathVariable("user_id") int id) {
         try {
@@ -74,6 +84,12 @@ public class OrderController {
         }
     }
 
+    /**
+     * Method update cac trang thai order
+     * dua vao trang thasi de thuc hien mot so quy trinh nhu tao diem,...
+     * @param args
+     * @return message success or fail
+     */
     @PutMapping("/update_status/{order_id}")
     public ResponseEntity<?> updateStatusOrder(@PathVariable("order_id") int id, @RequestBody ConfirmOrderRequest confirmOrderRequest) {
         try {
@@ -134,7 +150,11 @@ public class OrderController {
         }
     }
 
-    //wait check format JSON,..
+    /**
+     * Method get all order
+     * @param args
+     * @return list order
+     */
     @GetMapping("/all_orders")
     public ResponseEntity<?> getAllOrders() {
         return ResponseEntity.ok(orderService.getAllOrder());
@@ -151,6 +171,11 @@ public class OrderController {
         }
     }
 
+    /**
+     * Method get orderDetail
+     * @param args orderid
+     * @return order
+     */
     //wait check format JSON,..
     @GetMapping("/{order_id}")
     public ResponseEntity<?> getOrdersById(@PathVariable("order_id") int id) {
@@ -198,6 +223,11 @@ public class OrderController {
         }
     }
 
+    /**
+     * Method get order by  user
+     * @param args userId
+     * @return List order
+     */
     @GetMapping("/orders_by_user/{id}")
     public ResponseEntity<?> getOrdersByUserID(@PathVariable int id) {
         try {
@@ -228,6 +258,11 @@ public class OrderController {
         }
     }
 
+    /**
+     * Method get order with status cho xac nhan
+     * @param args
+     * @return list new order
+     */
     @GetMapping("/newest_order")
     public ResponseEntity<?> getNewestOrder() {
         try {
@@ -265,6 +300,11 @@ public class OrderController {
         }
     }
 
+    /**
+     * Method get order by status
+     * @param args
+     * @return list order by status
+     */
     @GetMapping("/orders_by_status/{status}")
     public ResponseEntity<?> getOrdersByStatus(@PathVariable String status) {
         try {
@@ -302,6 +342,11 @@ public class OrderController {
         }
     }
 
+    /**
+     * Method tao order moi
+     * @param args orderRequest
+     * @return message success or fail
+     */
     @PreAuthorize("hasRole('USER')")
     @PostMapping("/submit_order")
     public ResponseEntity<?> submitOrder(@RequestBody @Valid OrderRequest orderRequest) {

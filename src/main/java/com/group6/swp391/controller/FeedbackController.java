@@ -192,6 +192,12 @@ public class FeedbackController {
         }
     }
 
+    /**
+     * Method lay ra productcustomize voi trong mot order
+     * danh gia vaof product
+     * @param args orderId
+     * @return list product
+     */
     @GetMapping("/get_model_detail/{order_id}")
     public ResponseEntity<ObjectResponse> getProductFeedback(@PathVariable("order_id") int id) {
         try {

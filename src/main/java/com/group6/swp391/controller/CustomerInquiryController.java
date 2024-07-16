@@ -3,7 +3,6 @@ package com.group6.swp391.controller;
 import com.group6.swp391.model.Collection;
 import com.group6.swp391.model.CollectionProduct;
 import com.group6.swp391.model.CustomerInquiry;
-import com.group6.swp391.model.User;
 import com.group6.swp391.request.CustomerInquiryRequest;
 import com.group6.swp391.response.CollectionProductRespone;
 import com.group6.swp391.response.CustomerInquiryDetailRespone;

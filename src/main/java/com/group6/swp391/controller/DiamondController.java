@@ -21,6 +21,11 @@ public class DiamondController {
     @Autowired
     private DiamondServiceImp diamondServiceImp;
 
+    /**
+     * Method tao moi kim cuong
+     * @param args diamond
+     * @return success or fail
+     */
     @PostMapping("/create_diamond")
     public ResponseEntity<?> createDiamond(@RequestBody Diamond diamond) {
         Diamond newDiamond = null;
@@ -43,6 +48,11 @@ public class DiamondController {
         }
     }
 
+    /**
+     * Method get all diamond with status 'true'
+     * @param args diamond
+     * @return list diamond
+     */
     @GetMapping("/get_all_diamond")
     public ResponseEntity<ObjectResponse> getAllDiamond() {
         try {
@@ -56,6 +66,11 @@ public class DiamondController {
         }
     }
 
+    /**
+     * Method tim kiem diamond dua tren id
+     * @param args diamondId
+     * @return diamond
+     */
     @GetMapping("/diamond_id/{diamond_id}")
     public ResponseEntity<Diamond> getDiamondByDiamondID(@PathVariable("diamond_id") String diamondID) {
         try {
@@ -70,6 +85,11 @@ public class DiamondController {
         }
     }
 
+    /**
+     * Method get all diamond
+     * @param args diamond
+     * @return list diamond
+     */
     @GetMapping("/all_diamonds")
     public ResponseEntity<?> getAllDiamonds() {
         List<Diamond> diamonds;
@@ -85,6 +105,11 @@ public class DiamondController {
         }
     }
 
+    /**
+     * Method update kim cuong
+     * @param args DiamondName, Image, OriginPrice, Ratio, total = origin * ratio
+     * @return success or fail
+     */
     @PutMapping("/update_diamond/{id}")
     public ResponseEntity<?> updateDiamond(@RequestBody Diamond diamond, @PathVariable String id) {
         try {
@@ -117,20 +142,12 @@ public class DiamondController {
         }
     }
 
-//    @DeleteMapping("/delete_diamond/{id}")
-//    public ResponseEntity<?> deleteDiamond(@PathVariable String id) {
-//        try {
-//            Diamond existingDiamond = diamondService.getDiamondByDiamondID(id);
-//            if (existingDiamond == null) {
-//                return ResponseEntity.badRequest().body("Diamond not found with ID: " + id);
-//            }
-//            diamondService.deleteDiamond(id);
-//            return ResponseEntity.ok("Diamond deleted successfully with ID: " + id);
-//        } catch (Exception e) {
-//            return ResponseEntity.badRequest().body("Delete diamond failed: " + e.getMessage());
-//        }
-//    }
-
+    /**
+     * Method delete diamond
+     * change status true = fale
+     * @param args diamondId
+     * @return message success or fail
+     */
     @DeleteMapping("/delete_diamond/{id}")
     public ResponseEntity<?> deleteDiamond(@PathVariable("id") String id) {
         try {
@@ -141,6 +158,11 @@ public class DiamondController {
         }
     }
 
+    /**
+     * Method tim kim diamond dua tren shape or dismensions
+     * @param args shape, dismensions
+     * @return list diamond
+     */
     @GetMapping("/get_condition")
     public ResponseEntity<?> getCondition (
             @RequestParam("shape") String shape,
@@ -154,6 +176,11 @@ public class DiamondController {
         }
     }
 
+    /**
+     * Method xoa nhiu doi tuong cung luc
+     * @param args list diamondId
+     * @return message success or fail
+     */
     @PostMapping("/delete_diamonds")
     public ResponseEntity<String> deleteDiamonds(@RequestBody List<String> diamondIds) {
         try {
@@ -175,6 +202,11 @@ public class DiamondController {
         }
     }
 
+    /**
+     * Method tim kim diamond duadismensions
+     * @param args dismensions
+     * @return list diamond
+     */
     @GetMapping("/{dimension}")
     public ResponseEntity<ObjectResponse> getByDimension(@PathVariable("dimension") float dimension) {
         try {

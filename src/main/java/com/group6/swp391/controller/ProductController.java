@@ -6,6 +6,7 @@ import com.group6.swp391.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -21,6 +22,12 @@ public class ProductController {
     @Autowired SizeServiceImp sizeServiceImp;
     @Autowired ThumnailServiceImp thumnailServiceImp;
 
+    /**
+     * Method tao new product
+     * @param args productRequest
+     * @return message success or fail
+     */
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("create_product")
     public ResponseEntity<?> createProduct(@RequestBody ProductRequest productRequest) {
         try {
@@ -66,12 +73,22 @@ public class ProductController {
     }
 
 
+    /**
+     * Method get all product
+     * @param args
+     * @return list product
+     */
     @GetMapping("/all_products")
     public ResponseEntity<?> getAllProducts() {
         List<Product> products = productServiceImp.getAllProducts();
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
+    /**
+     * Method tim kim product by id
+     * @param args productId
+     * @return product
+     */
     @GetMapping("/product/{product_id}")
     public ResponseEntity<Product> getProductById(@PathVariable("product_id") String productID) {
         try {
@@ -85,6 +102,11 @@ public class ProductController {
         }
     }
 
+    /**
+     * Method tim kim product dua tren category name
+     * @param args categoryName
+     * @return list product
+     */
     @GetMapping("/category/{category_name}")
     public ResponseEntity<List<Product>> getProductByCategory(@PathVariable("category_name") String category_name) {
         try {
@@ -98,6 +120,12 @@ public class ProductController {
         }
     }
 
+    /**
+     * Method update product
+     * @param args product
+     * @return message success or fail
+     */
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/update/{product_id}")
     public ResponseEntity<?> updateProduct(@PathVariable("product_id") String id,@RequestBody Product product) {
         try {
@@ -181,6 +209,13 @@ public class ProductController {
         }
     }
 
+    /**
+     * Method xoa product bang cach thay doi trang thai
+     * true => false
+     * @param args
+     * @return message success or fail
+     */
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/delete/{product_id}")
     public ResponseEntity<String> deleteProductStatus(@PathVariable("product_id") String productID) {
         try {
@@ -196,6 +231,14 @@ public class ProductController {
         }
     }
 
+    /**
+     * Method xoa product bang cach thay doi trang thai
+     * true => false
+     * thuc hien tren nhiu doi tuong
+     * @param args
+     * @return message success or fail
+     */
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/delete_products")
     public ResponseEntity<String> deleteProducts(@RequestBody List<String> prodcutIds) {
         try {
@@ -218,7 +261,11 @@ public class ProductController {
         }
     }
 
-
+    /**
+     * method update size cuar product
+     * @param args product, list size
+     * @return message success or fail
+     */
     private void updateProductSizes(Product existingProduct, List<Size> newSizes) {
         List<Size> currentSizes = existingProduct.getSizes();
         List<Size> sizesToRemove = new ArrayList<>(currentSizes);
@@ -249,6 +296,11 @@ public class ProductController {
         }
     }
 
+    /**
+     * method update image cuar product
+     * @param args product, list size
+     * @return message success or fail
+     */
     private void updateProductThumbnails(Product existingProduct, List<Thumnail> newThumbnails) {
         List<Thumnail> currentThumbnails = existingProduct.getProductImages();
         List<Thumnail> thumbnailsToRemove = new ArrayList<>(currentThumbnails);

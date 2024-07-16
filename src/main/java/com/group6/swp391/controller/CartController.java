@@ -24,6 +24,12 @@ public class CartController {
     @Autowired CartItemRepository CartItemRepository;
     @Autowired UserService userService;
 
+    /**
+     * Method add to cart
+     * method này dành cho add kim cương
+     * @param args Nhan vao userId and diamondId
+     * @return success or field
+     */
     @PreAuthorize("hasRole('USER')")
     @PostMapping("/add_cart")
     public ResponseEntity<?> addCart(@RequestBody @Valid CartRequest cartRequest) {
@@ -39,6 +45,11 @@ public class CartController {
         }
     }
 
+    /**
+     * Method tìm kiem cart dua tren user
+     * @param args userId
+     * @return List cart_item in cart
+     */
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/cartUser/{user_id}")
     public ResponseEntity<?> getCartByUserId(@PathVariable("user_id") int userId) {
@@ -68,6 +79,12 @@ public class CartController {
         }
     }
 
+    /**
+     * Lay ra tat car cart trong data
+     * ko can thiet, chua dc su dung
+     * @param args
+     * @return List cart
+     */
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/all_carts")
     public ResponseEntity<List<Cart>> getAll() {
@@ -75,6 +92,11 @@ public class CartController {
         return ResponseEntity.ok(carts);
     }
 
+    /**
+     * Method xoa bat cu mot cart_item nao
+     * @param args cart_item_id
+     * @return message success or fail
+     */
     @PreAuthorize("hasRole('USER')")
     @DeleteMapping("delete/{cart_item_id}")
     public ResponseEntity<String> removeCart(@PathVariable("cart_item_id") int itemId) {
@@ -86,6 +108,11 @@ public class CartController {
         }
     }
 
+    /**
+     * Method dem so luong cart_item cos trong mot cart doi voi mot user
+     * @param args userId
+     * @return number integer
+     */
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/{user_id}")
     public ResponseEntity<Integer> getCart(@PathVariable("user_id") int id) {
