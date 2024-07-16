@@ -10,11 +10,13 @@ import com.group6.swp391.repository.RoleRepository;
 import com.group6.swp391.repository.UserRepository;
 import com.group6.swp391.service.UserService;
 import io.jsonwebtoken.lang.Strings;
+import jakarta.mail.MessagingException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,9 +30,12 @@ class Swp391ApplicationTests {
     @Autowired private DiamondRepository diamondRepository;
 
     @Test
-    void contextLoads() {
+    void contextLoads() throws MessagingException, UnsupportedEncodingException {
 
+        List<Integer> in =  userService.sendNotificationEmail();
 
+//            long t = userService.calculateDayTest(2023, 12, 16, 2024, 1, 15);
+//            System.out.println(t);
 
 //        String s = "EXCEL";
 //

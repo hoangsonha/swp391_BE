@@ -46,15 +46,17 @@ public interface UserService {
 
     public void setTimeLoginFailed(Date date, String email);
 
+    public void setQuantityReceiveEmailOffline(int number, String email);
+
     public int getPartDate(Date date, int calendarPart);
 
-    public long calculateSecondIn5Minute(User user);
+    public long calculateSecondInMinute(User user);
 
     public boolean checkEmailOrPhone(String s);
 
     public boolean setNewPassword(String emailOrPhone, String newPassword);
 
-    public boolean sendNotificationEmail() throws MessagingException, UnsupportedEncodingException;
+    public List<Integer> sendNotificationEmail() throws MessagingException, UnsupportedEncodingException;
 
     public boolean sendNotificationEmailHappyBirthDay() throws MessagingException, UnsupportedEncodingException;
 

@@ -47,7 +47,7 @@ public class StaffController {
         Role role = roleService.getRoleByRoleName(EnumRoleName.ROLE_USER);
 
         boolean check = true;
-        User user = new User(null, null, userRegister.getEmail(), userRegister.getPassword(),null, null, null, randomString, false, true, role, 0, null, null, null);
+        User user = new User(null, null, userRegister.getEmail(), userRegister.getPassword(),null, null, null, randomString, false, true, role, 0, null, null, null, 0);
 
         if (userRegister == null || userService.getUserByEmail(userRegister.getEmail()) != null) check = false;
         if (check) {

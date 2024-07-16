@@ -79,7 +79,7 @@ public class WebSecurityConfig {
 
                 .oauth2Login(oauth2 -> {
 //                    oauth2.loginPage("/public/login").permitAll();
-//                    oauth2.successHandler(customOAuth2AuthenticationSuccessHandler);
+                    oauth2.successHandler(customOAuth2AuthenticationSuccessHandler);
                 });
 
 

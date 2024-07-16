@@ -17,41 +17,46 @@ public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int userID;
-    @Column(name = "first_name", columnDefinition = "nvarchar(20)")
+    @Column(name = "first_name", columnDefinition = "NVARCHAR(30)")
     private String firstName;
-    @Column(name = "last_name", columnDefinition = "nvarchar(20)")
+    @Column(name = "last_name", columnDefinition = "NVARCHAR(30)")
     private String lastName;
-    @Column(name = "email", nullable = false, unique = true, columnDefinition = "nvarchar(200)")
+    @Column(name = "email", nullable = false, unique = true, columnDefinition = "NVARCHAR(255)")
     private String email;
-    @Column(name = "password", columnDefinition = "varchar(200)", nullable = true)
+    @Column(name = "password", nullable = true, columnDefinition = "VARCHAR(60)")
     private String password;
-    @Column(name = "phone", columnDefinition = "varchar(10)", unique = true)
+    @Column(name = "phone", nullable = true, unique = true, columnDefinition = "VARCHAR(12)")
     private String phone;
-    @Column(name = "address", columnDefinition = "varchar(300)")
+    @Column(name = "address", nullable = true, columnDefinition = "NVARCHAR(255)")
     private String address;
-    @Column(name = "avata", columnDefinition = "varchar(200)")
+    @Column(name = "avata", nullable = true, columnDefinition = "VARCHAR(255)")
     private String avata;
-    @Column(name = "code_verify", nullable = false, columnDefinition = "varchar(100)")
+    @Column(name = "code_verify", nullable = false, columnDefinition = "VARCHAR(36)")
     private String codeVerify;
+    @Column(name = "enabled", nullable = false, columnDefinition = "BOOLEAN DEFAULT false")
     private boolean enabled;
 
-    @Column(name = "non_locked")
+    @Column(name = "non_locked", nullable = false, columnDefinition = "BOOLEAN DEFAULT true")
     private boolean nonLocked;
 
-    @Column(name= "gender", columnDefinition = "varchar(10)")
+    @Column(name= "gender", nullable = true , columnDefinition = "VARCHAR(6)")
     @Enumerated(EnumType.STRING)
     private EnumGenderName gender;
 
-    @Column(name= "year_of_birth")
+    @Column(name= "year_of_birth", nullable = true)
     private Date yearOfBirth;
 
-    @Column(name = "offline_at")
+    @Column(name = "offline_at", nullable = true)
     private Date offlineAt;
 
-    @Column(columnDefinition = "INT DEFAULT 0", nullable = true)
+    @Column(columnDefinition = "INT DEFAULT 0")
     private int quantityLoginFailed;
 
+    @Column(name = "number_of_receive_email_offline", columnDefinition = "INT DEFAULT 0")
+    private int numberOFReceiveEmailOffline;
+
     @DateTimeFormat(pattern = "YYYY-MM-DD hh:mm:ss")
+    @Column(name = "time_login_failed", nullable = true)
     private Date timeLoginFailed;
 
     @ManyToOne
@@ -86,7 +91,7 @@ public class User extends BaseEntity {
 
     public User(String firstName, String lastName, String email, String password, String phone, String address,
                 String avata, String codeVerify, boolean enabled, boolean nonLooked, Role role, int quantityLoginFailed,
-                Date timeLoginFailed, EnumGenderName gender, Date yearOfBirth) {
+                Date timeLoginFailed, EnumGenderName gender, Date yearOfBirth, int receiveEmailOffline) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -102,18 +107,7 @@ public class User extends BaseEntity {
         this.gender = gender;
         this.yearOfBirth = yearOfBirth;
         this.timeLoginFailed = timeLoginFailed;
-    }
-
-    public User(int userID, String email, String firstName, String lastName, String address, String phone, boolean enabled, boolean nonLocked, String roleName) {
-        this.userID = userID;
-        this.email = email;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.address = address;
-        this.phone = phone;
-        this.enabled = enabled;
-        this.nonLocked = nonLocked;
-        this.roleName = roleName;
+        this.numberOFReceiveEmailOffline = receiveEmailOffline;
     }
 
 }

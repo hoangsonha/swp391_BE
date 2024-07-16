@@ -27,6 +27,13 @@ public class MainSchedule {
         scheduler.scheduleJob(jobDetail, triggerDetail);
     }
 
+    public void scheduler(Class className, int minute) throws SchedulerException {
+        JobDetail jobDetail = commonUtils.getJobDetail(className);
+        Trigger triggerDetail = commonUtils.getTriggerByCronExpression(className, minute);
+        scheduler.scheduleJob(jobDetail, triggerDetail);
+    }
+
+
     @PreDestroy
     public void stopSchedule() throws SchedulerException {
         scheduler.shutdown();

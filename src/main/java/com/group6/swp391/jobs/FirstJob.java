@@ -9,6 +9,7 @@ import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 
 @Component
 @Slf4j
@@ -19,9 +20,11 @@ public class FirstJob implements Job {
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         try {
-            boolean check = userService.sendNotificationEmail();
-            if(check)
-                System.out.println("Email offline sent");
+            List<Integer> check = userService.sendNotificationEmail();
+            if(check.size() > 0)
+                for(Integer i : check) {
+                    System.out.println("Email offline sent to " + i);
+                }
             else
                 System.out.println("Error email offline");
         } catch (Exception e) {

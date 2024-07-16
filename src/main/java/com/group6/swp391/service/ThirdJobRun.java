@@ -16,6 +16,6 @@ public class ThirdJobRun {
 
     @PostConstruct
     public void init() throws SchedulerException {
-        schedule.scheduler(ThirdJob.class, 8, 0);
+        schedule.scheduler(ThirdJob.class, 30);
     }
 }

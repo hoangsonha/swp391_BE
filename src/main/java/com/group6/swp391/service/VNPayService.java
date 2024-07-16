@@ -31,12 +31,12 @@ public class VNPayService {
     @Value("${vnpay.vnp_ApiUrl}")
     private String vnp_ApiUrl_Va;
 
-    public String getVNPay(long total, HttpServletRequest req, String orderID) throws UnsupportedEncodingException {
+    public String getVNPay(double total, HttpServletRequest req, String orderID) throws UnsupportedEncodingException {
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
         String orderType = "other";
         String bankCode = "NCB";
-        long amount = total;
+        double amount = total;
 //      String vnp_TxnRef = VNPay.getRandomNumber(8);
         String vnp_IpAddr = VNPay.getIpAddress(req);
         String vnp_TmnCode = vnp_TmnCode_Va;

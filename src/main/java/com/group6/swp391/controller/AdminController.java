@@ -82,7 +82,7 @@ public class AdminController {
         boolean check = true;
         User user = new User(adminRegister.getFirstName(), adminRegister.getLastName(), adminRegister.getEmail(),
                 bCryptPasswordEncoder.encode(adminRegister.getPassword()), adminRegister.getPhone(), adminRegister.getAddress(), adminRegister.getAvata(),
-                randomString, false, true, role, 0, null, null, null);
+                randomString, false, true, role, 0, null, null, null, 0);
         if(userService.getUserByEmail(adminRegister.getEmail()) != null || adminRegister.getEmail() == null) {
             check = false;
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Create account failed", null));

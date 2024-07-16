@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 
+import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
+
 @Service
 public class CommonUtils {
 
@@ -24,6 +26,16 @@ public class CommonUtils {
                 .newTrigger()
                 .withIdentity(className.getSimpleName())
                 .withSchedule(CronScheduleBuilder.dailyAtHourAndMinute(hour, minute))
+                .build();
+    }
+
+    public Trigger getTriggerByCronExpression(Class className, int minute) {
+        return TriggerBuilder
+                .newTrigger()
+                .withIdentity(className.getSimpleName())
+                .withSchedule(simpleSchedule()
+                        .withIntervalInMinutes(minute)
+                        .repeatForever())
                 .build();
     }
 

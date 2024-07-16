@@ -47,7 +47,7 @@ public class CustomOAuth2AuthenticationSuccessHandler extends SimpleUrlAuthentic
             } else {
                 String randomString = UUID.randomUUID().toString();
                 Role role = roleRepository.getRoleByRoleName(EnumRoleName.ROLE_USER);
-                user = new User(null, oauth2User.getAttribute("name"), oauth2User.getAttribute("email"), null, null, null, null, randomString, true, true, role, 0, null, null, null);
+                user = new User(null, oauth2User.getAttribute("name"), oauth2User.getAttribute("email"), null, null, null, null, randomString, true, true, role, 0, null, null, null, 0);
                 userRepository.save(user);
                 CustomUserDetail customUserDetail = CustomUserDetail.mapUserToUserDetail(user);
                 String token = jwtToken.generatedToken(customUserDetail);

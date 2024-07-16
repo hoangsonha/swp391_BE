@@ -133,7 +133,8 @@ public class PayPalService {
     }
 
     public double priceToUSD(double price) {
-        double value = (price / Double.parseDouble(priceInDola.getDola()));
+        String dola = priceInDola.getDola().replace(".", "");
+        double value = (price / Double.parseDouble(dola));
         String s = String.format("%.2f",value);
         return Math.floor(Double.parseDouble(s));
     }

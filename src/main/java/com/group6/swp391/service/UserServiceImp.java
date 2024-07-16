@@ -439,6 +439,11 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
+    public void setQuantityReceiveEmailOffline(int number, String email) {
+        userRepository.setReceiveEmailOffline(number, email);
+    }
+
+    @Override
     public int getPartDate(Date date, int calendarPart) {
         Calendar calendar = new GregorianCalendar();
         calendar.setTime(date);
@@ -446,7 +451,7 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public long calculateSecondIn5Minute(User user) {
+    public long calculateSecondInMinute(User user) {
         long countSecond = 0;
         if (user.getTimeLoginFailed() != null) {
             int yearInDB = getPartDate(user.getTimeLoginFailed(), Calendar.YEAR);
@@ -480,6 +485,32 @@ public class UserServiceImp implements UserService {
             }
         }
         return countSecond;
+    }
+
+    public int calculateDay(User user) {
+        int countDay = 0;
+        if (user.getOfflineAt() != null) {
+            int yearInDB = getPartDate(user.getOfflineAt(), Calendar.YEAR);
+            int monthInDB = getPartDate(user.getOfflineAt(), Calendar.MONTH);
+            int dayInDB = getPartDate(user.getOfflineAt(), Calendar.DATE);
+            monthInDB += 1;
+            int yearInNow = getPartDate(new Date(), Calendar.YEAR);
+            int monthInNow = getPartDate(new Date(), Calendar.MONTH);
+            int dayInNow = getPartDate(new Date(), Calendar.DATE);
+            monthInNow += 1;
+
+            int countDayInYearInDB = countDayInYear(yearInDB, monthInDB, dayInDB);
+            int countDayInYearInNow = countDayInYear(yearInNow, monthInNow, dayInNow);
+
+            if (yearInDB == yearInNow) {
+                countDay = countDayInYearInNow - countDayInYearInDB;
+            } else if (yearInDB < yearInNow) {
+                    int countDayIn1Year = countDayIn1Year(yearInDB);
+                    int remainingDayInDB = countDayIn1Year - countDayInYearInDB;
+                    countDay = countDayInYearInNow + remainingDayInDB;
+                }
+        }
+        return countDay;
     }
 
     public int countDayInMonth(int year, int month) {
@@ -530,13 +561,15 @@ public class UserServiceImp implements UserService {
     // function automation send email (System handler)
 
     @Override
-    public boolean sendNotificationEmail() throws MessagingException, UnsupportedEncodingException {
+    public List<Integer> sendNotificationEmail() throws MessagingException, UnsupportedEncodingException {
+        List<Integer> list_int = new ArrayList<>();
         boolean check = false;
         List<User> lists = userRepository.findAll();
         for (User user : lists) {
             if (user.getOfflineAt() != null) {
-                long dayOff = calculateSecondIn5Minute(user);
-                int monthOff = (int) (dayOff / 2_592_000);
+                int dayOff = calculateDay(user);
+                int monthOff = dayOff / 30;
+
                 int yearInDB = getPartDate(user.getOfflineAt(), Calendar.YEAR);
                 int monthInDB = getPartDate(user.getOfflineAt(), Calendar.MONTH);
                 int dayInDB = getPartDate(user.getOfflineAt(), Calendar.DATE);
@@ -548,16 +581,54 @@ public class UserServiceImp implements UserService {
 
                 if (dayInNow == dayInDB) {
                     if (yearInNow == yearInDB) {
-                        if ((monthInNow - monthInDB) == 1) {
-                            check = mailOffline(user, monthOff);
-                        }
+                        check = checkNumberOfReceivedEmailOffline(user, monthOff);
+                        if(check) list_int.add(user.getUserID());
                     } else {
                         if (monthInNow == 1 && monthInDB == 12) {
-                            check = mailOffline(user, monthOff);
+                            check = checkNumberOfReceivedEmailOffline(user, monthOff);
+                            if(check) list_int.add(user.getUserID());
                         }
                     }
                 }
             }
+        }
+        return list_int;
+    }
+
+    private boolean checkNumberOfReceivedEmailOffline(User user, int monthOff) throws MessagingException, UnsupportedEncodingException {
+        boolean check = false;
+        if(user.getNumberOFReceiveEmailOffline() == 0) {
+            if(monthOff == 1) {
+                check = mailOffline(user, monthOff);
+                userRepository.setReceiveEmailOffline(1, user.getEmail());
+            }
+        } else if(user.getNumberOFReceiveEmailOffline() == 1) {
+            if(monthOff == 2) {
+                check = mailOffline(user, monthOff);
+                userRepository.setReceiveEmailOffline(2, user.getEmail());
+            }
+        } else if(user.getNumberOFReceiveEmailOffline() == 2) {
+            if(monthOff == 3) {
+                check = mailOffline(user, monthOff);
+                userRepository.setReceiveEmailOffline(3, user.getEmail());
+            }
+        } else if(user.getNumberOFReceiveEmailOffline() == 3) {
+            if(monthOff == 4) {
+                check = mailOffline(user, monthOff);
+                userRepository.setReceiveEmailOffline(4, user.getEmail());
+            }
+        } else if(user.getNumberOFReceiveEmailOffline() == 4) {
+            if(monthOff == 5) {
+                check = mailOffline(user, monthOff);
+                userRepository.setReceiveEmailOffline(5, user.getEmail());
+            }
+        } else if(user.getNumberOFReceiveEmailOffline() == 5) {
+            if(monthOff == 6) {
+                check = mailOffline(user, monthOff);
+                userRepository.setReceiveEmailOffline(6, user.getEmail());
+            }
+        } else if(user.getNumberOFReceiveEmailOffline() == 6) {
+            userRepository.lockedByEmail(user.getEmail());
         }
         return check;
     }

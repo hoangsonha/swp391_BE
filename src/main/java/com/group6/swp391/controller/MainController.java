@@ -67,7 +67,7 @@ public class MainController {
         Role role = roleService.getRoleByRoleName(EnumRoleName.ROLE_USER);
         String randomString = UUID.randomUUID().toString();
         boolean check = true;
-        User user = new User(null, null, userRegister.getEmail(), bCryptPasswordEncoder.encode(userRegister.getPassword()), null, null, null, randomString, false, true, role, 0, null, null, null);
+        User user = new User(null, null, userRegister.getEmail(), bCryptPasswordEncoder.encode(userRegister.getPassword()), null, null, null, randomString, false, true, role, 0, null, null, null, 0);
         if(userRegister == null || userService.getUserByEmail(userRegister.getEmail()) != null) {
             check = false;
         }
@@ -94,9 +94,9 @@ public class MainController {
     @PostMapping("/login")
     public ResponseEntity<TokenResponse> loginPage(@Valid @RequestBody UserLogin userLogin, HttpServletRequest request, HttpServletResponse response) {
         try {
-            String gRecaptchaResponse = userLogin.getRecaptchaResponse();
-            boolean check_captcha = userService.verifyRecaptcha(gRecaptchaResponse);
-            if(check_captcha) {
+//            String gRecaptchaResponse = userLogin.getRecaptchaResponse();
+//            boolean check_captcha = userService.verifyRecaptcha(gRecaptchaResponse);
+//            if(check_captcha) {
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                         new UsernamePasswordAuthenticationToken(userLogin.getEmail(), userLogin.getPassword());
                 Authentication authentication = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
@@ -104,10 +104,15 @@ public class MainController {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 //SecurityContextHolder.getContext().getAuthentication().getPrincipal();
                 String s = jwtToken.generatedToken(userDetails);
+
+                userService.setQuantityLoginFailed(0, userDetails.getEmail());
+                userService.setTimeOffline(null, userDetails.getEmail());
+                userService.setQuantityReceiveEmailOffline(0, userDetails.getEmail());
+
                 return ResponseEntity.status(HttpStatus.OK).body(new TokenResponse("Success", "Login successfully", s));
-            } else {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new TokenResponse("Failed", "Login failed", null));
-            }
+//            } else {
+//                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new TokenResponse("Failed", "Login failed", null));
+//            }
         } catch(Exception e) {
             log.error("Cannot login : {}", e.toString());
             User user = userService.getUserByEmail(userLogin.getEmail());
@@ -118,7 +123,7 @@ public class MainController {
                         if(quantityLoginFailed == 0) {
                             userService.setTimeLoginFailed(new Date(), user.getEmail());
                         } else {
-                            long minus = userService.calculateSecondIn5Minute(user);
+                            long minus = userService.calculateSecondInMinute(user);
                             if(minus >= 300) {
                                 userService.setQuantityLoginFailed(1, user.getEmail());
                                 quantityLoginFailed = 0;
@@ -194,7 +199,6 @@ public class MainController {
         return lists.size() > 0 ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Get all diamond by search advance successfully", lists))
                 : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Get all diamond by search advance failed", null));
     }
-
 
 
 
