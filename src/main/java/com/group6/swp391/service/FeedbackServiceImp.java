@@ -6,6 +6,7 @@ import com.group6.swp391.request.FeedbackRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -67,52 +68,104 @@ public class FeedbackServiceImp implements FeedbackService {
     }
 
     @Override
-    public Feedback saveFeedback(FeedbackRequest feedbackRequest) {
-        try {
-            Diamond diamond = null;
-            Product product = null;
-            Collection collection = null;
+    public List<Feedback> saveFeedback(List<FeedbackRequest> feedbackRequests) {
+        List<Feedback> savedFeedbacks = new ArrayList<>();
 
-            User user = userRepository.findById(feedbackRequest.getUserID()).orElse(null);
-            if (user == null) {
-                return null;
+        for (FeedbackRequest feedbackRequest : feedbackRequests) {
+            try {
+                Diamond diamond = null;
+                Product product = null;
+                Collection collection = null;
+
+                User user = userRepository.findById(feedbackRequest.getUserID()).orElse(null);
+                if (user == null) {
+                    continue;
+                }
+
+                if (feedbackRequest.getDiamondID() !=  null) {
+                    diamond = diamondRepository.findById(feedbackRequest.getDiamondID()).orElse(null);
+                    if (diamond == null) {
+                        continue;
+                    }
+                } else if (feedbackRequest.getProductID() != null) {
+                    product = productRepository.findById(feedbackRequest.getProductID()).orElse(null);
+                    if (product == null) {
+                        continue;
+                    }
+                } else if (feedbackRequest.getCollectionID() != null) {
+                    collection = collectionRepository.findById(feedbackRequest.getCollectionID()).orElse(null);
+                    if (collection == null) {
+                        continue;
+                    }
+                } else {
+                    continue;
+                }
+
+                Feedback feedback = Feedback.builder()
+                        .comment(feedbackRequest.getComment())
+                        .rating(feedbackRequest.getRating())
+                        .diamond(diamond)
+                        .product(product)
+                        .collection(collection)
+                        .user(user)
+                        .build();
+
+                Feedback savedFeedback = feedbackRepository.save(feedback);
+                savedFeedbacks.add(savedFeedback);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-
-            if (feedbackRequest.getDiamondID() != null) {
-                diamond = diamondRepository.findById(feedbackRequest.getDiamondID()).orElse(null);
-                if (diamond == null) {
-                    return null;
-                }
-            } else if (feedbackRequest.getProductID() != null) {
-                product = productRepository.findById(feedbackRequest.getProductID()).orElse(null);
-                if (product == null) {
-                    return null;
-                }
-            } else if (feedbackRequest.getCollectionID() != null) {
-                collection = collectionRepository.findById(feedbackRequest
-                        .getCollectionID()).orElse(null);
-                if (collection == null) {
-                    return null;
-                }
-            } else {
-                return null;
-            }
-
-            Feedback feedback = Feedback.builder()
-                    .comment(feedbackRequest.getComment())
-                    .rating(feedbackRequest.getRating())
-                    .diamond(diamond)
-                    .product(product)
-                    .collection(collection)
-                    .user(user)
-                    .build();
-
-            return feedbackRepository.save(feedback);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
         }
+        return savedFeedbacks;
     }
+
+//    @Override
+//    public Feedback saveFeedback(FeedbackRequest feedbackRequest) {
+//        try {
+//            Diamond diamond = null;
+//            Product product = null;
+//            Collection collection = null;
+//
+//            User user = userRepository.findById(feedbackRequest.getUserID()).orElse(null);
+//            if (user == null) {
+//                return null;
+//            }
+//
+//            if (feedbackRequest.getDiamondID() != null) {
+//                diamond = diamondRepository.findById(feedbackRequest.getDiamondID()).orElse(null);
+//                if (diamond == null) {
+//                    return null;
+//                }
+//            } else if (feedbackRequest.getProductID() != null) {
+//                product = productRepository.findById(feedbackRequest.getProductID()).orElse(null);
+//                if (product == null) {
+//                    return null;
+//                }
+//            } else if (feedbackRequest.getCollectionID() != null) {
+//                collection = collectionRepository.findById(feedbackRequest
+//                        .getCollectionID()).orElse(null);
+//                if (collection == null) {
+//                    return null;
+//                }
+//            } else {
+//                return null;
+//            }
+//
+//            Feedback feedback = Feedback.builder()
+//                    .comment(feedbackRequest.getComment())
+//                    .rating(feedbackRequest.getRating())
+//                    .diamond(diamond)
+//                    .product(product)
+//                    .collection(collection)
+//                    .user(user)
+//                    .build();
+//
+//            return feedbackRepository.save(feedback);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return null;
+//        }
+//    }
 
     @Override
     public List<Feedback> getNewestFeedbacks(int limit) {

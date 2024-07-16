@@ -22,6 +22,8 @@ public class DeliveryController {
 
     @Autowired OrderService orderService;
 
+    // Method to get all pending delivery orders
+    // Returns a list of orders with status "Chờ giao hàng"
     @PreAuthorize("hasRole('DELIVERY')")
     @GetMapping("/pending_delivery")
     public ResponseEntity<List<Order>> getPendingDeliveryOrders() {
@@ -29,6 +31,8 @@ public class DeliveryController {
         return ResponseEntity.ok(orders);
     }
 
+    // Method to start delivery of an order
+    // Accepts an order ID as a request parameter and updates the order status to "Đang giao hàng"
     @PreAuthorize("hasRole('DELIVERY')")
     @PutMapping("/start_delivery")
     public ResponseEntity<?> startDelivery(@RequestParam int orderID) {
@@ -40,6 +44,8 @@ public class DeliveryController {
         }
     }
 
+    // Method to update the status of an order
+    // Accepts an order ID, status, and optional reason as request parameters, and updates the order status
     @PreAuthorize("hasRole('DELIVERY')")
     @PutMapping("/update_order_status")
     public ResponseEntity<?> updateOrderStatus(@RequestParam int orderID,
@@ -53,6 +59,8 @@ public class DeliveryController {
         }
     }
 
+    // Method to get the newest orders with status "Chờ giao hàng"
+    // Groups orders by user and returns a list of NewOrderRespone objects
     @PreAuthorize("hasRole('DELIVERY')")
     @GetMapping("/newest_order")
     public ResponseEntity<?> getNewestOrder() {
@@ -91,6 +99,8 @@ public class DeliveryController {
         }
     }
 
+    // Method to get the count of pending delivery orders
+    // Returns the count of orders with status "Chờ giao hàng"
     @PreAuthorize("hasRole('DELIVERY')")
     @GetMapping("/pending_delivery_count")
     public ResponseEntity<Long> getPendingDeliveryOrderCount() {

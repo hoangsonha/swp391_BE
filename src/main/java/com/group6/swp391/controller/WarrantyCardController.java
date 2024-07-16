@@ -28,6 +28,9 @@ public class WarrantyCardController {
     @Autowired
     UserServiceImp userServiceImp;
 
+    // Get a warranty card by its ID
+    // Input: warrantyCard_id (int)
+    // Output: WarrantyCardDetailRespone or error message
     @GetMapping("/warrantyCard_id/{warrantyCard_id}")
     public ResponseEntity<?> getById(@PathVariable("warrantyCard_id") int id) {
         try {
@@ -52,7 +55,6 @@ public class WarrantyCardController {
                 wcd.setObjectId(wc.getDiamond().getDiamondID());
                 wcd.setObjectType("Diamond");
                 wcd.setPrice(wc.getDiamond().getTotalPrice());
-                //return ResponseEntity.ok().body("No warranty card found");
             }
             return ResponseEntity.ok(wcd);
         } catch (Exception e) {
@@ -60,6 +62,7 @@ public class WarrantyCardController {
         }
     }
 
+    // Searches for warranty cards based on a query
     @GetMapping("/search")
     @JsonView(Views.Public.class)
     public ResponseEntity<?> searchWarrantyCards(@RequestParam("query") String query) {
@@ -84,46 +87,7 @@ public class WarrantyCardController {
         }
     }
 
-//    @GetMapping("/search")
-//    @JsonView(Views.Public.class)
-//    public ResponseEntity<?> searchWarrantyCards(@RequestParam("query") String query) {
-//        try {
-//            List<WarrantyCard> warrantyCards = warrantyCardServiceImp.searchWarrantyCards(query);
-//            if (warrantyCards == null || warrantyCards.isEmpty()) {
-//                return ResponseEntity.ok(warrantyCards);
-//            }
-//            List<WarrantyCardRespone> warrantyCardRespones = new ArrayList<>();
-//            for (WarrantyCard warrantyCard: warrantyCards) {
-//                WarrantyCardRespone warrantyCardRespone = new WarrantyCardRespone();
-//                warrantyCardRespone.setWarrantyCardID(warrantyCard.getWarrantyCardID());
-//                if (warrantyCard.getProductCustomize() != null) {
-//                    warrantyCardRespone.setObjectId(warrantyCard.getProductCustomize().getProdcutCustomId());
-//                } else if (warrantyCard.getDiamond() != null) {
-//                    warrantyCardRespone.setObjectId(warrantyCard.getDiamond().getDiamondID());
-//                }
-//                warrantyCardRespone.setPurchaseDate(warrantyCard.getPurchaseDate());
-//                warrantyCardRespone.setExpirationDate(warrantyCard.getExpirationDate());
-//                warrantyCardRespones.add(warrantyCardRespone);
-//            }
-//            return ResponseEntity.ok(warrantyCardRespones);
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-//        }
-//    }
-
-//    @GetMapping("/all_warranty_card")
-//    public ResponseEntity<?> getAll() {
-//        try {
-//            List<WarrantyCard> warrantyCards = warrantyCardServiceImp.getAll();
-//            if (warrantyCards == null || warrantyCards.isEmpty()) {
-//                return ResponseEntity.noContent().build();
-//            }
-//            return ResponseEntity.ok(warrantyCards);
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-//        }
-//    }
-
+    // Retrieves all warranty cards
     @GetMapping("/all_warranty_card")
     @JsonView(Views.Internal.class)
     public ResponseEntity<?> getAll() {
@@ -152,6 +116,7 @@ public class WarrantyCardController {
         }
     }
 
+    // Retrieves warranty cards by user ID
     @GetMapping("/user/{user_id}")
     @JsonView(Views.Public.class)
     public ResponseEntity<?> getByUserId(@PathVariable("user_id") int id) {
@@ -180,6 +145,7 @@ public class WarrantyCardController {
         }
     }
 
+    // Retrieves warranty cards that are expiring soon
     @GetMapping("/getExpiringSoon")
     public ResponseEntity<List<WarrantyCard>> getExpiringSoon() {
         List<WarrantyCard> warrantyCards;
@@ -194,6 +160,7 @@ public class WarrantyCardController {
         }
     }
 
+    // Deletes a warranty card by its ID
     @DeleteMapping("/warrantyCard_id/{warrantyCard_id}")
     public ResponseEntity<String> deleteWarrantyCard(@PathVariable("warrantyCard_id") int id) {
         WarrantyCard warrantyCard;

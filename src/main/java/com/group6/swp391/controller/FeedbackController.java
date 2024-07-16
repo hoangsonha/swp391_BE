@@ -27,6 +27,8 @@ public class FeedbackController {
 
     @Autowired OrderService orderService;
 
+    // Method to get all feedbacks
+    // Returns a list of all feedbacks or an appropriate error message
     @GetMapping("/all_feedbacks")
     public ResponseEntity<?> getAllFeedbacks() {
         List<Feedback> feedbacks;
@@ -42,6 +44,8 @@ public class FeedbackController {
         }
     }
 
+    // Method to get feedbacks by diamond ID
+    // Accepts a diamond ID as a path variable and returns a list of feedbacks or an error message
     @GetMapping("/feedbacks_by_diamond/{id}")
     public ResponseEntity<?> getFeedbacksByDiamondID(@PathVariable String id) {
         List<Feedback> feedbacks;
@@ -59,6 +63,8 @@ public class FeedbackController {
         }
     }
 
+    // Method to get feedbacks by user ID
+    // Accepts a user ID as a path variable and returns a list of feedbacks or an error message
     @GetMapping("/feedbacks_by_user/{id}")
     public ResponseEntity<?> getFeedbacksByUserID(@PathVariable int id) {
         List<Feedback> feedbacks;
@@ -76,6 +82,8 @@ public class FeedbackController {
         }
     }
 
+    // Method to get feedbacks by product ID
+    // Accepts a product ID as a path variable and returns a list of feedbacks or an error message
     @GetMapping("/feedbacks_by_product/{id}")
     public ResponseEntity<?> getFeedbacksByProductID(@PathVariable String id) {
         List<Feedback> feedbacks;
@@ -93,6 +101,8 @@ public class FeedbackController {
         }
     }
 
+    // Method to get feedbacks by collection ID
+    // Accepts a collection ID as a path variable and returns a list of feedbacks or an error message
     @GetMapping("/feedbacks_by_collection/{id}")
     public ResponseEntity<?> getFeedbacksByCollectionID(@PathVariable String id) {
         List<Feedback> feedbacks;
@@ -110,6 +120,8 @@ public class FeedbackController {
         }
     }
 
+    // Method to get the newest feedbacks
+    // Accepts an optional limit as a request parameter (default is 10) and returns the latest feedbacks
     @GetMapping("/newest_feedbacks")
     public ResponseEntity<?> getNewestFeedbacks(@RequestParam(defaultValue = "10") int limit) {
         try {
@@ -124,6 +136,8 @@ public class FeedbackController {
         }
     }
 
+    // Method to delete a feedback by ID
+    // Accepts a feedback ID as a path variable and returns a success message or an error message
     @DeleteMapping("/delete_feedback/{id}")
     public ResponseEntity<?> deleteFeedback(@PathVariable int id) {
         try {
@@ -140,12 +154,15 @@ public class FeedbackController {
         }
     }
 
+    // Method to submit new feedback
+    // Accepts a list of FeedbackRequest objects in the request body and
+    // returns the saved feedbacks or an error message
     @PostMapping("/submit_feedback")
-    public ResponseEntity<?> submitFeedback(@RequestBody @Valid FeedbackRequest feedbackRequest) {
+    public ResponseEntity<?> submitFeedback(@RequestBody @Valid List<FeedbackRequest> feedbackRequests) {
         try {
-            Feedback feedback = feedbackService.saveFeedback(feedbackRequest);
-            if (feedback != null) {
-                return ResponseEntity.ok(feedback);
+            List<Feedback> feedbacks = feedbackService.saveFeedback(feedbackRequests);
+            if (!feedbacks.isEmpty()) {
+                return ResponseEntity.ok(feedbacks);
             } else {
                 return ResponseEntity.badRequest()
                         .body("Error saving feedback: Invalid product, diamond, or user ID");
@@ -156,6 +173,8 @@ public class FeedbackController {
         }
     }
 
+    // Method to get the average rating for a product by product ID
+    // Accepts a product ID as a path variable and returns the average rating or an error message
     @GetMapping("/average_rating_product/{productID}")
     public ResponseEntity<?> getAverageRatingForProduct(@PathVariable String productID) {
         try {
@@ -168,6 +187,8 @@ public class FeedbackController {
         }
     }
 
+    // Method to get the average rating for a diamond by diamond ID
+    // Accepts a diamond ID as a path variable and returns the average rating or an error message
     @GetMapping("/average_rating_diamond/{diamondID}")
     public ResponseEntity<?> getAverageRatingForDiamond(@PathVariable String diamondID) {
         try {
@@ -180,6 +201,8 @@ public class FeedbackController {
         }
     }
 
+    // Method to get the average rating for a collection by collection ID
+    // Accepts a collection ID as a path variable and returns the average rating or an error message
     @GetMapping("/average_rating_collection/{collectionID}")
     public ResponseEntity<?> getAverageRatingForCollection(@PathVariable String collectionID) {
         try {

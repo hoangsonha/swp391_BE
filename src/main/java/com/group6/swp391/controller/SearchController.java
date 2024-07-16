@@ -17,6 +17,8 @@ public class SearchController {
     @Autowired
     private SearchService searchService;
 
+    // Method to handle search requests
+    // Accepts a query as a request parameter, decodes it, and returns search results
     @GetMapping
     public ResponseEntity<?> search(@RequestParam String query) {
         String decodedQuery = URLDecoder.decode(query, StandardCharsets.UTF_8);
