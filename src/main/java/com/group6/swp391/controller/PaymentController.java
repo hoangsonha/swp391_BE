@@ -8,6 +8,7 @@ import com.group6.swp391.model.OrderDetail;
 import com.group6.swp391.request.CancelPaymentRequest;
 import com.group6.swp391.request.PaymentRequest;
 import com.group6.swp391.response.PaymentResponse;
+import com.group6.swp391.security.CustomUserDetail;
 import com.group6.swp391.service.*;
 import com.paypal.api.payments.Links;
 import com.paypal.api.payments.Payment;
@@ -20,6 +21,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -53,16 +55,17 @@ public class PaymentController {
                 String successUrl = request.getRequestURL().toString().replace(request.getServletPath(), "") + "/payment/paypal/success?orderID=" + paymentRequest.getOrderID();
                 try {
                     Order order = orderService.getOrderByOrderID(Integer.parseInt(paymentRequest.getOrderID()));
-                    String orderStatus = EnumOrderStatus.Chờ_thanh_toán.name();
-                    if(order != null && order.getStatus().equals(orderStatus.replaceAll("_", " "))) {
-                        Payment payment = payPalService.createPayment(order, EnumPayPalPaymentMethod.paypal,
-                                EnumPaypalPaymentIntent.sale, cancelUrl, successUrl);
-                        for(Links links : payment.getLinks()) {
-                            if(links.getRel().equals("approval_url")) {
-                                return ResponseEntity.status(HttpStatus.OK).body(new PaymentResponse("Success", "Redirect payment page successfully", null, links.getHref()));
+                        String orderStatus = EnumOrderStatus.Chờ_thanh_toán.name();
+                        if(order != null && order.getStatus().equals(orderStatus.replaceAll("_", " "))) {
+                            Payment payment = payPalService.createPayment(order, EnumPayPalPaymentMethod.paypal,
+                                    EnumPaypalPaymentIntent.sale, cancelUrl, successUrl);
+                            for(Links links : payment.getLinks()) {
+                                if(links.getRel().equals("approval_url")) {
+                                    return ResponseEntity.status(HttpStatus.OK).body(new PaymentResponse("Success", "Redirect payment page successfully", null, links.getHref()));
+                                }
                             }
-                        }
-                    } else return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new PaymentResponse("Failed", "Redirect payment page failed", null, null));
+                        } else return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new PaymentResponse("Failed", "Redirect payment page failed", null, null));
+
                 } catch(Exception e) {
                     log.error("Error at paypal payment {}", e.getMessage());
                     return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(new PaymentResponse("Failed", "Redirect payment page failed", null, null));
@@ -164,47 +167,50 @@ public class PaymentController {
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(new PaymentResponse("Failed", "Payment paypal failed", null, null));
     }
 
+    @PreAuthorize("hasRole('USER')")
     @PostMapping("/refund")
     public ResponseEntity<PaymentResponse> refund(@RequestBody CancelPaymentRequest cancelPaymentRequest, HttpServletRequest request) {
         try {
             Order order = orderService.getOrderByOrderID(Integer.parseInt(cancelPaymentRequest.getOrderID()));
-            String orderStatus = EnumOrderStatus.Chờ_giao_hàng.name();
-            if (order != null && order.getStatus().equals(orderStatus.replaceAll("_", " "))) {
-                com.group6.swp391.model.Payment payment = paymentService.findByOrder(order);
-                double amount = 0;
-                String paymentStatus = EnumPaymentStatus.Thanh_toán_thành_công.name();
-                if(payment.getMethodPayment().toLowerCase().equals(EnumPaymentMethod.paypal.name()) && payment.getStatus().equals(paymentStatus.replaceAll("_", " "))) {
-                    amount += payment.getPaymentAmount();
-                    String saleID = payment.getTransactionId();
-                    if(saleID != null) {
-                        double amount_at = priceToUSD(amount);
-                        boolean check = payPalService.cancelPayment(saleID, amount_at, "USD");
-                        if(check) {
-                            String orderStatusSuccess = EnumOrderStatus.Đã_hoàn_tiền.name();
-                            order.setStatus(orderStatusSuccess.replaceAll("_", " "));
-                            orderService.save(order);
-                            String paymentStatusSuccess = EnumPaymentStatus.Đã_hoàn_tiền.name();
-                            payment.setStatus(paymentStatusSuccess.replaceAll("_", " "));
-                            paymentService.save(payment);
-                            for(OrderDetail orderDetail : order.getOrderDetails()) {
-                                if(orderDetail.getDiamond() != null) {
-                                    Diamond diamond = diamondService.getDiamondByDiamondID(orderDetail.getDiamond().getDiamondID());
-                                    diamond.setStatus(true);
-                                    diamondService.saveDiamond(diamond);
+            CustomUserDetail customUserDetail = (CustomUserDetail) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            if(customUserDetail.getUserID() == order.getUser().getUserID()) {
+                String orderStatus = EnumOrderStatus.Chờ_giao_hàng.name();
+                if (order != null && order.getStatus().equals(orderStatus.replaceAll("_", " "))) {
+                    com.group6.swp391.model.Payment payment = paymentService.findByOrder(order);
+                    double amount = 0;
+                    String paymentStatus = EnumPaymentStatus.Thanh_toán_thành_công.name();
+                    if(payment.getMethodPayment().toLowerCase().equals(EnumPaymentMethod.paypal.name()) && payment.getStatus().equals(paymentStatus.replaceAll("_", " "))) {
+                        amount += payment.getPaymentAmount();
+                        String saleID = payment.getTransactionId();
+                        if(saleID != null) {
+                            double amount_at = priceToUSD(amount);
+                            boolean check = payPalService.cancelPayment(saleID, amount_at, "USD");
+                            if(check) {
+                                String orderStatusSuccess = EnumOrderStatus.Đã_hoàn_tiền.name();
+                                order.setStatus(orderStatusSuccess.replaceAll("_", " "));
+                                orderService.save(order);
+                                String paymentStatusSuccess = EnumPaymentStatus.Đã_hoàn_tiền.name();
+                                payment.setStatus(paymentStatusSuccess.replaceAll("_", " "));
+                                paymentService.save(payment);
+                                for(OrderDetail orderDetail : order.getOrderDetails()) {
+                                    if(orderDetail.getDiamond() != null) {
+                                        Diamond diamond = diamondService.getDiamondByDiamondID(orderDetail.getDiamond().getDiamondID());
+                                        diamond.setStatus(true);
+                                        diamondService.saveDiamond(diamond);
+                                    }
+                                    if(orderDetail.getProductCustomize() != null) {
+                                        Diamond diamond = diamondService.getDiamondByDiamondID(orderDetail.getProductCustomize().getDiamond().getDiamondID());
+                                        diamond.setStatus(true);
+                                        diamondService.saveDiamond(diamond);
+                                    }
                                 }
-                                if(orderDetail.getProductCustomize() != null) {
-                                    Diamond diamond = diamondService.getDiamondByDiamondID(orderDetail.getProductCustomize().getDiamond().getDiamondID());
-                                    diamond.setStatus(true);
-                                    diamondService.saveDiamond(diamond);
-                                }
+                                return ResponseEntity.status(HttpStatus.OK).body(new PaymentResponse("Success", "Refund successfully", null, null));
                             }
-                            return ResponseEntity.status(HttpStatus.OK).body(new PaymentResponse("Success", "Refund successfully", null, null));
                         }
-                    }
-                } else if(payment.getMethodPayment().toLowerCase().equals(EnumPaymentMethod.vnpay.name()) && payment.getStatus().equals(paymentStatus.replaceAll("_", " "))) {
-                    amount += payment.getPaymentAmount();
-                    double amount_at = priceToUSD(amount);
-                    String check = vnPayService.refundVNPay(amount_at, request, cancelPaymentRequest.getOrderID());
+                    } else if(payment.getMethodPayment().toLowerCase().equals(EnumPaymentMethod.vnpay.name()) && payment.getStatus().equals(paymentStatus.replaceAll("_", " "))) {
+                        amount += payment.getPaymentAmount();
+                        double amount_at = priceToUSD(amount);
+                        String check = vnPayService.refundVNPay(amount_at, request, cancelPaymentRequest.getOrderID());
 //                    if(check) {
 //                        String orderStatusSuccess = EnumOrderStatus.Đã_hoàn_tiền.name();
 //                        order.setStatus(orderStatusSuccess.replaceAll("_", " "));
@@ -214,8 +220,9 @@ public class PaymentController {
 //                        paymentService.save(payment);
 //                        return ResponseEntity.status(HttpStatus.OK).body(new PaymentResponse("Success", "Refund successfully", null, null));
 //                    }
+                    } else return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PaymentResponse("Failed", "Refund failed", null, null));
                 } else return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PaymentResponse("Failed", "Refund failed", null, null));
-            } else return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PaymentResponse("Failed", "Refund failed", null, null));
+            } else return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new PaymentResponse("Failed", "Refund failed", null, null));
         } catch(Exception e) {
             log.error(e.getMessage());
         }
