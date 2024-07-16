@@ -24,6 +24,7 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 @RequestMapping("/swp391/api/customer_inquiries")
 public class CustomerInquiryController {
+
     @Autowired CustomerInquiryService customerInquiryService;
     @Autowired CollectionService collectionService;
     @Autowired UserService userService;
