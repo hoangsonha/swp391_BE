@@ -75,8 +75,6 @@ public class WebSecurityConfig {
                         .anyRequest().authenticated())
 
                 .sessionManagement(m -> m.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//                  .oauth2Login(oauth2 -> oauth2.successHandler(customOAuth2AuthenticationSuccessHandler));
-
                 .oauth2Login(oauth2 -> {
 //                    oauth2.loginPage("/public/login").permitAll();
                     oauth2.successHandler(customOAuth2AuthenticationSuccessHandler);
