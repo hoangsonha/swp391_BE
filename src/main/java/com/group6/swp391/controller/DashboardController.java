@@ -10,6 +10,7 @@ import com.group6.swp391.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.DecimalFormat;
@@ -64,6 +65,7 @@ public class DashboardController {
         return null;
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/compare_total_date")
     public ResponseEntity<ObjectResponse> campareBetweenPrevAndCurrentDate() {
         try {
@@ -81,6 +83,7 @@ public class DashboardController {
     }
 
     // tong doanh thu trong ngay
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/total_revenue_date")
     public ResponseEntity<ObjectResponse> totalRevenueToday() {
         try {
@@ -99,6 +102,7 @@ public class DashboardController {
     }
 
     //tong loi nhuan tu luc kinh doanh
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/total_revenue_store")
     public ResponseEntity<ObjectResponse> totelRevenue() {
         try {
@@ -118,6 +122,7 @@ public class DashboardController {
     }
 
     //tong doanh thu tung thang theo bieu do
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/total_revenue")
     public ResponseEntity<ObjectResponse> getTotalRevenue() {
         try {
@@ -134,6 +139,7 @@ public class DashboardController {
     }
 
     //tong doanh thu kim cuong cua tung thanng theo bieu do
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/total_revenue_diamond")
     public ResponseEntity<ObjectResponse> gettotalDiamondRevenue() {
         try {
@@ -150,6 +156,7 @@ public class DashboardController {
     }
 
     // tong doanh thu cua customize cua tung thang theo bieu do
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/total_revenue_productcustomize")
     public ResponseEntity<ObjectResponse> gettotalProductCustomizeRevenue() {
         try {
@@ -166,6 +173,7 @@ public class DashboardController {
     }
 
     //list order dang doi xac nhan
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/listneworder")
     public ResponseEntity<ObjectResponse> listNewOrder() {
         try {
@@ -181,6 +189,7 @@ public class DashboardController {
     }
 
     // list order bi huy
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/listorderfailed")
     public ResponseEntity<ObjectResponse> listOrderFailed() {
         try {
@@ -196,6 +205,7 @@ public class DashboardController {
     }
 
     //list order bij trar lai trong thang
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/listorderreturn")
     public ResponseEntity<ObjectResponse> listOrderReturn() {
         try {
@@ -211,6 +221,7 @@ public class DashboardController {
     }
 
     // list order duoc giao thanh cong trong thang
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/listordersuccessfully")
     public ResponseEntity<ObjectResponse> listOrderSuccessfully() {
         try {
@@ -226,6 +237,7 @@ public class DashboardController {
     }
 
     // so luong user moi
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/newuser")
     public ResponseEntity<ObjectResponse> newUser() {
         try {
@@ -242,6 +254,7 @@ public class DashboardController {
     }
 
     // so sanh loi nhuan giua 2 thansg
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/compare_month")
     public ResponseEntity<ObjectResponse> compareBetweenTwoMonth() {
         try {
@@ -259,6 +272,7 @@ public class DashboardController {
     }
 
     //xem san pham moi duoc them vao
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/recently-created")
     public ResponseEntity<ObjectResponse> newProductAndDiamond() {
         try {

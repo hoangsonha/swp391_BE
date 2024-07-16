@@ -34,7 +34,7 @@ public class Order {
 
     private int quantity;
 
-    @Column(name = "full_name", nullable = false, columnDefinition = "nvarchar(300)")
+    @Column(name = "full_name", nullable = false, columnDefinition = "nvarchar(50)")
     private String fullName;
 
     @Column(name = "address_shipping", nullable = false, columnDefinition = "nvarchar(300)")
@@ -61,8 +61,10 @@ public class Order {
 
     private double price;
 
+    @Column(name = "status", columnDefinition = "NVARCHAR(20)")
     private String status;
 
+    @Column(name = "reason", columnDefinition = "NVARCHAR(300)")
     private String reason;
 
     private boolean deleteStatus;

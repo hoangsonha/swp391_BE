@@ -36,7 +36,7 @@ public class VNPayService {
         String vnp_Command = "pay";
         String orderType = "other";
         String bankCode = "NCB";
-        double amount = total;
+        double amount = 20000;
 //      String vnp_TxnRef = VNPay.getRandomNumber(8);
         String vnp_IpAddr = VNPay.getIpAddress(req);
         String vnp_TmnCode = vnp_TmnCode_Va;

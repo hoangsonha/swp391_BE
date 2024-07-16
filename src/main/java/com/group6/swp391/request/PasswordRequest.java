@@ -13,6 +13,7 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PasswordRequest {
+
     @NotBlank(message = "Mật khẩu cũ không được để trống")
     String oldPassWord;
 

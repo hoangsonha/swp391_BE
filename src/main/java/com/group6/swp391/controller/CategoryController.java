@@ -5,6 +5,7 @@ import com.group6.swp391.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,6 +18,7 @@ public class CategoryController {
     @Autowired
     CategoryService categoryService;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/create_category")
     public ResponseEntity<String> createCategory(@RequestBody Category category) {
         try {
@@ -31,6 +33,7 @@ public class CategoryController {
         }
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/all_categories")
     public ResponseEntity<?> getAllCategories() {
         List<Category> categoryList;
@@ -46,6 +49,7 @@ public class CategoryController {
         }
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/categoryId/{categoryId}")
     public ResponseEntity<?> getCategoryById(@PathVariable("categoryId") int categoryId) {
         Category findCategory = categoryService.getCategoryById(categoryId);
@@ -56,6 +60,7 @@ public class CategoryController {
         }
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/categoryAllName/{categoryName}")
     public ResponseEntity<?> getCategoryByName(@PathVariable String categoryName) {
         List<Category> categoryList;
@@ -72,6 +77,7 @@ public class CategoryController {
         }
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/categoryName/{categoryName}")
     public ResponseEntity<Category> getByName(@PathVariable String categoryName) {
         Category existCategory;
@@ -91,6 +97,7 @@ public class CategoryController {
         }
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("update_category/{categoryId}")
     public ResponseEntity<?> updateCategory(@PathVariable("categoryId") int id,
                                             @RequestBody Category category) {

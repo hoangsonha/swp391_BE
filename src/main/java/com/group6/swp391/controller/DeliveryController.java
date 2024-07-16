@@ -7,6 +7,7 @@ import com.group6.swp391.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -21,12 +22,14 @@ public class DeliveryController {
 
     @Autowired OrderService orderService;
 
+    @PreAuthorize("hasRole('DELIVERY')")
     @GetMapping("/pending_delivery")
     public ResponseEntity<List<Order>> getPendingDeliveryOrders() {
         List<Order> orders = orderService.getOrdersByStatus("Chờ giao hàng");
         return ResponseEntity.ok(orders);
     }
 
+    @PreAuthorize("hasRole('DELIVERY')")
     @PutMapping("/start_delivery")
     public ResponseEntity<?> startDelivery(@RequestParam int orderID) {
         try {
@@ -37,6 +40,7 @@ public class DeliveryController {
         }
     }
 
+    @PreAuthorize("hasRole('DELIVERY')")
     @PutMapping("/update_order_status")
     public ResponseEntity<?> updateOrderStatus(@RequestParam int orderID,
                                                @RequestParam String status,
@@ -49,6 +53,7 @@ public class DeliveryController {
         }
     }
 
+    @PreAuthorize("hasRole('DELIVERY')")
     @GetMapping("/newest_order")
     public ResponseEntity<?> getNewestOrder() {
         try {
@@ -86,6 +91,7 @@ public class DeliveryController {
         }
     }
 
+    @PreAuthorize("hasRole('DELIVERY')")
     @GetMapping("/pending_delivery_count")
     public ResponseEntity<Long> getPendingDeliveryOrderCount() {
         try {

@@ -11,6 +11,7 @@ import com.group6.swp391.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public class CartController {
     @Autowired CartItemRepository CartItemRepository;
     @Autowired UserService userService;
 
-
+    @PreAuthorize("hasRole('USER')")
     @PostMapping("/add_cart")
     public ResponseEntity<?> addCart(@RequestBody @Valid CartRequest cartRequest) {
         try {
@@ -38,7 +39,7 @@ public class CartController {
         }
     }
 
-
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/cartUser/{user_id}")
     public ResponseEntity<?> getCartByUserId(@PathVariable("user_id") int userId) {
         try {
@@ -67,12 +68,14 @@ public class CartController {
         }
     }
 
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/all_carts")
     public ResponseEntity<List<Cart>> getAll() {
         List<Cart>carts = cartServiceImp.getAllCarts();
         return ResponseEntity.ok(carts);
     }
 
+    @PreAuthorize("hasRole('USER')")
     @DeleteMapping("delete/{cart_item_id}")
     public ResponseEntity<String> removeCart(@PathVariable("cart_item_id") int itemId) {
         try {
@@ -83,6 +86,7 @@ public class CartController {
         }
     }
 
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/{user_id}")
     public ResponseEntity<Integer> getCart(@PathVariable("user_id") int id) {
         try {

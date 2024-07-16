@@ -13,8 +13,8 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class OTPRequest {
 
-    @NotNull(message = "Số điện thoại hoặc email không hợp lệ")
-    @NotBlank(message = "Số điện thoại hoặc email không hợp lệ")
-    @Size(max = 100, min = 10, message = "Số điện thoại hoặc email phải từ 10 tới 100 kí tự")
+    @NotNull(message = "Vui lòng nhập số điện thoại hoặc email")
+    @NotBlank(message = "Số điện thoại hoặc email không được để trống")
+    @Size(max = 255, min = 10, message = "Số điện thoại hoặc email phải từ 10 tới 255 kí tự")
     String emailOrPhone;
 }

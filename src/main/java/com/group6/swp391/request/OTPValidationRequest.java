@@ -14,8 +14,8 @@ import lombok.experimental.FieldDefaults;
 public class OTPValidationRequest {
     private String emailOrPhone;
 
-    @NotNull(message = "OTP không hợp lệ")
-    @NotBlank(message = "OTP không hợp lệ")
+    @NotNull(message = "Vui lòng nhập OTP")
+    @NotBlank(message = "OTP không được để trống")
     @Size(max = 6, min = 6, message = "OTP phải nhập 6 kí tự")
     String otp;
 }
