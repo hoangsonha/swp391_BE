@@ -23,7 +23,7 @@ public class DiamondController {
 
     /**
      * Method tao moi kim cuong
-     * @param args diamond
+     * @param diamond diamond
      * @return success or fail
      */
     @PostMapping("/create_diamond")
@@ -50,7 +50,6 @@ public class DiamondController {
 
     /**
      * Method get all diamond with status 'true'
-     * @param args diamond
      * @return list diamond
      */
     @GetMapping("/get_all_diamond")
@@ -68,7 +67,7 @@ public class DiamondController {
 
     /**
      * Method tim kiem diamond dua tren id
-     * @param args diamondId
+     * @param diamondID
      * @return diamond
      */
     @GetMapping("/diamond_id/{diamond_id}")
@@ -87,7 +86,6 @@ public class DiamondController {
 
     /**
      * Method get all diamond
-     * @param args diamond
      * @return list diamond
      */
     @GetMapping("/all_diamonds")
@@ -107,7 +105,7 @@ public class DiamondController {
 
     /**
      * Method update kim cuong
-     * @param args DiamondName, Image, OriginPrice, Ratio, total = origin * ratio
+     * @param diamond
      * @return success or fail
      */
     @PutMapping("/update_diamond/{id}")
@@ -145,7 +143,7 @@ public class DiamondController {
     /**
      * Method delete diamond
      * change status true = fale
-     * @param args diamondId
+     * @param id diamondId
      * @return message success or fail
      */
     @DeleteMapping("/delete_diamond/{id}")
@@ -160,7 +158,7 @@ public class DiamondController {
 
     /**
      * Method tim kim diamond dua tren shape or dismensions
-     * @param args shape, dismensions
+     * @param  shape dismensions
      * @return list diamond
      */
     @GetMapping("/get_condition")
@@ -178,7 +176,7 @@ public class DiamondController {
 
     /**
      * Method xoa nhiu doi tuong cung luc
-     * @param args list diamondId
+     * @param diamondIds diamondIds
      * @return message success or fail
      */
     @PostMapping("/delete_diamonds")
@@ -204,7 +202,7 @@ public class DiamondController {
 
     /**
      * Method tim kim diamond duadismensions
-     * @param args dismensions
+     * @param dimension dismensions
      * @return list diamond
      */
     @GetMapping("/{dimension}")

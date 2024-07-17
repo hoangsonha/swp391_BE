@@ -24,7 +24,7 @@ public class ProductController {
 
     /**
      * Method tao new product
-     * @param args productRequest
+     * @param productRequest productRequest
      * @return message success or fail
      */
     @PreAuthorize("hasRole('ADMIN')")
@@ -75,7 +75,6 @@ public class ProductController {
 
     /**
      * Method get all product
-     * @param args
      * @return list product
      */
     @GetMapping("/all_products")
@@ -86,7 +85,7 @@ public class ProductController {
 
     /**
      * Method tim kim product by id
-     * @param args productId
+     * @param productID productId
      * @return product
      */
     @GetMapping("/product/{product_id}")
@@ -104,7 +103,7 @@ public class ProductController {
 
     /**
      * Method tim kim product dua tren category name
-     * @param args categoryName
+     * @param  category_name
      * @return list product
      */
     @GetMapping("/category/{category_name}")
@@ -122,7 +121,7 @@ public class ProductController {
 
     /**
      * Method update product
-     * @param args product
+     * @param id productId
      * @return message success or fail
      */
     @PreAuthorize("hasRole('ADMIN')")
@@ -212,7 +211,6 @@ public class ProductController {
     /**
      * Method xoa product bang cach thay doi trang thai
      * true => false
-     * @param args
      * @return message success or fail
      */
     @PreAuthorize("hasRole('ADMIN')")
@@ -235,7 +233,6 @@ public class ProductController {
      * Method xoa product bang cach thay doi trang thai
      * true => false
      * thuc hien tren nhiu doi tuong
-     * @param args
      * @return message success or fail
      */
     @PreAuthorize("hasRole('ADMIN')")
@@ -263,7 +260,7 @@ public class ProductController {
 
     /**
      * method update size cuar product
-     * @param args product, list size
+     * @param newSizes product, list size
      * @return message success or fail
      */
     private void updateProductSizes(Product existingProduct, List<Size> newSizes) {
@@ -298,7 +295,6 @@ public class ProductController {
 
     /**
      * method update image cuar product
-     * @param args product, list size
      * @return message success or fail
      */
     private void updateProductThumbnails(Product existingProduct, List<Thumnail> newThumbnails) {

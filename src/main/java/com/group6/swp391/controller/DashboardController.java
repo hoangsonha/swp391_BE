@@ -28,7 +28,6 @@ public class DashboardController {
 
     /**
      * Method format number 0.00
-     * @param args number <double>
      * @return number with format 0.00
      */
     private String formatNumberDouble(Double number) {
@@ -39,7 +38,6 @@ public class DashboardController {
 
     /**
      * Method calculate total currentDate
-     * @param args no
      * @return total in date
      */
     private Double totalCurrentDate() {
@@ -60,7 +58,6 @@ public class DashboardController {
 
     /**
      * Method calculate total date before
-     * @param args no
      * @return total in date before
      */
     private Double totalBegoreDate() {
@@ -82,7 +79,6 @@ public class DashboardController {
 
     /**
      * Method compare total between two date
-     * @param args no
      * @return value compare between two date with format 0.00
      */
     @PreAuthorize("hasRole('ADMIN')")
@@ -104,7 +100,6 @@ public class DashboardController {
 
     /**
      * Method total revenue date
-     * @param args no
      * @return total int date
      */
     @PreAuthorize("hasRole('ADMIN')")
@@ -127,7 +122,6 @@ public class DashboardController {
 
     /**
      * Method total revenue in store
-     * @param args no
      * @return total
      */
     @PreAuthorize("hasRole('ADMIN')")
@@ -152,7 +146,6 @@ public class DashboardController {
     /**
      * Method tinh tong doanh thu tung thang
      * api nay su dung cho bieu do the hien qua tung thang
-     * @param args no
      * @return total tung thang
      */
     @PreAuthorize("hasRole('ADMIN')")
@@ -174,7 +167,6 @@ public class DashboardController {
     /**
      * Method tinh tong doanh thu tung thang cua kim cuong
      * api nay su dung cho bieu do the hien qua tung thang
-     * @param args no
      * @return total tung thang cua kim cuong
      */
     @PreAuthorize("hasRole('ADMIN')")
@@ -196,7 +188,6 @@ public class DashboardController {
     /**
      * Method tong doanh thu cua customize cua tung thang theo bieu do
      * api nay su dung cho bieu do the hien qua tung thang
-     * @param args no
      * @return total tung thang cua product customize
      */
     @PreAuthorize("hasRole('ADMIN')")
@@ -217,7 +208,6 @@ public class DashboardController {
 
     /**
      * Method tra ve tat cua cac order voi status dang doi xac nhan
-     * @param args no
      * @return list<newOrder>
      */
     @PreAuthorize("hasRole('ADMIN')")
@@ -238,7 +228,6 @@ public class DashboardController {
     /**
      * Method tra ve tat cua cac order voi status bi huy
      * duoc tong ket trong mot thang
-     * @param args no
      * @return list order bi huy
      */
     @PreAuthorize("hasRole('ADMIN')")
@@ -259,7 +248,6 @@ public class DashboardController {
     /**
      * Method tra ve tat cua cac order voi status hoan trar
      * duoc tong ket trong mot thang
-     * @param args no
      * @return list order hoan trar
      */
     @PreAuthorize("hasRole('ADMIN')")
@@ -280,7 +268,6 @@ public class DashboardController {
     /**
      * Method tra ve tat cua cac order voi status da giao
      * duoc tong ket trong mot thang
-     * @param args no
      * @return list order da giao
      */
     @PreAuthorize("hasRole('ADMIN')")
@@ -301,7 +288,6 @@ public class DashboardController {
     /**
      * Method so luong user moi dang ki
      * duoc tong ket trong mot thang
-     * @param args no
      * @return so luong user moi
      */
     @PreAuthorize("hasRole('ADMIN')")
@@ -323,7 +309,6 @@ public class DashboardController {
     /**
      * Method so sanh tong doanh thu giua hai thang
      * so sanh thang truoc va thang hien tai
-     * @param args no
      * @return gia tri chenh lech giua thang truoc va sau format 0.00
      */
     @PreAuthorize("hasRole('ADMIN')")
@@ -346,7 +331,6 @@ public class DashboardController {
     /**
      * Method san pham moi duoc them vao
      * tong ket trong mot thang
-     * @param args no
      * @return list new product, new diamond
      */
     @PreAuthorize("hasRole('ADMIN')")

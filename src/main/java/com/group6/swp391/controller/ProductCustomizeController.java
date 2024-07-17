@@ -33,7 +33,6 @@ public class ProductCustomizeController {
     /**
      * method tao customize
      * nhan ve doi tuong custmoize va tien hang add cart
-     * @param args userId, CustomizeRequest
      * @return message success or fail
      */
     @PreAuthorize("hasRole('USER')")
@@ -69,7 +68,7 @@ public class ProductCustomizeController {
     /**
      * method tao customize danh cho ADMIN or Staff
      * nhan ve doi tuong custmoize
-     * @param args CustomizeRequest
+     * @param customizeRequest CustomizeRequest
      * @return message success or fail
      */
     @PostMapping("/create_productcustomize_collection")
@@ -106,7 +105,7 @@ public class ProductCustomizeController {
 
     /**
      * method tim kim mot customize
-     * @param args productcustomizeId
+     * @param id productcustomizeId
      * @return productcustomize
      */
     @GetMapping("/productcustomeize_id/{id}")
@@ -124,7 +123,6 @@ public class ProductCustomizeController {
 
     /**
      * method delete customize
-     * @param args productcustomizeId
      * @return message success or fail
      */
     @DeleteMapping("/delete/{productcustomize_id}")
@@ -144,7 +142,7 @@ public class ProductCustomizeController {
 
     /**
      * method update customize
-     * @param args productcustomizeId
+     * @param id productcustomizeId
      * @return message success or fail
      */
     @PutMapping("update/{productcustomize_id}")
@@ -169,7 +167,6 @@ public class ProductCustomizeController {
 
     /**
      * method get all customize
-     * @param args
      * @return list customize
      */
     @GetMapping("/all_productcustomize")

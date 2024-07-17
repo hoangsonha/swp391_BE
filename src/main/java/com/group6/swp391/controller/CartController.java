@@ -27,7 +27,7 @@ public class CartController {
     /**
      * Method add to cart
      * method này dành cho add kim cương
-     * @param args Nhan vao userId and diamondId
+     * @param cartRequest
      * @return success or field
      */
     @PreAuthorize("hasRole('USER')")
@@ -47,7 +47,6 @@ public class CartController {
 
     /**
      * Method tìm kiem cart dua tren user
-     * @param args userId
      * @return List cart_item in cart
      */
     @PreAuthorize("hasRole('USER')")
@@ -82,7 +81,6 @@ public class CartController {
     /**
      * Lay ra tat car cart trong data
      * ko can thiet, chua dc su dung
-     * @param args
      * @return List cart
      */
     @PreAuthorize("hasRole('USER')")
@@ -94,7 +92,7 @@ public class CartController {
 
     /**
      * Method xoa bat cu mot cart_item nao
-     * @param args cart_item_id
+     * @param itemId cart_item_id
      * @return message success or fail
      */
 
@@ -111,7 +109,7 @@ public class CartController {
 
     /**
      * Method dem so luong cart_item cos trong mot cart doi voi mot user
-     * @param args userId
+     * @param id userId
      * @return number integer
      */
     @PreAuthorize("hasRole('USER')")

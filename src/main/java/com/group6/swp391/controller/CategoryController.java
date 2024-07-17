@@ -19,7 +19,7 @@ public class CategoryController {
     CategoryService categoryService;
     /**
      * Method create new category
-     * @param args category
+     * @param category category
      * @return success or fail
      */
     @PreAuthorize("hasRole('ADMIN')")
@@ -39,7 +39,6 @@ public class CategoryController {
 
     /**
      * Method all category in data
-     * @param args
      * @return List catrgory
      */
     @PreAuthorize("hasRole('ADMIN')")
@@ -60,7 +59,7 @@ public class CategoryController {
 
     /**
      * Method tìm kiem category by categoryId
-     * @param args categoryId
+     * @param categoryId categoryId
      * @return category
      */
     @PreAuthorize("hasRole('ADMIN')")
@@ -76,7 +75,7 @@ public class CategoryController {
 
     /**
      * Method tìm kiem category by categoryName
-     * @param args categoryId
+     * @param categoryName
      * @return List<category>
      */
     @PreAuthorize("hasRole('ADMIN')")
@@ -98,7 +97,7 @@ public class CategoryController {
 
     /**
      * Method tìm kiem category by categoryName
-     * @param args categoryName
+     * @param  categoryName
      * @return Category
      */
     @PreAuthorize("hasRole('ADMIN')")
@@ -123,7 +122,7 @@ public class CategoryController {
 
     /**
      * Method update category
-     * @param args categoryId and category
+     * @param id categoryId and category
      * @return success or fail
      */
     @PreAuthorize("hasRole('ADMIN')")
