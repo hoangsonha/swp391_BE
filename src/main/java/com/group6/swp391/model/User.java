@@ -2,6 +2,7 @@ package com.group6.swp391.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.group6.swp391.enums.EnumGenderName;
 import jakarta.persistence.*;
 import lombok.*;
@@ -69,25 +70,18 @@ public class User extends BaseEntity {
     private List<Points> points;
 
     @Transient
-    public double getTotalPoints() {
-        if (points == null) {
-            return 0;
-        }
-        return points.stream().mapToDouble(Points::getPoint).sum();
-    }
-
-    @Transient
     private String roleName;
 
-
     @Transient
-    public double getTotalUsedPoints() {
+    @JsonProperty("totalPoints")
+    public double getNetPoints() {
         if (points == null) {
             return 0;
         }
-        return points.stream().mapToDouble(Points::getUsedPoints).sum();
+        double totalPoints = points.stream().mapToDouble(Points::getPoint).sum();
+        double totalUsedPoints = points.stream().mapToDouble(Points::getUsedPoints).sum();
+        return totalPoints - totalUsedPoints;
     }
-
 
     public User(String firstName, String lastName, String email, String password, String phone, String address,
                 String avata, String codeVerify, boolean enabled, boolean nonLooked, Role role, int quantityLoginFailed,
