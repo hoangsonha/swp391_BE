@@ -23,14 +23,15 @@ import java.util.List;
 @SpringBootTest
 class Swp391ApplicationTests {
 
-    @Autowired private BCryptPasswordEncoder bCryptPasswordEncoder;
-    @Autowired private RoleRepository roleRepository;
-    @Autowired private UserRepository userRepository;
-    @Autowired private UserService userService;
-    @Autowired private DiamondRepository diamondRepository;
+//    @Autowired private BCryptPasswordEncoder bCryptPasswordEncoder;
+//    @Autowired private RoleRepository roleRepository;
+//    @Autowired private UserRepository userRepository;
+//    @Autowired private UserService userService;
+//    @Autowired private DiamondRepository diamondRepository;
 
     @Test
-    void contextLoads() throws MessagingException, UnsupportedEncodingException {
+    void contextLoads() {
+
 
 //        List<Integer> in =  userService.sendNotificationEmail();
 
