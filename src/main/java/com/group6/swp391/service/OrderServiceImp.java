@@ -161,12 +161,7 @@ public class OrderServiceImp implements OrderService {
         return updateOrderStatus(orderID, status, null);
     }
 
-    @Override
-    public List<Order> getNewestOrderByDate(String status, LocalDateTime date) {
-        LocalDateTime startOfDay = date.toLocalDate().atStartOfDay();
-        LocalDateTime endOfDay = date.toLocalDate().atTime(LocalTime.MAX);
-        return orderRepository.findByStatusAndOrderDateBetween(status, startOfDay, endOfDay);
-    }
+
 
     @Override
     public long getPendingDeliveryOrderCount() {

@@ -226,11 +226,13 @@ public class DashboardController {
 //    }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/new_orders")
+    @GetMapping("/listneworder")
     public ResponseEntity<ObjectResponse> getNewOrders() {
         try {
-            LocalDateTime currentDate = LocalDateTime.now();
-            List<Order> listNewOrders = orderService.getNewestOrderByDate("Chờ xác nhận", currentDate);
+            LocalDate currentDate = LocalDate.now();
+            LocalDateTime startDate = currentDate.atStartOfDay();
+            LocalDateTime endDate = startDate.plusDays(1).minusNanos(1);
+            List<Order> listNewOrders = dashboardService.getOrderDate("Chờ xác nhận", startDate, endDate);
             if (listNewOrders == null || listNewOrders.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.OK).body(
                         new ObjectResponse("Success", "List is empty", null));
@@ -248,11 +250,13 @@ public class DashboardController {
      * @return list order bi huy
      */
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/failed_orders")
+    @GetMapping("/listorderfailed")
     public ResponseEntity<ObjectResponse> listOrderFailed() {
         try {
-            LocalDateTime currentDate = LocalDateTime.now();
-            List<Order> listFailedOrders = orderService.getNewestOrderByDate("Đã hủy", currentDate);
+            LocalDate currentDate = LocalDate.now();
+            LocalDateTime startDate = currentDate.atStartOfDay();
+            LocalDateTime endDate = startDate.plusDays(1).minusNanos(1);
+            List<Order> listFailedOrders = dashboardService.getOrderDate("Đã hủy", startDate, endDate);
             if(listFailedOrders == null || listFailedOrders.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.OK).body(
                         new ObjectResponse("Success", "List is empty", null));
@@ -270,11 +274,13 @@ public class DashboardController {
      * @return list order hoan trar
      */
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/refunded_orders")
+    @GetMapping("/listorderreturn")
     public ResponseEntity<ObjectResponse> listOrderReturn() {
         try {
-            LocalDateTime currentDate = LocalDateTime.now();
-            List<Order> listFailedOrders = orderService.getNewestOrderByDate("Đã Hoàn Tiền", currentDate);
+            LocalDate currentDate = LocalDate.now();
+            LocalDateTime startDate = currentDate.atStartOfDay();
+            LocalDateTime endDate = startDate.plusDays(1).minusNanos(1);
+            List<Order> listFailedOrders = dashboardService.getOrderDate("Đã hoàn tiền", startDate, endDate);
             if(listFailedOrders == null || listFailedOrders.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.OK).body(
                         new ObjectResponse("Success", "List is empty", null));
@@ -292,11 +298,13 @@ public class DashboardController {
      * @return list order da giao
      */
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/successful_orders")
+    @GetMapping("/listordersuccessfully")
     public ResponseEntity<ObjectResponse> listOrderSuccessfully() {
         try {
-            LocalDateTime currentDate = LocalDateTime.now();
-            List<Order> listSuccessfulOrders = orderService.getNewestOrderByDate("Đã giao", currentDate);
+            LocalDate currentDate = LocalDate.now();
+            LocalDateTime startDate = currentDate.atStartOfDay();
+            LocalDateTime endDate = startDate.plusDays(1).minusNanos(1);
+            List<Order> listSuccessfulOrders = dashboardService.getOrderDate("Đã giao", startDate, endDate);
             if(listSuccessfulOrders == null || listSuccessfulOrders.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.OK).body(
                         new ObjectResponse("Success", "List is empty", null));

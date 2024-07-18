@@ -34,7 +34,6 @@ public interface OrderService {
 
     Order updateOrderStatus(int orderID, String status);
 
-    List<Order> getNewestOrderByDate(String status, LocalDateTime date);
 
     long getPendingDeliveryOrderCount();
 }
