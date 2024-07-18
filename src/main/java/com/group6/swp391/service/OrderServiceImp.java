@@ -8,6 +8,8 @@ import com.group6.swp391.repository.SizeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -157,6 +159,13 @@ public class OrderServiceImp implements OrderService {
     @Override
     public Order updateOrderStatus(int orderID, String status) {
         return updateOrderStatus(orderID, status, null);
+    }
+
+    @Override
+    public List<Order> getNewestOrderByDate(String status, LocalDateTime date) {
+        LocalDateTime startOfDay = date.toLocalDate().atStartOfDay();
+        LocalDateTime endOfDay = date.toLocalDate().atTime(LocalTime.MAX);
+        return orderRepository.findByStatusAndOrderDateBetween(status, startOfDay, endOfDay);
     }
 
     @Override

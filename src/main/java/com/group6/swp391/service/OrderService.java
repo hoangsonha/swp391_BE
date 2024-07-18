@@ -3,6 +3,7 @@ package com.group6.swp391.service;
 import com.group6.swp391.model.Order;
 import com.group6.swp391.model.OrderDetail;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface OrderService {
@@ -32,6 +33,8 @@ public interface OrderService {
     Order updateOrderStatus(int orderID, String status, String reason);
 
     Order updateOrderStatus(int orderID, String status);
+
+    List<Order> getNewestOrderByDate(String status, LocalDateTime date);
 
     long getPendingDeliveryOrderCount();
 }

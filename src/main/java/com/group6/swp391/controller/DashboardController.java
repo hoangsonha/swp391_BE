@@ -210,78 +210,102 @@ public class DashboardController {
      * Method tra ve tat cua cac order voi status dang doi xac nhan
      * @return list<newOrder>
      */
+//    @PreAuthorize("hasRole('ADMIN')")
+//    @GetMapping("/listneworder")
+//    public ResponseEntity<ObjectResponse> listNewOrder() {
+//        try {
+//            int monthCurrent = LocalDate.now().getMonthValue();
+//            List<Order> listNewOrder = orderService.getNewestOrder("Chờ xác nhận");
+//            if(listNewOrder == null || listNewOrder.isEmpty()) {
+//                return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "List Is empty", null));
+//            }
+//            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "List new Order", listNewOrder));
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "List Is empty", e.getMessage()));
+//        }
+//    }
+
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/listneworder")
-    public ResponseEntity<ObjectResponse> listNewOrder() {
+    @GetMapping("/new_orders")
+    public ResponseEntity<ObjectResponse> getNewOrders() {
         try {
-            int monthCurrent = LocalDate.now().getMonthValue();
-            List<Order> listNewOrder = orderService.getNewestOrder("Chờ xác nhận");
-            if(listNewOrder == null || listNewOrder.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "List Is empty", null));
+            LocalDateTime currentDate = LocalDateTime.now();
+            List<Order> listNewOrders = orderService.getNewestOrderByDate("Chờ xác nhận", currentDate);
+            if (listNewOrders == null || listNewOrders.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.OK).body(
+                        new ObjectResponse("Success", "List is empty", null));
             }
-            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "List new Order", listNewOrder));
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ObjectResponse("Success", "Get Orders Successfully", listNewOrders));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "List Is empty", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                    new ObjectResponse("Failed", "Get Orders Failed", null));
         }
     }
 
     /**
      * Method tra ve tat cua cac order voi status bi huy
-     * duoc tong ket trong mot thang
      * @return list order bi huy
      */
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/listorderfailed")
+    @GetMapping("/failed_orders")
     public ResponseEntity<ObjectResponse> listOrderFailed() {
         try {
-            int monthCurrent = LocalDate.now().getMonthValue();
-            List<Order> listOrderFailed = dashboardService.getOrderByStatus(monthCurrent, "Đã hủy");
-            if(listOrderFailed == null || listOrderFailed.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "List Is empty", null));
+            LocalDateTime currentDate = LocalDateTime.now();
+            List<Order> listFailedOrders = orderService.getNewestOrderByDate("Đã hủy", currentDate);
+            if(listFailedOrders == null || listFailedOrders.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.OK).body(
+                        new ObjectResponse("Success", "List is empty", null));
             }
-            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "List order failed", listOrderFailed));
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ObjectResponse("Success", "Get Orders Successfully", listFailedOrders));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "List Is empty", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                    new ObjectResponse("Failed", "Get Orders Failed", e.getMessage()));
         }
     }
 
     /**
      * Method tra ve tat cua cac order voi status hoan trar
-     * duoc tong ket trong mot thang
      * @return list order hoan trar
      */
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/listorderreturn")
+    @GetMapping("/refunded_orders")
     public ResponseEntity<ObjectResponse> listOrderReturn() {
         try {
-            int monthCurrent = LocalDate.now().getMonthValue();
-            List<Order> listOrderReturn = dashboardService.getOrderByStatus(monthCurrent, "Đã Hoàn Tiền");
-            if(listOrderReturn == null || listOrderReturn.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "List Is empty", null));
+            LocalDateTime currentDate = LocalDateTime.now();
+            List<Order> listFailedOrders = orderService.getNewestOrderByDate("Đã Hoàn Tiền", currentDate);
+            if(listFailedOrders == null || listFailedOrders.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.OK).body(
+                        new ObjectResponse("Success", "List is empty", null));
             }
-            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "List order return", listOrderReturn));
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ObjectResponse("Success", "Get Orders Successfully", listFailedOrders));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "List Is empty", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                    new ObjectResponse("Failed", "Get Orders Failed", e.getMessage()));
         }
     }
 
     /**
      * Method tra ve tat cua cac order voi status da giao
-     * duoc tong ket trong mot thang
      * @return list order da giao
      */
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/listordersuccessfully")
+    @GetMapping("/successful_orders")
     public ResponseEntity<ObjectResponse> listOrderSuccessfully() {
         try {
-            int monthCurrent = LocalDate.now().getMonthValue();
-            List<Order> listOrderSuccessfully = dashboardService.getOrderByStatus(monthCurrent, "Đã giao");
-            if(listOrderSuccessfully == null || listOrderSuccessfully.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "List Is empty", null));
+            LocalDateTime currentDate = LocalDateTime.now();
+            List<Order> listSuccessfulOrders = orderService.getNewestOrderByDate("Đã giao", currentDate);
+            if(listSuccessfulOrders == null || listSuccessfulOrders.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.OK).body(
+                        new ObjectResponse("Success", "List is empty", null));
             }
-            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "List order return", listOrderSuccessfully));
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ObjectResponse("Success", "Get Orders Successfully", listSuccessfulOrders));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "List Is empty", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                    new ObjectResponse("Failed", "Get Orders Failed", e.getMessage()));
         }
     }
 
