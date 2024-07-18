@@ -12,15 +12,14 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @Builder
 @Data
-//@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class CartRequest {
-//    @NotNull(message = "Vui lòng nhập mã người dùng")
-//    @NotBlank(message = "Mã người dùng không được để trống")
-//    @Min(value = 1, message = "Mã người dùng phải lớn hơn 0")
-    private int userId;
+    @NotNull(message = "Vui lòng nhập mã người dùng")
+    @Min(value = 1, message = "Mã người dùng phải lớn hơn 0")
+    int userId;
 
     @NotBlank(message = "Mã sản phẩm không được để trống")
     @NotNull(message = "Vui lòng nhập mã sản phẩm")
     @Min(value = 1, message = "Mã sản phẩm phải lớn hơn 0")
-    private String productId;
+    String productId;
 }

@@ -8,4 +8,6 @@ public interface PointsService {
     Points createPoints(int userId, int orderId);
     Points getUserPoints(int userId, int orderId, double userPoint);
     Points getPointByUser(int userId);
+
+
 }

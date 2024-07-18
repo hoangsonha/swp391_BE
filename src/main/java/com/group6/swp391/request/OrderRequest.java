@@ -29,12 +29,10 @@ public class OrderRequest {
     String phoneShipping;
 
     @NotNull(message = "Vui lòng nhập giá")
-    @NotBlank(message = "Giá không được để trống")
     @Min(value = 0, message = "Giá phải lớn hơn hoặc bằng 0")
     double price;
 
     @NotNull(message = "Vui lòng nhập mã người dùng")
-    @NotBlank(message = "Mã người dùng không được để trống")
     @Min(value = 1, message = "Mã người dùng phải lớn hơn hoặc bằng 1")
     int userID;
 

@@ -1,6 +1,7 @@
 package com.group6.swp391.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.group6.swp391.enums.EnumGenderName;
 import com.group6.swp391.model.Points;
 import jakarta.persistence.Transient;
@@ -28,17 +29,14 @@ public class UserRespone {
     @JsonIgnore
     private List<Points> points;
 
-    public double getTotalPoints() {
+    @Transient
+    @JsonProperty("currentPoints")
+    public double getNetPoints() {
         if (points == null) {
             return 0;
         }
-        return points.stream().mapToDouble(Points::getPoint).sum();
-    }
-
-    public double getTotalUsedPoints() {
-        if (points == null) {
-            return 0;
-        }
-        return points.stream().mapToDouble(Points::getUsedPoints).sum();
+        double totalPoints = points.stream().mapToDouble(Points::getPoint).sum();
+        double totalUsedPoints = points.stream().mapToDouble(Points::getUsedPoints).sum();
+        return totalPoints - totalUsedPoints;
     }
 }

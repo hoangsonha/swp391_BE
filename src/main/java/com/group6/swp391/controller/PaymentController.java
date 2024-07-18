@@ -1,10 +1,7 @@
 package com.group6.swp391.controller;
 
 import com.group6.swp391.enums.*;
-import com.group6.swp391.model.CrawledDataProperties;
-import com.group6.swp391.model.Diamond;
-import com.group6.swp391.model.Order;
-import com.group6.swp391.model.OrderDetail;
+import com.group6.swp391.model.*;
 import com.group6.swp391.request.CancelPaymentRequest;
 import com.group6.swp391.request.PaymentRequest;
 import com.group6.swp391.response.PaymentResponse;
@@ -21,12 +18,14 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 @RestController
@@ -41,6 +40,8 @@ public class PaymentController {
     @Autowired private PaymentService paymentService;
     @Autowired private VNPayService vnPayService;
     @Autowired private DiamondService diamondService;
+    @Autowired private RoleService roleService;
+    @Autowired private ProductService productService;
     @Autowired private CrawledDataProperties dola;
 
     @Value("${frontend.url}")
@@ -167,15 +168,17 @@ public class PaymentController {
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(new PaymentResponse("Failed", "Payment paypal failed", null, null));
     }
 
-    @PreAuthorize("hasRole('USER')")
+//    @PreAuthorize("hasRole('USER')")
     @PostMapping("/refund")
     public ResponseEntity<PaymentResponse> refund(@RequestBody CancelPaymentRequest cancelPaymentRequest, HttpServletRequest request) {
         try {
             Order order = orderService.getOrderByOrderID(Integer.parseInt(cancelPaymentRequest.getOrderID()));
             CustomUserDetail customUserDetail = (CustomUserDetail) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            if(customUserDetail.getUserID() == order.getUser().getUserID()) {
+            Role role = roleService.getRoleByRoleName(EnumRoleName.ROLE_DELIVERY);
+            if(customUserDetail.getUserID() == order.getUser().getUserID() || ((SimpleGrantedAuthority) ((ArrayList) customUserDetail.getGrantedAuthorities()).get(0)).getAuthority().equals("ROLE_DELIVERY")){
                 String orderStatus = EnumOrderStatus.Chờ_giao_hàng.name();
-                if (order != null && order.getStatus().equals(orderStatus.replaceAll("_", " "))) {
+                String orderStatus2 = EnumOrderStatus.Đã_giao.name();
+                if (order != null && order.getStatus().equals(orderStatus.replaceAll("_", " ")) || order.getStatus().equals(orderStatus2.replaceAll("_", " "))) {
                     com.group6.swp391.model.Payment payment = paymentService.findByOrder(order);
                     double amount = 0;
                     String paymentStatus = EnumPaymentStatus.Thanh_toán_thành_công.name();
@@ -201,6 +204,10 @@ public class PaymentController {
                                     if(orderDetail.getProductCustomize() != null) {
                                         Diamond diamond = diamondService.getDiamondByDiamondID(orderDetail.getProductCustomize().getDiamond().getDiamondID());
                                         diamond.setStatus(true);
+
+                                        Product product = productService.getProductById(orderDetail.getProductCustomize().getProduct().getProductID());
+                                        product.setQuantity(product.getQuantity() + 1);
+                                        productService.createProduct(product);
                                         diamondService.saveDiamond(diamond);
                                     }
                                 }
@@ -222,7 +229,7 @@ public class PaymentController {
 //                    }
                     } else return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PaymentResponse("Failed", "Refund failed", null, null));
                 } else return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PaymentResponse("Failed", "Refund failed", null, null));
-            } else return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new PaymentResponse("Failed", "Refund failed", null, null));
+            } else return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new PaymentResponse("Failed", "Refund because not authorization failed", null, null));
         } catch(Exception e) {
             log.error(e.getMessage());
         }

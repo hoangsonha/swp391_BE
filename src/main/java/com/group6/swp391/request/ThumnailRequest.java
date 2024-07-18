@@ -12,7 +12,7 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ThumnailRequest {
-    @NotBlank(message = "ID hình ảnh không được để trống")
+
     int imageId;
 
     @NotBlank(message = "URL hình ảnh không được để trống")

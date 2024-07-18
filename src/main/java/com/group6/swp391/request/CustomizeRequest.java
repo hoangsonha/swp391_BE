@@ -26,9 +26,7 @@ public class CustomizeRequest {
     String diamondId;
 
     @NotNull(message = "Vui lòng nhập kích thước")
-    @NotBlank(message = "Kích thước không được để trống")
     @Min(value = 1, message = "Kích thước phải lớn hơn hoặc bằng 1")
     int size;
 
-    private String collectionId;
 }

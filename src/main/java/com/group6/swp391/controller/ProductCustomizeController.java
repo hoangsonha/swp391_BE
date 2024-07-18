@@ -35,7 +35,7 @@ public class ProductCustomizeController {
      * nhan ve doi tuong custmoize va tien hang add cart
      * @return message success or fail
      */
-    @PreAuthorize("hasRole('USER')")
+//    @PreAuthorize("hasRole('USER')")
     @PostMapping("/create_customizeProduct/{userId}")
     public ResponseEntity<?> createProductCustome(@PathVariable("userId") int userId,
                                                   @RequestBody @Valid CustomizeRequest customizeRequest) {
@@ -82,10 +82,10 @@ public class ProductCustomizeController {
             if(diamondExisting == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Diamond do not exist", null));
             }
-            Collection collectionExisting = collectionService.getCollection(customizeRequest.getCollectionId());
-            if(collectionExisting == null) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Collection do not exist", null));
-            }
+//            Collection collectionExisting = collectionService.getCollection(customizeRequest.getCollectionId());
+//            if(collectionExisting == null) {
+//                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Collection do not exist", null));
+//            }
             ProductCustomize pcn = new ProductCustomize();
             pcn.setProdcutCustomId("P" + customizeRequest.getProductId() + "-" + diamondExisting.getDiamondID());
             pcn.setProduct(productExisting);
@@ -95,7 +95,7 @@ public class ProductCustomizeController {
             pcn.setDiamond(diamondExisting);
             pcn.setSize(customizeRequest.getSize());
             pcn.setTotalPrice(productExisting.getTotalPrice() + diamondExisting.getTotalPrice());
-            pcn.setCollection(collectionExisting);
+//            pcn.setCollection(collectionExisting);
             productCustomizeServiceImp.createProductCustomize(pcn);
             return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Product Customize created successfully", pcn));
         } catch (Exception e) {

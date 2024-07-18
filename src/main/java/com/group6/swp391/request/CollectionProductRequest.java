@@ -14,7 +14,6 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CollectionProductRequest {
     @NotNull(message = "Vui lòng nhập mã sản phẩm bộ sưu tập")
-    @NotBlank(message = "Mã sản phẩm bộ sưu tập không được để trống")
     int collectionProductId;
 
     @NotBlank(message = "Mã sản phẩm không được để trống")
