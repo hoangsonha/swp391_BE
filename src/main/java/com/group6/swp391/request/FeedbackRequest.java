@@ -19,8 +19,6 @@ public class FeedbackRequest {
 
     String productID;
 
-    String collectionID;
-
     @NotNull(message = "Mã người dùng không được để trống")
     int userID;
 }

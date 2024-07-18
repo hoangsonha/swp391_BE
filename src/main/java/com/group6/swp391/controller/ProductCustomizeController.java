@@ -1,16 +1,13 @@
 package com.group6.swp391.controller;
 
-import com.group6.swp391.model.Collection;
 import com.group6.swp391.model.Diamond;
 import com.group6.swp391.model.Product;
 import com.group6.swp391.model.ProductCustomize;
 import com.group6.swp391.repository.DiamondRepository;
 import com.group6.swp391.request.CustomizeRequest;
-import com.group6.swp391.response.ObjectResponse;
 import com.group6.swp391.service.*;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +25,6 @@ public class ProductCustomizeController {
     @Autowired DiamondRepository diamondRepository;
     @Autowired CategoryServiceImp categoryServiceImp;
     @Autowired CartServiceImp cartServiceImp;
-    @Autowired CollectionService collectionService;
 
     /**
      * method tao customize

@@ -101,24 +101,7 @@ public class FeedbackController {
         }
     }
 
-    // Method to get feedbacks by collection ID
-    // Accepts a collection ID as a path variable and returns a list of feedbacks or an error message
-    @GetMapping("/feedbacks_by_collection/{id}")
-    public ResponseEntity<?> getFeedbacksByCollectionID(@PathVariable String id) {
-        List<Feedback> feedbacks;
-        try {
-            feedbacks = feedbackService.getFeedbacksByCollectionID(id);
-            if (feedbacks.isEmpty()){
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body("No feedback for collection ID: " + id);
-            } else {
-                return ResponseEntity.ok(feedbacks);
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error retrieving feedback for collection ID: " + id);
-        }
-    }
+
 
     // Method to get the newest feedbacks
     // Accepts an optional limit as a request parameter (default is 10) and returns the latest feedbacks
@@ -201,19 +184,6 @@ public class FeedbackController {
         }
     }
 
-    // Method to get the average rating for a collection by collection ID
-    // Accepts a collection ID as a path variable and returns the average rating or an error message
-    @GetMapping("/average_rating_collection/{collectionID}")
-    public ResponseEntity<?> getAverageRatingForCollection(@PathVariable String collectionID) {
-        try {
-            double averageRating = feedbackService.getAverageRatingForCollection(collectionID);
-            return ResponseEntity.ok("Average rating for product ID " + collectionID
-                    + " is: " + averageRating);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error calculating average rating for product ID: " + collectionID);
-        }
-    }
 
     /**
      * Method lay ra productcustomize voi trong mot order

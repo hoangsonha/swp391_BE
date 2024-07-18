@@ -24,8 +24,6 @@ public class FeedbackServiceImp implements FeedbackService {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private CollectionRepository collectionRepository;
 
     @Override
     public List<Feedback> getAllFeedbacks() {
@@ -45,11 +43,6 @@ public class FeedbackServiceImp implements FeedbackService {
     @Override
     public List<Feedback> getFeedbacksByProductID(String productID) {
         return feedbackRepository.findByProductProductID(productID);
-    }
-
-    @Override
-    public List<Feedback> getFeedbacksByCollectionID(String collectionID) {
-        return feedbackRepository.findByCollectionCollecitonId(collectionID);
     }
 
     @Override
@@ -75,7 +68,6 @@ public class FeedbackServiceImp implements FeedbackService {
             try {
                 Diamond diamond = null;
                 Product product = null;
-                Collection collection = null;
 
                 User user = userRepository.findById(feedbackRequest.getUserID()).orElse(null);
                 if (user == null) {
@@ -92,11 +84,6 @@ public class FeedbackServiceImp implements FeedbackService {
                     if (product == null) {
                         continue;
                     }
-                } else if (feedbackRequest.getCollectionID() != null) {
-                    collection = collectionRepository.findById(feedbackRequest.getCollectionID()).orElse(null);
-                    if (collection == null) {
-                        continue;
-                    }
                 } else {
                     continue;
                 }
@@ -106,7 +93,6 @@ public class FeedbackServiceImp implements FeedbackService {
                         .rating(feedbackRequest.getRating())
                         .diamond(diamond)
                         .product(product)
-                        .collection(collection)
                         .user(user)
                         .build();
 
@@ -202,18 +188,4 @@ public class FeedbackServiceImp implements FeedbackService {
         }
     }
 
-    @Override
-    public double getAverageRatingForCollection(String collectionID) {
-        try {
-            List<Feedback> feedbacks = feedbackRepository.findByCollectionCollecitonId(collectionID);
-            if (feedbacks.isEmpty()) {
-                return 0.0;
-            }
-            double totalRating = feedbacks.stream().mapToDouble(Feedback::getRating).sum();
-            return totalRating / feedbacks.size();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return 0;
-        }
-    }
 }

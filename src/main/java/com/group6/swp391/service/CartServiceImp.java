@@ -23,7 +23,6 @@ public class  CartServiceImp implements CartService {
     @Autowired CartItemRepository CartItemRepository;
     @Autowired
     private CartItemRepository cartItemRepository;
-    @Autowired CollectionService collectionService;
 
     @Override
     public void addCart(int userId, String productId) {
