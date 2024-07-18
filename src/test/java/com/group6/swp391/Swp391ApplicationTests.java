@@ -32,7 +32,7 @@ class Swp391ApplicationTests {
     @Test
     void contextLoads() throws MessagingException, UnsupportedEncodingException {
 
-        List<Integer> in =  userService.sendNotificationEmail();
+//        List<Integer> in =  userService.sendNotificationEmail();
 
 //            long t = userService.calculateDayTest(2023, 12, 16, 2024, 1, 15);
 //            System.out.println(t);
