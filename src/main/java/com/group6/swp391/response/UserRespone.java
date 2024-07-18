@@ -30,7 +30,7 @@ public class UserRespone {
     private List<Points> points;
 
     @Transient
-    @JsonProperty("currentPoints")
+    @JsonProperty("totalPoints")
     public double getNetPoints() {
         if (points == null) {
             return 0;
