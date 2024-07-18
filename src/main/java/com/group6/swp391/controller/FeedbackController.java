@@ -218,7 +218,7 @@ public class FeedbackController {
     /**
      * Method lay ra productcustomize voi trong mot order
      * danh gia vaof product
-     * @param args orderId
+     * @param id orderId
      * @return list product
      */
     @GetMapping("/get_model_detail/{order_id}")
