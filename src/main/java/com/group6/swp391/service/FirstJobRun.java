@@ -6,15 +6,23 @@ import com.group6.swp391.schedule.MainSchedule;
 import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import org.quartz.SchedulerException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
-@AllArgsConstructor
 public class FirstJobRun {
-    private final MainSchedule schedule;
-    private final CommonUtils commonUtils;
+
+    @Autowired private MainSchedule schedule;
+
+    @Value("${job.first.hour}")
+    private int hour;
+
+    @Value("${job.first.minute}")
+    private int minute;
+
     @PostConstruct
     public void init() throws SchedulerException {
-        schedule.scheduler(FirstJob.class, 8, 0);
+        schedule.scheduler(FirstJob.class, hour, minute);
     }
 }

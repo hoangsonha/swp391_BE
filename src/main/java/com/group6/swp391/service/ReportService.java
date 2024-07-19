@@ -104,43 +104,4 @@ public class ReportService {
         ops.close();
     }
 
-//    public void exportExcel(HttpServletResponse response) throws IOException {
-//
-//        List<User> userList = userRepository.findAll();
-//        XSSFWorkbook workbook = new XSSFWorkbook();
-//        XSSFSheet sheet = workbook.createSheet("User Infor");
-//        XSSFRow row = sheet.createRow(0);
-//
-//        row.createCell(0).setCellValue("userID");
-//        row.createCell(1).setCellValue("firstName");
-//        row.createCell(2).setCellValue("lastName");
-//        row.createCell(3).setCellValue("email");
-//        row.createCell(4).setCellValue("phone");
-//        row.createCell(5).setCellValue("address");
-//        row.createCell(6).setCellValue("enabled");
-//        row.createCell(7).setCellValue("non-Locked");
-//
-//        // data start from row 2 because row 1 is title that set above
-//        int dataRowIndex = 1;
-//
-//        for(User user : userList) {
-//            XSSFRow dataRow = sheet.createRow(dataRowIndex);
-//            dataRow.createCell(0).setCellValue(user.getUserID());
-//            dataRow.createCell(1).setCellValue(user.getFirstName());
-//            dataRow.createCell(2).setCellValue(user.getLastName());
-//            dataRow.createCell(3).setCellValue(user.getEmail());
-//            dataRow.createCell(4).setCellValue(user.getPhone());
-//            dataRow.createCell(5).setCellValue(user.getAddress());
-//            dataRow.createCell(6).setCellValue(user.isEnabled());
-//            dataRow.createCell(7).setCellValue(user.isNonLocked());
-//            dataRowIndex++;
-//        }
-//
-//        // send data to client (can send any file binary such as picture, video, ...)
-//
-//        ServletOutputStream ops =  response.getOutputStream();
-//        workbook.write(ops);
-//        workbook.close();
-//        ops.close();
-//    }
 }

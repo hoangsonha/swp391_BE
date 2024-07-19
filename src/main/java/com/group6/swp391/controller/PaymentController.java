@@ -49,7 +49,7 @@ public class PaymentController {
 
     @PreAuthorize("hasRole('USER')")
     @PostMapping("/checkout")
-    public ResponseEntity<PaymentResponse> pay(@RequestBody PaymentRequest paymentRequest, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<PaymentResponse> pay(@RequestBody PaymentRequest paymentRequest, HttpServletRequest request) {
         try {
             if(paymentRequest.getPaymentMethod().equals("paypal") && EnumPaymentMethod.checkExistPaymentMethod(paymentRequest.getPaymentMethod())) {
                 String cancelUrl = request.getRequestURL().toString().replace(request.getServletPath(), "") + "/payment/paypal/cancel?orderID=" + paymentRequest.getOrderID();
@@ -168,14 +168,13 @@ public class PaymentController {
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(new PaymentResponse("Failed", "Payment paypal failed", null, null));
     }
 
-//    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('USER') or hasRole('DELIVERY')")
     @PostMapping("/refund")
     public ResponseEntity<PaymentResponse> refund(@RequestBody CancelPaymentRequest cancelPaymentRequest, HttpServletRequest request) {
         try {
             Order order = orderService.getOrderByOrderID(Integer.parseInt(cancelPaymentRequest.getOrderID()));
             CustomUserDetail customUserDetail = (CustomUserDetail) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            Role role = roleService.getRoleByRoleName(EnumRoleName.ROLE_DELIVERY);
-            if(customUserDetail.getUserID() == order.getUser().getUserID() || ((SimpleGrantedAuthority) ((ArrayList) customUserDetail.getGrantedAuthorities()).get(0)).getAuthority().equals("ROLE_DELIVERY")){
+            if(customUserDetail.getUserID() == order.getUser().getUserID()){
                 String orderStatus = EnumOrderStatus.Chờ_giao_hàng.name();
                 String orderStatus2 = EnumOrderStatus.Đã_giao.name();
                 if (order != null && order.getStatus().equals(orderStatus.replaceAll("_", " ")) || order.getStatus().equals(orderStatus2.replaceAll("_", " "))) {
@@ -235,8 +234,6 @@ public class PaymentController {
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PaymentResponse("Failed", "Refund failed", null, null));
     }
-
-
 
     private double priceToUSD(double price) {
         String dola_price = dola.getDola().replace(".", "");

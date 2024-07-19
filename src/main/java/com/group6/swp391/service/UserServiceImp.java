@@ -38,48 +38,50 @@ import java.util.*;
 @Slf4j
 public class UserServiceImp implements UserService {
 
-    @Value(value = "${recaptcha.secretKey}")
+    private WebDriver webDriver;
+
+    @Value("${recaptcha.secretKey}")
     private String recaptchaSecretKey;
 
-    @Value(value = "${recaptcha.url}")
+    @Value("${recaptcha.url}")
     private String recaptchaUrl;
+
+    @Value("${sms.token}")
+    private String smsToken;
+
+    @Value("${sms.sender}")
+    private String smsSender;
+
+    @Value("${sms.type}")
+    private int smsType;
 
     private Map<String, String> otpMap = new HashMap<>();
 
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private RoleService roleService;
-    @Autowired
-    private PaymentService paymentService;
-    @Autowired
-    private JavaMailSender javaMailSender;
-    @Autowired
-    private RestTemplate restTemplate;
+    @Autowired private UserRepository userRepository;
+    @Autowired private RoleService roleService;
+    @Autowired private PaymentService paymentService;
+    @Autowired private JavaMailSender javaMailSender;
+    @Autowired private RestTemplate restTemplate;
     @Autowired private BCryptPasswordEncoder bCryptPasswordEncoder;
-
     @Autowired private CrawledDataProperties crawledDataProperties;
-
-    private WebDriver webDriver;
 
     // CRUD
 
 
     @Override
     public List<User> findAll(String role) {
-        List<User> lists = userRepository.findAll();
         List<User> listsByRole = userRepository.findAll();
         Role role_admin = roleService.getRoleByRoleName(EnumRoleName.ROLE_ADMIN);
         Role role_delivery = roleService.getRoleByRoleName(EnumRoleName.ROLE_DELIVERY);
 
         if (role.equals("staff")) {
-            for (User user : lists) {
+            for (User user : userRepository.findAll()) {
                 if (user.getRole().equals(role_admin) || user.getRole().equals(role_delivery)) {
                     listsByRole.remove(user);
                 }
             }
         } else if (role.equals("admin")) {
-            return lists;
+            return userRepository.findAll();
         }
         return listsByRole;
     }
@@ -233,45 +235,6 @@ public class UserServiceImp implements UserService {
         return response.isSuccess();
     }
 
-//    public boolean loginGoogle(String code) {
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-//
-////        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-////        map.add("code", code);
-////        map.add("client_id", "478830836024-e2fa5s2erqeal7bupi7tim4ap64d0cha.apps.googleusercontent.com");
-////        map.add("client_secret", "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");
-////        map.add("redirect_uri", "http://localhost:8080/login/oauth2/code/google/");
-////        map.add("grant_type", "authorization_code");
-//
-//         String TOKEN_URL = "https://oauth2.googleapis.com/token";
-//        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(TOKEN_URL)
-//                .queryParam("code", code)
-//                .queryParam("client_id", "478830836024-e2fa5s2erqeal7bupi7tim4ap64d0cha.apps.googleusercontent.com")
-//                .queryParam("client_secret", "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")
-//                .queryParam("redirect_uri", "http://localhost:8080/login/oauth2/code/google/")
-//                .queryParam("grant_type", "authorization_code");
-//
-//        HttpEntity<String> entity = new HttpEntity<>(headers);
-//        ResponseEntity<Map> response = restTemplate.exchange(
-//                builder.toUriString(),
-//                HttpMethod.POST,
-//                entity,
-//                Map.class
-//        );
-//
-//        if (response.getStatusCode().is2xxSuccessful()) {
-//            Map<String, String> responseBody = response.getBody();
-//            String accessToken = responseBody.get("access_token");
-//            System.out.println("Access Token: " + accessToken);
-//            // Redirect to homepage or another endpoint
-//            return true;
-//        } else {
-//            // Handle error
-//            return false;
-//        }
-//    }
-
 
     // function set password
 
@@ -402,12 +365,11 @@ public class UserServiceImp implements UserService {
     public boolean sendSMS(OTPRequest otpRequest) {
         try {
             String phoneOrEmail = otpRequest.getEmailOrPhone();
-            int type = 5;
             String otp = generatedNumber();
             String content = "Dear Customer, Absolutely do not provide this authentication Code to anyone. Enter OTP code" + otp + " to reset the password";
-            String sender = "07eda63bd942bf35";
-            SpeedSMSAPI api = new SpeedSMSAPI("BeAfmVJjdj9CrAhg7oU49zqMpC9pV83r");
-            String result = api.sendSMS(phoneOrEmail, content, type, sender);
+            String sender = smsSender;
+            SpeedSMSAPI api = new SpeedSMSAPI(smsToken);
+            String result = api.sendSMS(phoneOrEmail, content, smsType, sender);
             otpMap.put(phoneOrEmail, otp);
             return true;
         } catch (Exception e) {
@@ -558,7 +520,9 @@ public class UserServiceImp implements UserService {
         return check;
     }
 
+
     // function automation send email (System handler)
+
 
     @Override
     public List<Integer> sendNotificationEmail() throws MessagingException, UnsupportedEncodingException {
@@ -1109,5 +1073,48 @@ public class UserServiceImp implements UserService {
         }
         return false;
     }
+
+
+
+
+//        public boolean loginGoogle(String code) {
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+//
+////        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+////        map.add("code", code);
+////        map.add("client_id", "478830836024-e2fa5s2erqeal7bupi7tim4ap64d0cha.apps.googleusercontent.com");
+////        map.add("client_secret", "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");
+////        map.add("redirect_uri", "http://localhost:8080/login/oauth2/code/google/");
+////        map.add("grant_type", "authorization_code");
+//
+//         String TOKEN_URL = "https://oauth2.googleapis.com/token";
+//        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(TOKEN_URL)
+//                .queryParam("code", code)
+//                .queryParam("client_id", "478830836024-e2fa5s2erqeal7bupi7tim4ap64d0cha.apps.googleusercontent.com")
+//                .queryParam("client_secret", "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")
+//                .queryParam("redirect_uri", "http://localhost:8080/login/oauth2/code/google/")
+//                .queryParam("grant_type", "authorization_code");
+//
+//        HttpEntity<String> entity = new HttpEntity<>(headers);
+//        ResponseEntity<Map> response = restTemplate.exchange(
+//                builder.toUriString(),
+//                HttpMethod.POST,
+//                entity,
+//                Map.class
+//        );
+//
+//        if (response.getStatusCode().is2xxSuccessful()) {
+//            Map<String, String> responseBody = response.getBody();
+//            String accessToken = responseBody.get("access_token");
+//            System.out.println("Access Token: " + accessToken);
+//            // Redirect to homepage or another endpoint
+//            return true;
+//        } else {
+//            // Handle error
+//            return false;
+//        }
+//    }
+
 
 }
