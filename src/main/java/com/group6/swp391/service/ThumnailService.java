@@ -11,8 +11,6 @@ public interface ThumnailService {
     void updateThumnail(int id, Thumnail thumnail);
     void deleteThumnail(int thumnailId);
 
-    Thumnail createThumnailV2(String objectId, String imageUrl);
 
     void updateThumnaiV2(Thumnail thumnail);
-    List<Thumnail> getThumnailByObject(String objectId);
 }

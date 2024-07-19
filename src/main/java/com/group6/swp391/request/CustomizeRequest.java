@@ -28,5 +28,4 @@ public class CustomizeRequest {
     @NotNull(message = "Vui lòng nhập kích thước")
     @Min(value = 1, message = "Kích thước phải lớn hơn hoặc bằng 1")
     int size;
-
 }

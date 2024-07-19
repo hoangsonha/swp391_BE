@@ -2,6 +2,7 @@ package com.group6.swp391.controller;
 
 import com.group6.swp391.model.*;
 import com.group6.swp391.request.ProductRequest;
+import com.group6.swp391.response.ObjectResponse;
 import com.group6.swp391.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,11 +30,11 @@ public class ProductController {
      */
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("create_product")
-    public ResponseEntity<?> createProduct(@RequestBody ProductRequest productRequest) {
+    public ResponseEntity<ObjectResponse> createProduct(@RequestBody ProductRequest productRequest) {
         try {
             Product product = productRequest.getProduct();
             if(productServiceImp.getProductById(product.getProductID()) != null) {
-                return ResponseEntity.badRequest().body("Product already exists");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Product Already Exist", null));
             } else {
                 product.setStatus(true);
                 product.setTotalPrice((product.getWagePrice() + product.getOriginalPrice())*(1+ product.getRatio()));
@@ -65,10 +66,10 @@ public class ProductController {
                 product.setProductImages(setThumnail);
                 product.setSizes(setSize);
             }
-            return ResponseEntity.ok().body("Product created successfully");
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Product Created", product));
 
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ObjectResponse("Failed", e.getMessage(), null));
         }
     }
 

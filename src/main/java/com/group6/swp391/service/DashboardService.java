@@ -18,4 +18,5 @@ public interface DashboardService {
     Double totalRevenueDate(LocalDateTime startdate,LocalDateTime endtdate);
     List<Diamond> getNewDiamonds(int month, int year);
     List<Product> getNewProducts(int month, int year);
+    List<Order> getOrderDate(String status, LocalDateTime startdate, LocalDateTime endtdate);
 }

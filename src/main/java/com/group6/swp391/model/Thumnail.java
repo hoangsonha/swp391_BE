@@ -25,8 +25,4 @@ public class Thumnail {
     @JsonIgnore
     private Product product;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "collection_id")
-    @JsonIgnore
-    private Collection collection;
 }

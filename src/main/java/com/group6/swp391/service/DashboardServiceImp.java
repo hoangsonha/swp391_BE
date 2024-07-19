@@ -68,4 +68,9 @@ public class DashboardServiceImp implements DashboardService {
         return productRepository.findByCreateInMOnth(month, year);
     }
 
+    @Override
+    public List<Order> getOrderDate(String status, LocalDateTime startdate, LocalDateTime endtdate) {
+        return orderRepository.getStatusIntdate(status, startdate, endtdate);
+    }
+
 }
