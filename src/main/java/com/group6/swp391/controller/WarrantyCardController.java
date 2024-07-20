@@ -9,6 +9,7 @@ import com.group6.swp391.view.Views;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -31,6 +32,7 @@ public class WarrantyCardController {
     // Get a warranty card by its ID
     // Input: warrantyCard_id (int)
     // Output: WarrantyCardDetailRespone or error message
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping("/warrantyCard_id/{warrantyCard_id}")
     public ResponseEntity<?> getById(@PathVariable("warrantyCard_id") int id) {
         try {
@@ -88,6 +90,7 @@ public class WarrantyCardController {
     }
 
     // Retrieves all warranty cards
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping("/all_warranty_card")
     @JsonView(Views.Internal.class)
     public ResponseEntity<?> getAll() {
@@ -117,6 +120,7 @@ public class WarrantyCardController {
     }
 
     // Retrieves warranty cards by user ID
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping("/user/{user_id}")
     @JsonView(Views.Public.class)
     public ResponseEntity<?> getByUserId(@PathVariable("user_id") int id) {
@@ -146,6 +150,7 @@ public class WarrantyCardController {
     }
 
     // Retrieves warranty cards that are expiring soon
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping("/getExpiringSoon")
     public ResponseEntity<List<WarrantyCard>> getExpiringSoon() {
         List<WarrantyCard> warrantyCards;
@@ -161,6 +166,7 @@ public class WarrantyCardController {
     }
 
     // Deletes a warranty card by its ID
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @DeleteMapping("/warrantyCard_id/{warrantyCard_id}")
     public ResponseEntity<String> deleteWarrantyCard(@PathVariable("warrantyCard_id") int id) {
         WarrantyCard warrantyCard;

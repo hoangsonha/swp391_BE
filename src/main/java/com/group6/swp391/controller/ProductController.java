@@ -74,21 +74,14 @@ public class ProductController {
     }
 
 
-    /**
-     * Method get all product
-     * @return list product
-     */
-    @GetMapping("/all_products")
-    public ResponseEntity<?> getAllProducts() {
-        List<Product> products = productServiceImp.getAllProducts();
-        return new ResponseEntity<>(products, HttpStatus.OK);
-    }
+
 
     /**
      * Method tim kim product by id
      * @param productID productId
      * @return product
      */
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER') or hasRole('STAFF')")
     @GetMapping("/product/{product_id}")
     public ResponseEntity<Product> getProductById(@PathVariable("product_id") String productID) {
         try {
@@ -107,6 +100,7 @@ public class ProductController {
      * @param  category_name
      * @return list product
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/category/{category_name}")
     public ResponseEntity<List<Product>> getProductByCategory(@PathVariable("category_name") String category_name) {
         try {

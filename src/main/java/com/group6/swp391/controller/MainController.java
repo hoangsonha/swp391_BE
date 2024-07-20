@@ -4,6 +4,7 @@ import com.group6.swp391.jwt.JWTToken;
 import com.group6.swp391.logout.ListToken;
 import com.group6.swp391.enums.EnumRoleName;
 import com.group6.swp391.model.Diamond;
+import com.group6.swp391.model.Product;
 import com.group6.swp391.model.Role;
 import com.group6.swp391.model.User;
 import com.group6.swp391.request.*;
@@ -11,6 +12,7 @@ import com.group6.swp391.response.ObjectResponse;
 import com.group6.swp391.response.TokenResponse;
 import com.group6.swp391.security.CustomUserDetail;
 import com.group6.swp391.service.DiamondService;
+import com.group6.swp391.service.ProductService;
 import com.group6.swp391.service.RoleService;
 import com.group6.swp391.service.UserService;
 import jakarta.mail.MessagingException;
@@ -53,6 +55,7 @@ public class MainController {
     @Autowired private ListToken listToken;
     @Autowired private BCryptPasswordEncoder bCryptPasswordEncoder;
     @Autowired private DiamondService diamondService;
+    @Autowired private ProductService productService;
 
     @Value("${frontend.url}")
     private String urlRedirect;
@@ -201,7 +204,30 @@ public class MainController {
     }
 
 
+    /**
+     * Method get all product
+     * @return list product
+     */
+    @GetMapping("/all_products")
+    public ResponseEntity<?> getAllProducts() {
+        List<Product> products = productService.getAllProducts();
+        return new ResponseEntity<>(products, HttpStatus.OK);
+    }
 
+    @GetMapping("/all_diamonds")
+    public ResponseEntity<?> getAllDiamonds() {
+        List<Diamond> diamonds;
+        try {
+            diamonds = diamondService.getAllDiamond();
+            if (diamonds == null || diamonds.isEmpty()) {
+                throw new RuntimeException("Diamond list is empty!");
+            } else {
+                return ResponseEntity.ok(diamonds);
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Get all diamonds failed");
+        }
+    }
 
 
 

@@ -1,5 +1,6 @@
 package com.group6.swp391.controller;
 
+import com.group6.swp391.enums.EnumOrderStatus;
 import com.group6.swp391.model.Order;
 import com.group6.swp391.response.NewOrderRespone;
 import com.group6.swp391.response.OrderRespone;
@@ -27,7 +28,7 @@ public class DeliveryController {
     @PreAuthorize("hasRole('DELIVERY')")
     @GetMapping("/pending_delivery")
     public ResponseEntity<List<Order>> getPendingDeliveryOrders() {
-        List<Order> orders = orderService.getOrdersByStatus("Chờ giao hàng");
+        List<Order> orders = orderService.getOrdersByStatus(EnumOrderStatus.Chờ_giao_hàng.name().replaceAll("_", " "));
         return ResponseEntity.ok(orders);
     }
 

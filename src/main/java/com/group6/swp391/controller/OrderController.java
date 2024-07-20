@@ -33,6 +33,7 @@ public class OrderController {
     @Autowired ProductCustomizeServiceImp productCustomizeServiceImp;
     @Autowired OrderServiceImp orderServiceImp;
 
+    @PreAuthorize("hasRole('USER')")
     @DeleteMapping("/delete_order/{id}")
     public ResponseEntity<?> deleteOrder(@PathVariable int id, @RequestBody ConfirmOrderRequest confirmOrderRequest) {
         try {
@@ -47,6 +48,7 @@ public class OrderController {
      * Method tinh tong so don hang moi voi trang thai dang doi xac nhan
      * @return number
      */
+    @PreAuthorize("hasRole('USER') or hasRole('STAFF')")
     @GetMapping("/orderpending")
     public ResponseEntity<Integer> countOrderPending() {
         try {
@@ -65,6 +67,7 @@ public class OrderController {
      * Method tinh tong so don hang voi trang thai dang doi thanh toan
      * @return number
      */
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/orderWaitPay/{user_id}")
     public ResponseEntity<Integer> countOrderWaitPay(@PathVariable("user_id") int id) {
         try {
@@ -88,6 +91,7 @@ public class OrderController {
      * dua vao trang thasi de thuc hien mot so quy trinh nhu tao diem,...
      * @return message success or fail
      */
+    @PreAuthorize("hasRole('USER') or hasRole('STAFF')")
     @PutMapping("/update_status/{order_id}")
     public ResponseEntity<?> updateStatusOrder(@PathVariable("order_id") int id, @RequestBody ConfirmOrderRequest confirmOrderRequest) {
         try {
@@ -152,12 +156,13 @@ public class OrderController {
      * Method get all order
      * @return list order
      */
+    @PreAuthorize("hasRole('USER') or hasRole('STAFF') or hasRole('ADMIN') or hasRole('DELIVERY')")
     @GetMapping("/all_orders")
     public ResponseEntity<?> getAllOrders() {
         return ResponseEntity.ok(orderService.getAllOrder());
     }
 
-    //wait check format JSON,..
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/orders_by_diamond/{id}")
     public ResponseEntity<?> getOrdersByDiamondID(@PathVariable String id) {
         try {
@@ -173,7 +178,7 @@ public class OrderController {
      * @param id orderid
      * @return order
      */
-    //wait check format JSON,..
+    @PreAuthorize("hasRole('USER') or hasRole('STAFF') or hasRole('DELIVERY')")
     @GetMapping("/{order_id}")
     public ResponseEntity<?> getOrdersById(@PathVariable("order_id") int id) {
         try {
@@ -203,8 +208,7 @@ public class OrderController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
-    //wait check format JSON,..
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/order_details_by_order/{id}")
     public ResponseEntity<?> getOrderDetailsByOrderID(@PathVariable int id) {
         try {
@@ -225,6 +229,7 @@ public class OrderController {
      * @param id userId
      * @return List order
      */
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/orders_by_user/{id}")
     public ResponseEntity<?> getOrdersByUserID(@PathVariable int id) {
         try {
@@ -259,6 +264,7 @@ public class OrderController {
      * Method get order with status cho xac nhan
      * @return list new order
      */
+    @PreAuthorize("hasRole('STAFF')")
     @GetMapping("/newest_order")
     public ResponseEntity<?> getNewestOrder() {
         try {
@@ -300,6 +306,7 @@ public class OrderController {
      * Method get order by status
      * @return list order by status
      */
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/orders_by_status/{status}")
     public ResponseEntity<?> getOrdersByStatus(@PathVariable String status) {
         try {
@@ -363,22 +370,22 @@ public class OrderController {
             newOrder.setDiscount(orderRequest.getDiscount());
 
 
-            Map<Integer, Integer> countByStaffAdvised = getCountByStaffAdvised();
+//            Map<Integer, Integer> countByStaffAdvised = getCountByStaffAdvised();
+//
+//
+//            for(Integer staffID : countByStaffAdvised.keySet()) {
+//
+//            }
 
 
-            for(Integer staffID : countByStaffAdvised.keySet()) {
-
-            }
-
-
-            List<Order> list_order = orderService.getAllOrder();
-            List<User> lists = new ArrayList<>();
-            for(Order liOrders : list_order) {
-                if(liOrders.getStatus().toLowerCase().equals((EnumOrderStatus.Chờ_xác_nhận).name().replaceAll("_", " ").toLowerCase())) {
-                    User user = userService.getUserByID(liOrders.getStaffID().getUserID());
-                    lists.add(user);
-                }
-            }
+//            List<Order> list_order = orderService.getAllOrder();
+//            List<User> lists = new ArrayList<>();
+//            for(Order liOrders : list_order) {
+//                if(liOrders.getStatus().toLowerCase().equals((EnumOrderStatus.Chờ_xác_nhận).name().replaceAll("_", " ").toLowerCase())) {
+//                    User user = userService.getUserByID(liOrders.getStaffID().getUserID());
+//                    lists.add(user);
+//                }
+//            }
 
 
             Cart existingCart = cartService.getCart(existingUser.getUserID());
@@ -445,7 +452,7 @@ public class OrderController {
         return countByStaffAdvised;
     }
 
-    public boolean checkStaffProcessingOrder(User user) {
+    private boolean checkStaffProcessingOrder(User user) {
         boolean check = false;
         List<Order> list_order = orderService.getAllOrder();
         for(Order order : list_order) {

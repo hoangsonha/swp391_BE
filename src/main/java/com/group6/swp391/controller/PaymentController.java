@@ -60,7 +60,8 @@ public class PaymentController {
                 String successUrl = request.getRequestURL().toString().replace(request.getServletPath(), "") + "/payment/paypal/success?orderID=" + paymentRequest.getOrderID();
                 try {
                     Order order = orderService.getOrderByOrderID(Integer.parseInt(paymentRequest.getOrderID()));
-                    order.setDelivery(paymentRequest.isDelivery());
+                    boolean check = Boolean.parseBoolean(paymentRequest.getIsDelivery());
+                    order.setDelivery(check);
                     orderService.save(order);
                         String orderStatus = EnumOrderStatus.Chờ_thanh_toán.name();
                         if(order != null && order.getStatus().equals(orderStatus.replaceAll("_", " "))) {
@@ -80,7 +81,8 @@ public class PaymentController {
             } else if(paymentRequest.getPaymentMethod().equals("vnpay") && EnumPaymentMethod.checkExistPaymentMethod(paymentRequest.getPaymentMethod())) {
                 try {
                     Order order = orderService.getOrderByOrderID(Integer.parseInt(paymentRequest.getOrderID()));
-                    order.setDelivery(paymentRequest.isDelivery());
+                    boolean check = Boolean.parseBoolean(paymentRequest.getIsDelivery());
+                    order.setDelivery(check);
                     orderService.save(order);
                     String orderStatus = EnumOrderStatus.Chờ_thanh_toán.name();
                     if(order.getStatus().equals(orderStatus.replaceAll("_", " ")) && order != null) {

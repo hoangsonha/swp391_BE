@@ -66,6 +66,7 @@ public class ProductCustomizeController {
      * @param id productcustomizeId
      * @return productcustomize
      */
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/productcustomeize_id/{id}")
     public ResponseEntity<ProductCustomize> getProductCustomById(@PathVariable("id") String id) {
         try {
@@ -83,6 +84,7 @@ public class ProductCustomizeController {
      * method delete customize
      * @return message success or fail
      */
+    @PreAuthorize("hasRole('USER')")
     @DeleteMapping("/delete/{productcustomize_id}")
     public ResponseEntity<String> deleteProductCustomById(@PathVariable("productcustomize_id") String id) {
         try {
@@ -103,6 +105,7 @@ public class ProductCustomizeController {
      * @param id productcustomizeId
      * @return message success or fail
      */
+    @PreAuthorize("hasRole('USER')")
     @PutMapping("update/{productcustomize_id}")
     public ResponseEntity<?> updateProductCustome(@RequestBody ProductCustomize productCustomize,
                                                   @PathVariable("productcustomize_id") String id) {
@@ -127,6 +130,7 @@ public class ProductCustomizeController {
      * method get all customize
      * @return list customize
      */
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/all_productcustomize")
     public ResponseEntity<List<ProductCustomize>> getAllProductCustomize() {
         try {

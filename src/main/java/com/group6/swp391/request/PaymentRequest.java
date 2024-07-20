@@ -27,5 +27,5 @@ public class PaymentRequest {
     @Size(max = 6, min = 5, message = "Phương thức thanh toán phải từ 5 tới 6 kí tự")
     private String paymentMethod;
 
-    private boolean isDelivery;
+    private String isDelivery;
 }

@@ -12,6 +12,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ public class FeedbackController {
 
     // Method to get all feedbacks
     // Returns a list of all feedbacks or an appropriate error message
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('STAFF') ")
     @GetMapping("/all_feedbacks")
     public ResponseEntity<?> getAllFeedbacks() {
         List<Feedback> feedbacks;
@@ -46,6 +48,7 @@ public class FeedbackController {
 
     // Method to get feedbacks by diamond ID
     // Accepts a diamond ID as a path variable and returns a list of feedbacks or an error message
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('STAFF') ")
     @GetMapping("/feedbacks_by_diamond/{id}")
     public ResponseEntity<?> getFeedbacksByDiamondID(@PathVariable String id) {
         List<Feedback> feedbacks;
@@ -65,6 +68,7 @@ public class FeedbackController {
 
     // Method to get feedbacks by user ID
     // Accepts a user ID as a path variable and returns a list of feedbacks or an error message
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('STAFF') ")
     @GetMapping("/feedbacks_by_user/{id}")
     public ResponseEntity<?> getFeedbacksByUserID(@PathVariable int id) {
         List<Feedback> feedbacks;
@@ -84,6 +88,7 @@ public class FeedbackController {
 
     // Method to get feedbacks by product ID
     // Accepts a product ID as a path variable and returns a list of feedbacks or an error message
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('STAFF')")
     @GetMapping("/feedbacks_by_product/{id}")
     public ResponseEntity<?> getFeedbacksByProductID(@PathVariable String id) {
         List<Feedback> feedbacks;
@@ -105,6 +110,7 @@ public class FeedbackController {
 
     // Method to get the newest feedbacks
     // Accepts an optional limit as a request parameter (default is 10) and returns the latest feedbacks
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('STAFF') ")
     @GetMapping("/newest_feedbacks")
     public ResponseEntity<?> getNewestFeedbacks(@RequestParam(defaultValue = "10") int limit) {
         try {
@@ -121,6 +127,7 @@ public class FeedbackController {
 
     // Method to delete a feedback by ID
     // Accepts a feedback ID as a path variable and returns a success message or an error message
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('STAFF') ")
     @DeleteMapping("/delete_feedback/{id}")
     public ResponseEntity<?> deleteFeedback(@PathVariable int id) {
         try {
@@ -140,6 +147,7 @@ public class FeedbackController {
     // Method to submit new feedback
     // Accepts a list of FeedbackRequest objects in the request body and
     // returns the saved feedbacks or an error message
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('STAFF') ")
     @PostMapping("/submit_feedback")
     public ResponseEntity<?> submitFeedback(@RequestBody @Valid List<FeedbackRequest> feedbackRequests) {
         try {
@@ -158,6 +166,7 @@ public class FeedbackController {
 
     // Method to get the average rating for a product by product ID
     // Accepts a product ID as a path variable and returns the average rating or an error message
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('STAFF') ")
     @GetMapping("/average_rating_product/{productID}")
     public ResponseEntity<?> getAverageRatingForProduct(@PathVariable String productID) {
         try {
@@ -172,6 +181,7 @@ public class FeedbackController {
 
     // Method to get the average rating for a diamond by diamond ID
     // Accepts a diamond ID as a path variable and returns the average rating or an error message
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('STAFF') ")
     @GetMapping("/average_rating_diamond/{diamondID}")
     public ResponseEntity<?> getAverageRatingForDiamond(@PathVariable String diamondID) {
         try {
@@ -191,6 +201,7 @@ public class FeedbackController {
      * @param id orderId
      * @return list product
      */
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('STAFF') ")
     @GetMapping("/get_model_detail/{order_id}")
     public ResponseEntity<ObjectResponse> getProductFeedback(@PathVariable("order_id") int id) {
         try {

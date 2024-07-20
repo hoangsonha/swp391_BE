@@ -7,6 +7,7 @@ import com.group6.swp391.repository.OrderRepository;
 import com.group6.swp391.repository.PointsRepository;
 import com.group6.swp391.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.awt.*;
@@ -21,6 +22,8 @@ public class PointsServiceImp implements PointsService {
     @Autowired
     PointsRepository pointsRepository;
 
+    @Value("${devide.point}") private int devidePoint;
+
     @Override
     public Points createPoints(int userId, int orderId) {
         try {
@@ -31,10 +34,10 @@ public class PointsServiceImp implements PointsService {
             }
             Points points = pointsRepository.findByOrderId(orderId);
             if(points != null){
-                points.setPoint(orderExisting.getPrice()/100000000);
+                points.setPoint(orderExisting.getPrice()/devidePoint);
             } else {
                 points = new Points();
-                points.setPoint(orderExisting.getPrice()/100000000);
+                points.setPoint(orderExisting.getPrice()/devidePoint);
                 points.setUser(userExisting);
                 points.setOrder(orderExisting);
             }

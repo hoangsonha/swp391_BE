@@ -7,6 +7,7 @@ import com.group6.swp391.service.DiamondServiceImp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,6 +27,7 @@ public class DiamondController {
      * @param diamond diamond
      * @return success or fail
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/create_diamond")
     public ResponseEntity<?> createDiamond(@RequestBody Diamond diamond) {
         Diamond newDiamond = null;
@@ -52,6 +54,7 @@ public class DiamondController {
      * Method get all diamond with status 'true'
      * @return list diamond
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/get_all_diamond")
     public ResponseEntity<ObjectResponse> getAllDiamond() {
         try {
@@ -70,6 +73,7 @@ public class DiamondController {
      * @param diamondID
      * @return diamond
      */
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER') or hasRole('STAFF')")
     @GetMapping("/diamond_id/{diamond_id}")
     public ResponseEntity<Diamond> getDiamondByDiamondID(@PathVariable("diamond_id") String diamondID) {
         try {
@@ -88,26 +92,15 @@ public class DiamondController {
      * Method get all diamond
      * @return list diamond
      */
-    @GetMapping("/all_diamonds")
-    public ResponseEntity<?> getAllDiamonds() {
-        List<Diamond> diamonds;
-        try {
-            diamonds = diamondService.getAllDiamond();
-            if (diamonds == null || diamonds.isEmpty()) {
-                throw new RuntimeException("Diamond list is empty!");
-            } else {
-                return ResponseEntity.ok(diamonds);
-            }
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Get all diamonds failed");
-        }
-    }
+
+
 
     /**
      * Method update kim cuong
      * @param diamond
      * @return success or fail
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/update_diamond/{id}")
     public ResponseEntity<?> updateDiamond(@RequestBody Diamond diamond, @PathVariable String id) {
         try {
@@ -146,6 +139,7 @@ public class DiamondController {
      * @param id diamondId
      * @return message success or fail
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/delete_diamond/{id}")
     public ResponseEntity<?> deleteDiamond(@PathVariable("id") String id) {
         try {
@@ -156,29 +150,31 @@ public class DiamondController {
         }
     }
 
-    /**
-     * Method tim kim diamond dua tren shape or dismensions
-     * @param  shape dismensions
-     * @return list diamond
-     */
-    @GetMapping("/get_condition")
-    public ResponseEntity<?> getCondition (
-            @RequestParam("shape") String shape,
-            @RequestParam("dimensions") float dimensions) {
-        List<Diamond> list = diamondServiceImp.getByCondition(shape, dimensions);
-
-        if (list == null || list.isEmpty()) {
-            return ResponseEntity.badRequest().body("Diamond list is empty");
-        } else {
-            return ResponseEntity.ok(list);
-        }
-    }
+//    /**
+//     * Method tim kim diamond dua tren shape or dismensions
+//     * @param  shape dismensions
+//     * @return list diamond
+//     */
+//
+//    @GetMapping("/get_condition")
+//    public ResponseEntity<?> getCondition (
+//            @RequestParam("shape") String shape,
+//            @RequestParam("dimensions") float dimensions) {
+//        List<Diamond> list = diamondServiceImp.getByCondition(shape, dimensions);
+//
+//        if (list == null || list.isEmpty()) {
+//            return ResponseEntity.badRequest().body("Diamond list is empty");
+//        } else {
+//            return ResponseEntity.ok(list);
+//        }
+//    }
 
     /**
      * Method xoa nhiu doi tuong cung luc
      * @param diamondIds diamondIds
      * @return message success or fail
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/delete_diamonds")
     public ResponseEntity<String> deleteDiamonds(@RequestBody List<String> diamondIds) {
         try {
@@ -200,22 +196,22 @@ public class DiamondController {
         }
     }
 
-    /**
-     * Method tim kim diamond duadismensions
-     * @param dimension dismensions
-     * @return list diamond
-     */
-    @GetMapping("/{dimension}")
-    public ResponseEntity<ObjectResponse> getByDimension(@PathVariable("dimension") float dimension) {
-        try {
-            List<Diamond> diamonds = diamondService.getByDimension(dimension);
-            if(diamonds == null || diamonds.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "no data", null));
-            }
-            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "List diamond search by dimension", diamonds));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Exception", e.getMessage()));
-        }
-    }
+//    /**
+//     * Method tim kim diamond duadismensions
+//     * @param dimension dismensions
+//     * @return list diamond
+//     */
+//    @GetMapping("/{dimension}")
+//    public ResponseEntity<ObjectResponse> getByDimension(@PathVariable("dimension") float dimension) {
+//        try {
+//            List<Diamond> diamonds = diamondService.getByDimension(dimension);
+//            if(diamonds == null || diamonds.isEmpty()) {
+//                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "no data", null));
+//            }
+//            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "List diamond search by dimension", diamonds));
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Exception", e.getMessage()));
+//        }
+//    }
 
 }
