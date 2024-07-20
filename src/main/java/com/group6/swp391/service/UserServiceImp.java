@@ -38,65 +38,48 @@ import java.util.*;
 @Slf4j
 public class UserServiceImp implements UserService {
 
-    private WebDriver webDriver;
+    @Value(value = "${recaptcha.secretKey}")
+    private String recaptchaSecretKey;
 
-    @Autowired private UserRepository userRepository;
-    @Autowired private RoleService roleService;
-    @Autowired private PaymentService paymentService;
-    @Autowired private JavaMailSender javaMailSender;
-    @Autowired private RestTemplate restTemplate;
-    @Autowired private BCryptPasswordEncoder bCryptPasswordEncoder;
-    @Autowired private CrawledDataProperties crawledDataProperties;
+    @Value(value = "${recaptcha.url}")
+    private String recaptchaUrl;
 
     private Map<String, String> otpMap = new HashMap<>();
 
-    @Value("${recaptcha.secretKey}") private String recaptchaSecretKey;
-    @Value("${recaptcha.url}") private String recaptchaUrl;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private RoleService roleService;
+    @Autowired
+    private PaymentService paymentService;
+    @Autowired
+    private JavaMailSender javaMailSender;
+    @Autowired
+    private RestTemplate restTemplate;
+    @Autowired private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    @Value("${sms.token}") private String smsToken;
-    @Value("${sms.sender}") private String smsSender;
-    @Value("${sms.type}") private int smsType;
+    @Autowired private CrawledDataProperties crawledDataProperties;
 
-    @Value("${spring.mail.username}") private String sendMail;
-
-    @Value("${mail.url.verify}") private String mailUrlVerify;
-    @Value("${mail.title.verify}") private String titleVerifyMail;
-    @Value("${mail.senderName.verify}") private String senderNameVerifyMail;
-
-    @Value("${mail.title.resetPassword}") private String titleResetPasswordMail;
-    @Value("${mail.senderName.resetPassword}") private String senderNameResetPasswordMail;
-
-    @Value("${mail.title.offline}") private String titleOfflineMail;
-    @Value("${mail.senderName.offline}") private String senderNameOfflineMail;
-
-    @Value("${mail.title.happyBirthDay}") private String titleHappyBirthDayMail;
-    @Value("${mail.senderName.happyBirthDay}") private String senderNameHappyBirthDayMail;
-
-    @Value("${mail.title.invoice}") private String titleInvoiceMail;
-    @Value("${mail.senderName.invoice}") private String senderNameInvoiceMail;
-
-    @Value("${crawl.data.url}") private String crawlDataUrl;
-    @Value("${crawl.data.elementIDSearch}") private String crawlElementIDSearch;
-    @Value("${crawl.data.sendKeys}") private String crawlSendKeys;
-    @Value("${crawl.data.elementGetText}") private String crawlElementGetText;
-
+    private WebDriver webDriver;
 
     // CRUD
 
 
     @Override
     public List<User> findAll(String role) {
+        List<User> lists = userRepository.findAll();
         List<User> listsByRole = userRepository.findAll();
         Role role_admin = roleService.getRoleByRoleName(EnumRoleName.ROLE_ADMIN);
         Role role_delivery = roleService.getRoleByRoleName(EnumRoleName.ROLE_DELIVERY);
-        if (role.equals(EnumRoleName.ROLE_STAFF.name())) {
-            for (User user : userRepository.findAll()) {
+
+        if (role.equals("staff")) {
+            for (User user : lists) {
                 if (user.getRole().equals(role_admin) || user.getRole().equals(role_delivery)) {
                     listsByRole.remove(user);
                 }
             }
-        } else if (role.equals(EnumRoleName.ROLE_ADMIN.name())) {
-            return userRepository.findAll();
+        } else if (role.equals("admin")) {
+            return lists;
         }
         return listsByRole;
     }
@@ -141,14 +124,14 @@ public class UserServiceImp implements UserService {
 
 
     @Override
-    public boolean sendVerificationEmail(User user, String siteUrl) {
+    public boolean sendVerificationEmail(User user, String siteUrl) throws MessagingException, UnsupportedEncodingException {
         if (user.getEmail() == null) {
             return false;
         }
         try {
-            String verifyURL = siteUrl + mailUrlVerify + user.getCodeVerify();
+            String verifyURL = siteUrl + "/public/verify?code=" + user.getCodeVerify();
 
-            String mail = "<body \n" +
+            String mai = "<body \n" +
                     "    style=\"font-family: Arial, sans-serif;\n" +
                     "            background-color: #f4f4f4;\n" +
                     "            margin: 0;\n" +
@@ -204,18 +187,18 @@ public class UserServiceImp implements UserService {
                     "    </div>\n" +
                     "</body>";
 
-            String title = titleVerifyMail;
-            String senderName = senderNameVerifyMail;
+            String title = "Please verify your registration";
+            String senderName = "Group6";
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
-            helper.setFrom(sendMail, senderName);
+            helper.setFrom("hoangsonhadiggory@gmail.com", senderName);
             helper.setTo(user.getEmail());
             helper.setSubject(title);
-            helper.setText(mail, true);
+            helper.setText(mai, true);
             javaMailSender.send(mimeMessage);
             return true;
         } catch (Exception e) {
-            log.error("Can not send mail {}", e.toString());
+            log.error("Cannot send mail {}", e.toString());
             return false;
         }
     }
@@ -250,12 +233,51 @@ public class UserServiceImp implements UserService {
         return response.isSuccess();
     }
 
+//    public boolean loginGoogle(String code) {
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+//
+////        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+////        map.add("code", code);
+////        map.add("client_id", "478830836024-e2fa5s2erqeal7bupi7tim4ap64d0cha.apps.googleusercontent.com");
+////        map.add("client_secret", "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");
+////        map.add("redirect_uri", "http://localhost:8080/login/oauth2/code/google/");
+////        map.add("grant_type", "authorization_code");
+//
+//         String TOKEN_URL = "https://oauth2.googleapis.com/token";
+//        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(TOKEN_URL)
+//                .queryParam("code", code)
+//                .queryParam("client_id", "478830836024-e2fa5s2erqeal7bupi7tim4ap64d0cha.apps.googleusercontent.com")
+//                .queryParam("client_secret", "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")
+//                .queryParam("redirect_uri", "http://localhost:8080/login/oauth2/code/google/")
+//                .queryParam("grant_type", "authorization_code");
+//
+//        HttpEntity<String> entity = new HttpEntity<>(headers);
+//        ResponseEntity<Map> response = restTemplate.exchange(
+//                builder.toUriString(),
+//                HttpMethod.POST,
+//                entity,
+//                Map.class
+//        );
+//
+//        if (response.getStatusCode().is2xxSuccessful()) {
+//            Map<String, String> responseBody = response.getBody();
+//            String accessToken = responseBody.get("access_token");
+//            System.out.println("Access Token: " + accessToken);
+//            // Redirect to homepage or another endpoint
+//            return true;
+//        } else {
+//            // Handle error
+//            return false;
+//        }
+//    }
+
 
     // function set password
 
 
     @Override
-    public boolean sendResetPasswordEmail(OTPRequest otpRequest, String siteUrl) {
+    public boolean sendResetPasswordEmail(OTPRequest otpRequest, String siteUrl) throws MessagingException, UnsupportedEncodingException {
         try {
             String phoneOrEmail = otpRequest.getEmailOrPhone();
             User user = null;
@@ -312,11 +334,11 @@ public class UserServiceImp implements UserService {
                     "        </div>\n" +
                     "    </div>\n" +
                     "</body>";
-            String title = titleResetPasswordMail;
-            String senderName = senderNameResetPasswordMail;
+            String title = "Please verify your registration";
+            String senderName = "Group6";
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
-            helper.setFrom(sendMail, senderName);
+            helper.setFrom("hoangsonhadiggory@gmail.com", senderName);
             helper.setTo(user.getEmail());
             helper.setSubject(title);
             helper.setText(mai, true);
@@ -380,11 +402,12 @@ public class UserServiceImp implements UserService {
     public boolean sendSMS(OTPRequest otpRequest) {
         try {
             String phoneOrEmail = otpRequest.getEmailOrPhone();
+            int type = 5;
             String otp = generatedNumber();
             String content = "Dear Customer, Absolutely do not provide this authentication Code to anyone. Enter OTP code" + otp + " to reset the password";
-            String sender = smsSender;
-            SpeedSMSAPI api = new SpeedSMSAPI(smsToken);
-            String result = api.sendSMS(phoneOrEmail, content, smsType, sender);
+            String sender = "07eda63bd942bf35";
+            SpeedSMSAPI api = new SpeedSMSAPI("BeAfmVJjdj9CrAhg7oU49zqMpC9pV83r");
+            String result = api.sendSMS(phoneOrEmail, content, type, sender);
             otpMap.put(phoneOrEmail, otp);
             return true;
         } catch (Exception e) {
@@ -535,12 +558,10 @@ public class UserServiceImp implements UserService {
         return check;
     }
 
-
     // function automation send email (System handler)
 
-
     @Override
-    public List<Integer> sendNotificationEmail() {
+    public List<Integer> sendNotificationEmail() throws MessagingException, UnsupportedEncodingException {
         List<Integer> list_int = new ArrayList<>();
         boolean check = false;
         List<User> lists = userRepository.findAll();
@@ -574,7 +595,7 @@ public class UserServiceImp implements UserService {
         return list_int;
     }
 
-    private boolean checkNumberOfReceivedEmailOffline(User user, int monthOff) {
+    private boolean checkNumberOfReceivedEmailOffline(User user, int monthOff) throws MessagingException, UnsupportedEncodingException {
         boolean check = false;
         if(user.getNumberOFReceiveEmailOffline() == 0) {
             if(monthOff == 1) {
@@ -613,7 +634,7 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public boolean sendNotificationEmailHappyBirthDay() {
+    public boolean sendNotificationEmailHappyBirthDay() throws MessagingException, UnsupportedEncodingException {
         boolean check = false;
         List<User> lists = userRepository.findAll();
         for (User user : lists) {
@@ -632,7 +653,7 @@ public class UserServiceImp implements UserService {
         userRepository.setTimeOfflineAt(date, email);
     }
 
-    public boolean mailOffline(User user, int monthOff) {
+    public boolean mailOffline(User user, int monthOff) throws MessagingException, UnsupportedEncodingException {
         if (user.getEmail() == null) {
             return false;
         }
@@ -693,11 +714,11 @@ public class UserServiceImp implements UserService {
                     "    </div>\n" +
                     "</body>";
 
-            String title = titleOfflineMail;
-            String senderName = senderNameOfflineMail;
+            String title = "Chăm sóc khách hàng";
+            String senderName = "Auto notification";
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
-            helper.setFrom(sendMail, senderName);
+            helper.setFrom("hoangsonhadiggory@gmail.com", senderName);
             helper.setTo(user.getEmail());
             helper.setSubject(title);
             helper.setText(mai, true);
@@ -710,7 +731,7 @@ public class UserServiceImp implements UserService {
         }
     }
 
-    public boolean emailHappyBirth(User user) {
+    public boolean emailHappyBirth(User user) throws MessagingException, UnsupportedEncodingException {
         if (user.getEmail() == null) {
             return false;
         }
@@ -761,11 +782,11 @@ public class UserServiceImp implements UserService {
                     "    </div>\n" +
                     "</body>";
 
-            String title = titleHappyBirthDayMail;
-            String senderName = senderNameHappyBirthDayMail;
+            String title = "Happy Birth Day";
+            String senderName = "Auto notification";
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
-            helper.setFrom(sendMail, senderName);
+            helper.setFrom("hoangsonhadiggory@gmail.com", senderName);
             helper.setTo(user.getEmail());
             helper.setSubject(title);
             helper.setText(mai, true);
@@ -794,14 +815,12 @@ public class UserServiceImp implements UserService {
         return check;
     }
 
-
     // Invoice
 
-
     @Override
-    public void sendInvoice(Order order) {
+    public boolean sendInvoice(Order order) {
         if (order == null) {
-            return;
+            return false;
         }
         try {
             NumberFormat nb = NumberFormat.getInstance();
@@ -1039,24 +1058,25 @@ public class UserServiceImp implements UserService {
                     "                        </section>                       \n" +
                     "                      </body>";
 
-            String title = titleInvoiceMail;
-            String senderName = senderNameInvoiceMail;
+            String title = "Invoice";
+            String senderName = "Invoice";
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
-            helper.setFrom(sendMail, senderName);
+            helper.setFrom("hoangsonhadiggory@gmail.com", senderName);
             helper.setTo(order.getEmail());
             helper.setSubject(title);
             helper.setText(mail, true);
 
             javaMailSender.send(mimeMessage);
+            return true;
+
         } catch (Exception e) {
             log.error("Error at send invoice {}", e.toString());
+            return false;
         }
     }
 
-
     // crawlData
-
 
     @Override
     public boolean crawlData() throws InterruptedException {
@@ -1067,15 +1087,15 @@ public class UserServiceImp implements UserService {
         webDriver.manage().window().maximize();
         Thread.sleep(5000);
 
-        webDriver.get(crawlDataUrl);
+        webDriver.get("https://google.com");
         Thread.sleep(5000);
 
-        WebElement element = webDriver.findElement(By.id(crawlElementIDSearch));
-        element.sendKeys(crawlSendKeys);
+        WebElement element = webDriver.findElement(By.id("APjFqb"));
+        element.sendKeys("giá dola ngày hôm nay");
         element.submit();
 
         Thread.sleep(5000);
-        WebElement element_price = webDriver.findElement(By.xpath(crawlElementGetText));
+        WebElement element_price = webDriver.findElement(By.xpath("//span[@class='DFlfde SwHCTb']"));
 
         String[] split = element_price.getText().split(",");
         String price = split[0];
@@ -1089,48 +1109,5 @@ public class UserServiceImp implements UserService {
         }
         return false;
     }
-
-
-
-
-//        public boolean loginGoogle(String code) {
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-//
-////        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-////        map.add("code", code);
-////        map.add("client_id", "478830836024-e2fa5s2erqeal7bupi7tim4ap64d0cha.apps.googleusercontent.com");
-////        map.add("client_secret", "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");
-////        map.add("redirect_uri", "http://localhost:8080/login/oauth2/code/google/");
-////        map.add("grant_type", "authorization_code");
-//
-//         String TOKEN_URL = "https://oauth2.googleapis.com/token";
-//        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(TOKEN_URL)
-//                .queryParam("code", code)
-//                .queryParam("client_id", "478830836024-e2fa5s2erqeal7bupi7tim4ap64d0cha.apps.googleusercontent.com")
-//                .queryParam("client_secret", "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")
-//                .queryParam("redirect_uri", "http://localhost:8080/login/oauth2/code/google/")
-//                .queryParam("grant_type", "authorization_code");
-//
-//        HttpEntity<String> entity = new HttpEntity<>(headers);
-//        ResponseEntity<Map> response = restTemplate.exchange(
-//                builder.toUriString(),
-//                HttpMethod.POST,
-//                entity,
-//                Map.class
-//        );
-//
-//        if (response.getStatusCode().is2xxSuccessful()) {
-//            Map<String, String> responseBody = response.getBody();
-//            String accessToken = responseBody.get("access_token");
-//            System.out.println("Access Token: " + accessToken);
-//            // Redirect to homepage or another endpoint
-//            return true;
-//        } else {
-//            // Handle error
-//            return false;
-//        }
-//    }
-
 
 }

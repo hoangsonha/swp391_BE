@@ -3,7 +3,6 @@ package com.group6.swp391.service;
 import com.group6.swp391.enums.EnumClarityName;
 import com.group6.swp391.enums.EnumColorName;
 import com.group6.swp391.enums.EnumShapeName;
-import com.group6.swp391.enums.EnumSortSearchAdvance;
 import com.group6.swp391.model.Diamond;
 import com.group6.swp391.repository.DiamondRepository;
 import com.group6.swp391.request.SearchAdvanceRequest;
@@ -252,7 +251,7 @@ public class DiamondServiceImp implements DiamondService {
 
 
         if(StringUtils.hasText(searchAdvanceRequest.getOptionPrice())) {
-            if(searchAdvanceRequest.getOptionPrice().toLowerCase().equals(EnumSortSearchAdvance.giá_từ_thấp_đến_cao.name().replaceAll("_", " "))) {
+            if(searchAdvanceRequest.getOptionPrice().toLowerCase().equals("giá từ thấp đến cao")) {
                 Collections.sort(lists_diamond, new Comparator<Diamond>() {
                     @Override
                     public int compare(Diamond d1, Diamond d2) {
@@ -262,7 +261,7 @@ public class DiamondServiceImp implements DiamondService {
                         return -1;
                     }
                 });
-            } else if(searchAdvanceRequest.getOptionPrice().toLowerCase().equals(EnumSortSearchAdvance.giá_từ_cao_đến_thấp.name().replaceAll("_", " "))) {
+            } else if(searchAdvanceRequest.getOptionPrice().toLowerCase().equals("giá từ cao đến thấp")) {
                 Collections.sort(lists_diamond, new Comparator<Diamond>() {
                     @Override
                     public int compare(Diamond d1, Diamond d2) {

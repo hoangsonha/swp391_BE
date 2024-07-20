@@ -8,14 +8,13 @@ import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@AllArgsConstructor
 public class MainSchedule {
-
-    @Autowired private Scheduler scheduler;
-    @Autowired private CommonUtils commonUtils;
+    private final Scheduler scheduler;
+    private final CommonUtils commonUtils;
 
     @PostConstruct
     public void startSchedule() throws SchedulerException {

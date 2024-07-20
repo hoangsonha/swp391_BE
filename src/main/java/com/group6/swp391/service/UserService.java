@@ -62,7 +62,7 @@ public interface UserService {
 
     public void setTimeOffline(Date date, String email);
 
-    public void sendInvoice(Order order);
+    public boolean sendInvoice(Order order);
 
     public boolean crawlData() throws InterruptedException;
 

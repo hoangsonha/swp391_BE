@@ -4,9 +4,7 @@ import com.group6.swp391.logout.ListToken;
 import com.group6.swp391.security.CustomUserDetail;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -20,21 +18,13 @@ public class JWTToken {
 
     @Autowired private ListToken listToken;
 
-    @Value("${jwt.expiration}")
-    private int JWT_EXPIRATION;
-
-    @Value("${jwt.secret}")
-    private String sceretString;
-
-    @Value("${jwt.algorithms}")
-    private String algorithm;
-
     private SecretKey SCRET_KEY;
+    private int JWT_EXPIRATION = 864000000;  // 10 ngay
 
-    @PostConstruct
-    public void init() {
+    public JWTToken() {
+        String sceretString = "753474857438754387594385743975348574893759843753498776576576575765634545435365346534645645364565465347657547465";
         byte[] keyBytes = Base64.getDecoder().decode(sceretString.getBytes(StandardCharsets.UTF_8));
-        this.SCRET_KEY = new SecretKeySpec(keyBytes, algorithm);
+        this.SCRET_KEY = new SecretKeySpec(keyBytes,"HmacSHA256" );
     }
 
     public String generatedToken(CustomUserDetail customUserDetail) {

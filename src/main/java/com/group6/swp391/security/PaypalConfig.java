@@ -12,7 +12,6 @@ import java.util.Map;
 
 @Configuration
 public class PaypalConfig {
-
     @Value("${paypal.client.app}")
     private String clientID;
     @Value("${paypal.client.secret}")

@@ -73,11 +73,13 @@ public class WebSecurityConfig {
 //                        .requestMatchers("/oauth2/**").permitAll()
 //                              .requestMatchers(HttpMethod.POST, "/ues", "/*").permitAll()
                         .anyRequest().authenticated())
+
                 .sessionManagement(m -> m.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .oauth2Login(oauth2 -> {
 //                    oauth2.loginPage("/public/login").permitAll();
                     oauth2.successHandler(customOAuth2AuthenticationSuccessHandler);
                 });
+
 
 
 //                .logout(logout -> logout.logoutUrl("/logout").addLogoutHandler(logoutHandler).logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext()));
@@ -88,19 +90,17 @@ public class WebSecurityConfig {
         return httpSecurity.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class).build();
     }
 
-    @Bean
-    public RestTemplate restTemplate(RestTemplateBuilder builder) {
-        return builder.build();
-    }
-
-
-
-//    @Bean
+    //    @Bean
 //    public AuthenticationProvider authenticationProvider() {
 //        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
 //        daoAuthenticationProvider.setUserDetailsService(customUserDetailService);
 //        daoAuthenticationProvider.setPasswordEncoder(bCryptPasswordEncoder());
 //        return daoAuthenticationProvider;
 //    }
+
+    @Bean
+    public RestTemplate restTemplate(RestTemplateBuilder builder) {
+        return builder.build();
+    }
 
 }

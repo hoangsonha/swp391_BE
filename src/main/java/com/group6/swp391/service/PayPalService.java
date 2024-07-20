@@ -19,28 +19,10 @@ import java.util.List;
 @Service
 @Slf4j
 public class PayPalService {
-
     @Autowired private APIContext apiContext;
     @Autowired private UserRepository userRepository;
+
     @Autowired private CrawledDataProperties priceInDola;
-
-    @Value("${paypal.currency}")
-    private String currency;
-
-    @Value("${paypal.tax}")
-    private String tax;
-
-    @Value("${paypal.shipping}")
-    private String shipping;
-
-    @Value("${paypal.countryCode}")
-    private String countryCode;
-
-    @Value("${paypal.verified}")
-    private String verified;
-
-    @Value("${paypal.successPayment}")
-    private String successPayment;
 
     public Payment createPayment(Order order,
                                  EnumPayPalPaymentMethod method,
@@ -49,12 +31,12 @@ public class PayPalService {
                                  String successURL) throws PayPalRESTException {
         Amount amount = new Amount();
         double priceToUSD = priceToUSD(order.getPrice());
-        amount.setCurrency(currency);
+        amount.setCurrency("USD");
 //        order.getPrice() = new BigDecimal(order.getPrice()).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
 
         Details details = new Details();
-        details.setShipping(shipping);
-        details.setTax(tax);
+        details.setShipping("0.00");
+        details.setTax("0.00");
         details.setSubtotal(String.format("%.2f", priceToUSD));
 
         amount.setTotal(String.format("%.2f", priceToUSD));
@@ -74,7 +56,7 @@ public class PayPalService {
         payerInfo.setEmail(user.getEmail());
         payerInfo.setFirstName(user.getFirstName());
         payerInfo.setLastName(user.getLastName());
-        payerInfo.setCountryCode(countryCode);
+        payerInfo.setCountryCode("VN");
 //        payerInfo.setPhone(user.getPhone());
         payerInfo.setPayerId(String.valueOf(user.getUserID()));
 
@@ -84,13 +66,8 @@ public class PayPalService {
         shippingAddress.setLine1(user.getAddress());
         payerInfo.setShippingAddress(shippingAddress);
 
-        boolean checkActive = user.isEnabled();
-        String actived = null;
-        if(checkActive) {
-            actived = verified;
-        }
         payer.setPayerInfo(payerInfo);
-        payer.setStatus(actived);
+        payer.setStatus("VERIFIED");
 
 //        ItemList itemList = new ItemList();
 //        List<Item> items = new ArrayList<>();
@@ -177,7 +154,7 @@ public class PayPalService {
 
             refund = sale.refund(apiContext, refund);
 
-            if (successPayment.equalsIgnoreCase(refund.getState())) {
+            if ("completed".equalsIgnoreCase(refund.getState())) {
                 return true;
             } else {
                 log.error("Error canceling payment {}", transactionId);
