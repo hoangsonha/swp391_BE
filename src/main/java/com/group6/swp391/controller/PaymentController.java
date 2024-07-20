@@ -11,6 +11,7 @@ import com.paypal.api.payments.Links;
 import com.paypal.api.payments.Payment;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -47,15 +48,20 @@ public class PaymentController {
     @Value("${frontend.url}")
     private String urlRedirect;
 
+    @Value("${vnpay.removeDecimal}")
+    private int removeDecimal;
+
     @PreAuthorize("hasRole('USER')")
     @PostMapping("/checkout")
-    public ResponseEntity<PaymentResponse> pay(@RequestBody PaymentRequest paymentRequest, HttpServletRequest request) {
+    public ResponseEntity<PaymentResponse> pay(@RequestBody @Valid PaymentRequest paymentRequest, HttpServletRequest request) {
         try {
             if(paymentRequest.getPaymentMethod().equals("paypal") && EnumPaymentMethod.checkExistPaymentMethod(paymentRequest.getPaymentMethod())) {
                 String cancelUrl = request.getRequestURL().toString().replace(request.getServletPath(), "") + "/payment/paypal/cancel?orderID=" + paymentRequest.getOrderID();
                 String successUrl = request.getRequestURL().toString().replace(request.getServletPath(), "") + "/payment/paypal/success?orderID=" + paymentRequest.getOrderID();
                 try {
                     Order order = orderService.getOrderByOrderID(Integer.parseInt(paymentRequest.getOrderID()));
+                    order.setDelivery(paymentRequest.isDelivery());
+                    orderService.save(order);
                         String orderStatus = EnumOrderStatus.Chờ_thanh_toán.name();
                         if(order != null && order.getStatus().equals(orderStatus.replaceAll("_", " "))) {
                             Payment payment = payPalService.createPayment(order, EnumPayPalPaymentMethod.paypal,
@@ -74,9 +80,12 @@ public class PaymentController {
             } else if(paymentRequest.getPaymentMethod().equals("vnpay") && EnumPaymentMethod.checkExistPaymentMethod(paymentRequest.getPaymentMethod())) {
                 try {
                     Order order = orderService.getOrderByOrderID(Integer.parseInt(paymentRequest.getOrderID()));
+                    order.setDelivery(paymentRequest.isDelivery());
+                    orderService.save(order);
                     String orderStatus = EnumOrderStatus.Chờ_thanh_toán.name();
                     if(order.getStatus().equals(orderStatus.replaceAll("_", " ")) && order != null) {
-                        long amount = (long) (order.getPrice()*100);
+                        //Số tiền cần thanh toán nhân với 100 để triệt tiêu phần thập phân trước khi gửi sang VNPAY
+                        long amount = (long) (order.getPrice() * removeDecimal);
                         double haveToPay = amount;
                         String link = vnPayService.getVNPay(haveToPay, request, paymentRequest.getOrderID());
                         return ResponseEntity.status(HttpStatus.OK).body(new PaymentResponse("Success", "Redirect payment page successfully", null, link));
@@ -109,7 +118,6 @@ public class PaymentController {
                     Date date = spm.parse(payment.getCreateTime());
                     String transactionID = payment.getTransactions().get(0).getRelatedResources().get(0).getSale().getId();
 //                  double paymentAmount = Double.parseDouble(payment.getTransactions().get(0).getAmount().getTotal());
-//                  double payAmount = Math.floor(paymentAmount * 25500);
                     double paymentAmount = order.getPrice();
                     double remainAmount = (order.getPrice() - paymentAmount);
                     double totalAmount = order.getPrice();
@@ -117,9 +125,12 @@ public class PaymentController {
                     com.group6.swp391.model.Payment payment_order = new com.group6.swp391.model.Payment(paymentAmount, order, date, remainAmount, totalAmount, transactionID, "Paypal", paymentStatusSuccess.replaceAll("_", " "));
                     paymentService.save(payment_order);
                     String orderStatusSuccess = EnumOrderStatus.Chờ_giao_hàng.name();
+                    if(!order.isDelivery()) {
+                        orderStatusSuccess = EnumOrderStatus.Đến_cửa_hàng_lấy.name();
+                    }
                     order.setStatus(orderStatusSuccess.replaceAll("_", " "));
                     orderService.save(order);
-                    boolean check = userService.sendInvoice(order);
+                    userService.sendInvoice(order);
                     response.sendRedirect(urlRedirect);
                     return ResponseEntity.status(HttpStatus.OK).body(new PaymentResponse("Success", "Payment paypal successfully", null, null));
                 }
@@ -157,9 +168,12 @@ public class PaymentController {
                 com.group6.swp391.model.Payment payment1 = new com.group6.swp391.model.Payment(paymentAmount, order, date, remainAmount, totalAmount, null, "VNPay", paymentStatusSuccess.replaceAll("_", " "));
                 paymentService.save(payment1);
                 String orderStatusSuccess = EnumOrderStatus.Chờ_giao_hàng.name();
+                if(!order.isDelivery()) {
+                    orderStatusSuccess = EnumOrderStatus.Đến_cửa_hàng_lấy.name();
+                }
                 order.setStatus(orderStatusSuccess.replaceAll("_", " "));
                 orderService.save(order);
-                boolean check = userService.sendInvoice(order);
+                userService.sendInvoice(order);
                 response.sendRedirect(urlRedirect);
                 return ResponseEntity.status(HttpStatus.OK).body(new PaymentResponse("Success", "Payment VNPay successfully", null, null));
             }

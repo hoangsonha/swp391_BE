@@ -1,5 +1,6 @@
 package com.group6.swp391.controller;
 
+import com.group6.swp391.enums.EnumOrderStatus;
 import com.group6.swp391.model.*;
 import com.group6.swp391.request.ConfirmOrderRequest;
 import com.group6.swp391.request.OrderRequest;
@@ -360,6 +361,26 @@ public class OrderController {
             newOrder.setStatus("Chờ xác nhận");
             newOrder.setPrice(orderRequest.getPrice());
             newOrder.setDiscount(orderRequest.getDiscount());
+
+
+            Map<Integer, Integer> countByStaffAdvised = getCountByStaffAdvised();
+
+
+            for(Integer staffID : countByStaffAdvised.keySet()) {
+
+            }
+
+
+            List<Order> list_order = orderService.getAllOrder();
+            List<User> lists = new ArrayList<>();
+            for(Order liOrders : list_order) {
+                if(liOrders.getStatus().toLowerCase().equals((EnumOrderStatus.Chờ_xác_nhận).name().replaceAll("_", " ").toLowerCase())) {
+                    User user = userService.getUserByID(liOrders.getStaffID().getUserID());
+                    lists.add(user);
+                }
+            }
+
+
             Cart existingCart = cartService.getCart(existingUser.getUserID());
             if(existingCart == null) {
                 return ResponseEntity.badRequest().body("Cart not found");
@@ -405,4 +426,64 @@ public class OrderController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+
+    private Map<Integer, Integer> getCountByStaffAdvised() {
+        Map<Integer, Integer> countByStaffAdvised = new HashMap<>();
+        List<Order> lists = orderService.getAllOrder();
+        for(Order order : lists) {
+            if(order.getStaffID() != null) {
+                for(Integer i : countByStaffAdvised.keySet()) {
+                    if(order.getStaffID().getUserID() == i) {
+                        countByStaffAdvised.put(order.getStaffID().getUserID(), countByStaffAdvised.get(i) + 1);
+                    } else {
+                        countByStaffAdvised.put(order.getStaffID().getUserID(), 1);
+                    }
+                }
+            }
+        }
+        return countByStaffAdvised;
+    }
+
+    public boolean checkStaffProcessingOrder(User user) {
+        boolean check = false;
+        List<Order> list_order = orderService.getAllOrder();
+        for(Order order : list_order) {
+            if(order.getStatus().toLowerCase().equals((EnumOrderStatus.Chờ_xác_nhận).name().replaceAll("_", " ").toLowerCase())) {
+                User users = userService.getUserByID(order.getStaffID().getUserID());
+                if(users.equals(user)) {
+                    check = true;
+                }
+            }
+        }
+        return check;
+    }
+
+
+//
+//    private Map<Integer, Integer> count() {
+//        Map<Integer, Integer> countByStaffAdvised = new HashMap<>();
+//
+//        List<Order> list_Orders = orderService.getAllOrder();
+//        for(Order order : list_Orders) {
+//            if(order.getStaffID() != null) {
+//                User staff = userService.getUserByID(order.getStaffID().getUserID());
+////                addMap(countByStaffAdvised, countStaffAdvised(staff), order.getStaffID().getUserID());
+//
+//            }
+//        }
+//
+//
+//    }
+//
+//    private void addMap(Map<Integer, Integer> countByStaffAdvised, int value, int staffID) {
+//        for(Integer i : countByStaffAdvised.keySet()) {
+//            if(i == staffID) {
+//                int n = countByStaffAdvised.get(i) + value;
+//                countByStaffAdvised.put(i, n);
+//            } else {
+//                countByStaffAdvised.put(i, countByStaffAdvised.get(i));
+//            }
+//        }
+//    }
 }

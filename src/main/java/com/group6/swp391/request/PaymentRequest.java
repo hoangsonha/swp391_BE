@@ -26,4 +26,6 @@ public class PaymentRequest {
     @NotBlank(message = "Phương thức thanh toán không được để trống")
     @Size(max = 6, min = 5, message = "Phương thức thanh toán phải từ 5 tới 6 kí tự")
     private String paymentMethod;
+
+    private boolean isDelivery;
 }

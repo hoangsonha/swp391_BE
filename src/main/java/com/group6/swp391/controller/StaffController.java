@@ -32,7 +32,7 @@ public class StaffController {
     @GetMapping("/all_users")
     @PreAuthorize("hasRole('STAFF')")
     public ResponseEntity<ObjectResponse> getAllUser() {
-        List<User> lists = userService.findAll("staff");
+        List<User> lists = userService.findAll(EnumRoleName.ROLE_STAFF.name());
         boolean check = false;
         if (lists != null) if (lists.size() > 0) check = true;
 

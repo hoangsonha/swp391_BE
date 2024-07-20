@@ -4,6 +4,7 @@ package com.group6.swp391;
 import com.group6.swp391.enums.EnumExportFile;
 import com.group6.swp391.enums.EnumOrderStatus;
 import com.group6.swp391.enums.EnumPaymentStatus;
+import com.group6.swp391.enums.EnumRoleName;
 import com.group6.swp391.model.User;
 import com.group6.swp391.repository.DiamondRepository;
 import com.group6.swp391.repository.RoleRepository;
@@ -31,6 +32,11 @@ class Swp391ApplicationTests {
 
     @Test
     void contextLoads() {
+
+        String role_staff = EnumRoleName.ROLE_STAFF.name();
+
+        System.out.println(role_staff);
+
 
 
 //        List<Integer> in =  userService.sendNotificationEmail();

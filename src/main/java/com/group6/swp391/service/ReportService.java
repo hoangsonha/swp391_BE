@@ -1,5 +1,6 @@
 package com.group6.swp391.service;
 
+import com.group6.swp391.enums.EnumExportFile;
 import com.group6.swp391.model.User;
 import com.group6.swp391.repository.UserRepository;
 import jakarta.servlet.ServletOutputStream;
@@ -10,6 +11,7 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 
@@ -27,6 +29,18 @@ public class ReportService {
 
     @Autowired private UserRepository userRepository;
 
+    @Value("${excel.sheetName}")
+    private String excelTitle;
+
+    @Value("${excel.startRow}")
+    private int startRow;
+
+    @Value("${excel.startRowData}")
+    private int startRowData;
+
+    @Value("${report.createBy}")
+    private String createBy;
+
     public void exportReport(HttpServletResponse response,String reportFormat) throws IOException, JRException, SQLException, NoSuchFieldException {
 
         List<User> listsUser = userRepository.findAll();
@@ -43,12 +57,12 @@ public class ReportService {
         JRBeanCollectionDataSource ds = new JRBeanCollectionDataSource(listsUser);
 
         Map<String, Object> hm = new HashMap<>();
-        hm.put("Create By", "HoangSonHa");
+        hm.put("Create By", createBy);
         JasperPrint jp = JasperFillManager.fillReport(jr, hm, ds);
 
         ServletOutputStream ops =  response.getOutputStream();
 
-        if (reportFormat.equalsIgnoreCase("html")) {
+        if (reportFormat.equalsIgnoreCase(EnumExportFile.HTML.name())) {
 
             File tempHtmlFile = File.createTempFile("user", ".html");
             JasperExportManager.exportReportToHtmlFile(jp, tempHtmlFile.getAbsolutePath());
@@ -63,13 +77,13 @@ public class ReportService {
             fis.close();
             tempHtmlFile.delete();
 
-        } else if (reportFormat.equalsIgnoreCase("pdf")) {
+        } else if (reportFormat.equalsIgnoreCase(EnumExportFile.PDF.name())) {
             JasperExportManager.exportReportToPdfStream(jp, ops);
 
-        } else if(reportFormat.equalsIgnoreCase("excel")) {
+        } else if(reportFormat.equalsIgnoreCase(EnumExportFile.EXCEL.name())) {
             XSSFWorkbook workbook = new XSSFWorkbook();
-            XSSFSheet sheet = workbook.createSheet("User Infor");
-            XSSFRow row = sheet.createRow(0);
+            XSSFSheet sheet = workbook.createSheet(excelTitle);
+            XSSFRow row = sheet.createRow(startRow);
 
             row.createCell(0).setCellValue("userID");
             row.createCell(1).setCellValue("firstName");
@@ -81,7 +95,7 @@ public class ReportService {
             row.createCell(7).setCellValue("non-Locked");
 
             // data start from row 2 because row 1 is title that set above
-            int dataRowIndex = 1;
+            int dataRowIndex = startRowData;
 
             for(User user : listsUser) {
                 XSSFRow dataRow = sheet.createRow(dataRowIndex);
