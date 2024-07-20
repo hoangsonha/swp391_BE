@@ -87,14 +87,17 @@ public class DashboardController {
         try {
             Double currentDate = totalCurrentDate();
             Double prevDate = totalBegoreDate();
+            if(prevDate == 0.0 || prevDate == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Doanh thu hôm trước = 0", null));
+            }
             Double total = (currentDate - prevDate)/prevDate * 100;
             if (total == null || total == 0.0) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "no data", 0.0));
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "total = 0", null));
             }
             String numberFormat = formatNumberDouble(total);
             return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Get value compare between two date", numberFormat));
         } catch (Exception e) {
-            return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "failed", e.getMessage()));
+            return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", e.getMessage(), null));
         }
     }
 
