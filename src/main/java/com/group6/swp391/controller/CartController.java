@@ -72,6 +72,7 @@ public class CartController {
             userRespone.setPoints(userExisting.getPoints());
             cartResponse.setUser(userRespone);
             cartResponse.setItems(exsitingCart.getItems());
+            cartResponse.setQuantity(exsitingCart.getItems().size());
             return ResponseEntity.ok(cartResponse);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
