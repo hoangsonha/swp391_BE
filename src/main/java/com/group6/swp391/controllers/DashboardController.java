@@ -1,5 +1,6 @@
 package com.group6.swp391.controllers;
 
+import com.group6.swp391.enums.EnumOrderStatus;
 import com.group6.swp391.pojos.Diamond;
 import com.group6.swp391.pojos.Order;
 import com.group6.swp391.pojos.Product;
@@ -92,12 +93,12 @@ public class DashboardController {
             }
             Double total = (currentDate - prevDate)/prevDate * 100;
             if (total == null || total == 0.0) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "total = 0", null));
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Doanh thu cả 2 ngày đêu bằng 0", null));
             }
             String numberFormat = formatNumberDouble(total);
-            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Get value compare between two date", numberFormat));
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Giá trị so sánh giữa ngày " + currentDate + " và " + prevDate, numberFormat));
         } catch (Exception e) {
-            return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", e.getMessage(), null));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
         }
     }
 
@@ -114,12 +115,11 @@ public class DashboardController {
             LocalDateTime endDate = startDate.plusDays(1).minusNanos(1);
             Double total = dashboardService.totalRevenueDate(startDate, endDate);
             if(total == null || total == 0.0) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "no data", 0.0));
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Tổng doanh thu hôm nay bằng 0", null));
             }
-
-            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "total revenue in date", total));
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Tổng doanh thu hôm nay", total));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "no data", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
         }
     }
 
@@ -134,15 +134,14 @@ public class DashboardController {
             double toteal = 0.0;
             List<Order> orders = dashboardService.totalRevenueStore();
             if(orders == null || orders.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "get data failed", 0.0));
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Tổng doanh thu của cửa hàng rỗng", null));
             }
             for (Order order : orders) {
                 toteal += order.getPrice();
             }
-
-            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Total Revenue Store", toteal));
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Tổng doanh thu của cửa hàng", toteal));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "get data failed", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
         }
     }
 
@@ -161,9 +160,9 @@ public class DashboardController {
                 Double moonth = dashboardService.getTotalRevenueInMonth(i,currentYear);
                 totalRevenue.add(moonth);
             }
-            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Total Revenue in month", totalRevenue));
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Tổng doanh thu trong một năm", totalRevenue));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "get data failed", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
         }
     }
 
@@ -182,9 +181,9 @@ public class DashboardController {
                 Double moonth = dashboardService.getTotalRevenueDiamond(i, currentYear);
                 totalRevenue.add(moonth);
             }
-            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Total Diamond Revenue in month", totalRevenue));
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Tổng doanh thu kim cương", totalRevenue));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "get data failed", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
         }
     }
 
@@ -203,9 +202,9 @@ public class DashboardController {
                 Double moonth = dashboardService.getTotalRevenueProductcustomizer(i, currentYear);
                 totalRevenue.add(moonth);
             }
-            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Total Productcustomize Revenue in month", totalRevenue));
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Tổng doanh thu sản phẩm tùy chọn", totalRevenue));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "get data failed", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
         }
     }
 
@@ -235,16 +234,16 @@ public class DashboardController {
             LocalDate currentDate = LocalDate.now();
             LocalDateTime startDate = currentDate.atStartOfDay();
             LocalDateTime endDate = startDate.plusDays(1).minusNanos(1);
-            List<Order> listNewOrders = dashboardService.getOrderDate("Chờ xác nhận", startDate, endDate);
+            List<Order> listNewOrders = dashboardService.getOrderDate((EnumOrderStatus.Chờ_xác_nhận).name().replaceAll("_", " "), startDate, endDate);
             if (listNewOrders == null || listNewOrders.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.OK).body(
-                        new ObjectResponse("Success", "List is empty", null));
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                        new ObjectResponse("Failed", "Danh sách đơn hàng mới rỗng", null));
             }
             return ResponseEntity.status(HttpStatus.OK).body(
-                    new ObjectResponse("Success", "Get Orders Successfully", listNewOrders));
+                    new ObjectResponse("Success", "Danh sách đơn hàng mới", listNewOrders));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    new ObjectResponse("Failed", "Get Orders Failed", null));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Success", "Message: " + e.getMessage(), null));
+
         }
     }
 
@@ -259,16 +258,15 @@ public class DashboardController {
             LocalDate currentDate = LocalDate.now();
             LocalDateTime startDate = currentDate.atStartOfDay();
             LocalDateTime endDate = startDate.plusDays(1).minusNanos(1);
-            List<Order> listFailedOrders = dashboardService.getOrderDate("Đã hủy", startDate, endDate);
+            List<Order> listFailedOrders = dashboardService.getOrderDate(EnumOrderStatus.Đã_hủy.name().replaceAll("_"," "), startDate, endDate);
             if(listFailedOrders == null || listFailedOrders.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.OK).body(
-                        new ObjectResponse("Success", "List is empty", null));
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                        new ObjectResponse("Failed", "Danh sách đơn hàng đã hủy rỗng", null));
             }
             return ResponseEntity.status(HttpStatus.OK).body(
-                    new ObjectResponse("Success", "Get Orders Successfully", listFailedOrders));
+                    new ObjectResponse("Success", "Danh sách đơn hàng đã hủy", listFailedOrders));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    new ObjectResponse("Failed", "Get Orders Failed", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
         }
     }
 
@@ -283,16 +281,15 @@ public class DashboardController {
             LocalDate currentDate = LocalDate.now();
             LocalDateTime startDate = currentDate.atStartOfDay();
             LocalDateTime endDate = startDate.plusDays(1).minusNanos(1);
-            List<Order> listFailedOrders = dashboardService.getOrderDate("Đã hoàn tiền", startDate, endDate);
+            List<Order> listFailedOrders = dashboardService.getOrderDate(EnumOrderStatus.Đã_hoàn_tiền.name().replaceAll("_"," "), startDate, endDate);
             if(listFailedOrders == null || listFailedOrders.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.OK).body(
-                        new ObjectResponse("Success", "List is empty", null));
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                        new ObjectResponse("Failed", "Danh sách đơn hàng Đã hoàn tiền rỗng", null));
             }
             return ResponseEntity.status(HttpStatus.OK).body(
-                    new ObjectResponse("Success", "Get Orders Successfully", listFailedOrders));
+                    new ObjectResponse("Success", "Danh sách đơn hàng Đã hoàn tiền", listFailedOrders));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    new ObjectResponse("Failed", "Get Orders Failed", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
         }
     }
 
@@ -307,13 +304,13 @@ public class DashboardController {
             LocalDate currentDate = LocalDate.now();
             LocalDateTime startDate = currentDate.atStartOfDay();
             LocalDateTime endDate = startDate.plusDays(1).minusNanos(1);
-            List<Order> listSuccessfulOrders = dashboardService.getOrderDate("Đã giao", startDate, endDate);
+            List<Order> listSuccessfulOrders = dashboardService.getOrderDate(EnumOrderStatus.Đã_giao.name().replaceAll("_"," "), startDate, endDate);
             if(listSuccessfulOrders == null || listSuccessfulOrders.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.OK).body(
-                        new ObjectResponse("Success", "List is empty", null));
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                        new ObjectResponse("Failed", "Danh sách đơn hàng ã giao rỗng", null));
             }
             return ResponseEntity.status(HttpStatus.OK).body(
-                    new ObjectResponse("Success", "Get Orders Successfully", listSuccessfulOrders));
+                    new ObjectResponse("Success", "Danh sách đơn hàng ã giao", listSuccessfulOrders));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
                     new ObjectResponse("Failed", "Get Orders Failed", e.getMessage()));
@@ -333,11 +330,11 @@ public class DashboardController {
             int yearCurrent = LocalDate.now().getYear();
             Integer newUser = dashboardService.newUser(monthCurrent, yearCurrent);
             if(newUser == null || newUser == 0) {
-                return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "No new user", 0));
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Danh sách người dùng mới trong tháng " + monthCurrent + " rỗng", null));
             }
-            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Quantity new user", newUser));
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Danh sách người dùng mới trong tháng " + monthCurrent, newUser));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "failed", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
         }
     }
 
@@ -357,9 +354,9 @@ public class DashboardController {
             Double totalRevenueMonthCurrent = dashboardService.getTotalRevenueInMonth(monthCurrent, year);
             Double totalCompare = (((totalRevenueMonthCurrent - totalRevenueMonthPrev)/totalRevenueMonthPrev) * 100);
             String numberFormat = formatNumberDouble(totalCompare);
-            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Get value compare between two month", numberFormat));
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Doanh thu giữa tháng " + monthPrev + " Và " + monthCurrent, numberFormat));
         } catch (Exception e) {
-            return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "failed", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
         }
     }
 
@@ -378,7 +375,7 @@ public class DashboardController {
             List<Product> recentlyCreatedProducts = dashboardService.getNewProducts(month, year);
             List<Diamond> recentlyCreatedDiamonds = dashboardService.getNewDiamonds(month, year);
             if(recentlyCreatedDiamonds.isEmpty() && recentlyCreatedProducts.isEmpty()) {
-                return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "There are no new product objects of the month", null));
+                return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Không có sản phẩm mới trong tháng " + month, null));
             }
             for (Diamond diamond: recentlyCreatedDiamonds) {
                 ProductRespone productRespone = new ProductRespone();
@@ -396,9 +393,9 @@ public class DashboardController {
                 productRespone.setThumnail(product.getProductImages().get(0).getImageUrl());
                 ObjectProduct.add(productRespone);
             }
-            return  ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "New Product Objects of the Month", ObjectProduct));
+            return  ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Sản phẩm mới trong tháng " + month, ObjectProduct));
         } catch (Exception e) {
-            return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "failed", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
         }
     }
 }

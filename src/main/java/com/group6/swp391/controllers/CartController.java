@@ -5,11 +5,13 @@ import com.group6.swp391.pojos.User;
 import com.group6.swp391.repositories.CartItemRepository;
 import com.group6.swp391.requests.CartRequest;
 import com.group6.swp391.responses.CartResponse;
+import com.group6.swp391.responses.ObjectResponse;
 import com.group6.swp391.responses.UserRespone;
 import com.group6.swp391.services.CartServiceImp;
 import com.group6.swp391.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -32,18 +34,19 @@ public class CartController {
      */
     @PreAuthorize("hasRole('USER')")
     @PostMapping("/add_cart")
-    public ResponseEntity<?> addCart(@RequestBody @Valid CartRequest cartRequest) {
+    public ResponseEntity<ObjectResponse> addCart(@RequestBody @Valid CartRequest cartRequest) {
         try {
             if(cartRequest.getProductId() == null) {
-                return ResponseEntity.badRequest().body("Product is required");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Kim Cương Không Tồn Tại", null));
             }
 
             cartServiceImp.addCart(cartRequest.getUserId(), cartRequest.getProductId());
-            return ResponseEntity.ok().body("added cart successfully");
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Thêm Giỏ Hàng Thành Công",null));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed","Message: " +  e.getMessage(), null));
         }
     }
+
 
     /**
      * Method tìm kiem cart dua tren user
@@ -51,15 +54,20 @@ public class CartController {
      */
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/cartUser/{user_id}")
-    public ResponseEntity<?> getCartByUserId(@PathVariable("user_id") int userId) {
+    public ResponseEntity<ObjectResponse> getCartByUserId(@PathVariable("user_id") int userId) {
         try {
+            User userExisting = userService.getUserByID(userId);
+            if(userExisting == null) {
+                return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed","Người Dùng Không Tồn Tại", null));
+            }
             Cart exsitingCart = cartServiceImp.getCart(userId);
             if (exsitingCart == null) {
-                return ResponseEntity.badRequest().body("user not found");
+                exsitingCart = new Cart();
+                exsitingCart.setUser(userExisting);
+                cartServiceImp.create(exsitingCart);
             }
             CartResponse cartResponse = new CartResponse();
             cartResponse.setCartId(exsitingCart.getCartId());
-            User userExisting = userService.getUserByID(userId);
             UserRespone userRespone = new UserRespone();
             userRespone.setUserID(userExisting.getUserID());
             userRespone.setFirstName(userExisting.getFirstName());
@@ -73,11 +81,12 @@ public class CartController {
             cartResponse.setUser(userRespone);
             cartResponse.setItems(exsitingCart.getItems());
             cartResponse.setQuantity(exsitingCart.getItems().size());
-            return ResponseEntity.ok(cartResponse);
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Giỏ Hàng Với Người Dùng" + userExisting.getFirstName() + userExisting.getLastName(), cartResponse));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed","Message: " + e.getMessage(), null));
         }
     }
+
 
     /**
      * Lay ra tat car cart trong data
@@ -86,10 +95,18 @@ public class CartController {
      */
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/all_carts")
-    public ResponseEntity<List<Cart>> getAll() {
-        List<Cart>carts = cartServiceImp.getAllCarts();
-        return ResponseEntity.ok(carts);
+    public ResponseEntity<ObjectResponse> getAll() {
+        try {
+            List<Cart> carts = cartServiceImp.getAllCarts();
+            if(carts == null || carts.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Giỏ Hàng Trống","Giỏ Hàng Trống"));
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Giỏ Hàng ",carts));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed","Message: " +  e.getMessage(), null));
+        }
     }
+
 
     /**
      * Method xoa bat cu mot cart_item nao
@@ -99,12 +116,12 @@ public class CartController {
 
     @PreAuthorize("hasRole('USER')")
     @DeleteMapping("delete/{cart_item_id}")
-    public ResponseEntity<String> removeCart(@PathVariable("cart_item_id") int itemId) {
+    public ResponseEntity<ObjectResponse> removeCart(@PathVariable("cart_item_id") int itemId) {
         try {
             cartServiceImp.removeCart(itemId);
-            return ResponseEntity.ok().body("Item removed from cart successfully!");
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Xóa Thành Công", null));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed","Message: " + e.getMessage(), null));
         }
     }
 
@@ -115,16 +132,16 @@ public class CartController {
      */
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/{user_id}")
-    public ResponseEntity<Integer> getCart(@PathVariable("user_id") int id) {
+    public ResponseEntity<ObjectResponse> countQuantityIncart(@PathVariable("user_id") int id) {
         try {
             Cart exsitingCart = cartServiceImp.getCart(id);
             if (exsitingCart == null) {
-                return ResponseEntity.badRequest().body(0);
+                return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Failed", "Giỏ hàng không tồn tại", null));
             }
             int count = exsitingCart.getItems().size();
-            return ResponseEntity.ok(count);
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Số lượng sản phẩm có trong giỏ hàng", count));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(0);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Success", "Message: " + e.getMessage(), null));
         }
     }
 }
