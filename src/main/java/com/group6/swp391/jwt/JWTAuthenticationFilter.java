@@ -1,7 +1,7 @@
 package com.group6.swp391.jwt;
 
-import com.group6.swp391.security.CustomUserDetail;
-import com.group6.swp391.security.CustomUserDetailService;
+import com.group6.swp391.config.CustomUserDetail;
+import com.group6.swp391.config.CustomUserDetailService;
 import io.jsonwebtoken.lang.Strings;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

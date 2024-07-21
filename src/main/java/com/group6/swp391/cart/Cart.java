@@ -1,7 +1,7 @@
 package com.group6.swp391.cart;
 
-import com.group6.swp391.model.Diamond;
-import com.group6.swp391.model.ProductCustomize;
+import com.group6.swp391.pojos.Diamond;
+import com.group6.swp391.pojos.ProductCustomize;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

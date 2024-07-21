@@ -1,7 +1,7 @@
 package com.group6.swp391.jobs;
 
-import com.group6.swp391.model.CrawledDataProperties;
-import com.group6.swp391.service.UserService;
+import com.group6.swp391.pojos.CrawledDataProperties;
+import com.group6.swp391.services.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;

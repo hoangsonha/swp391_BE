@@ -1,24 +1,8 @@
 package com.group6.swp391;
 
 //import com.group6.swp391.cart.Cart;
-import com.group6.swp391.enums.EnumExportFile;
-import com.group6.swp391.enums.EnumOrderStatus;
-import com.group6.swp391.enums.EnumPaymentStatus;
-import com.group6.swp391.model.User;
-import com.group6.swp391.repository.DiamondRepository;
-import com.group6.swp391.repository.RoleRepository;
-import com.group6.swp391.repository.UserRepository;
-import com.group6.swp391.service.UserService;
-import io.jsonwebtoken.lang.Strings;
-import jakarta.mail.MessagingException;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
 
 @SpringBootTest
 class Swp391ApplicationTests {

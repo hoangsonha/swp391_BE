@@ -1,14 +1,13 @@
 package com.group6.swp391.jobs;
 
-import com.group6.swp391.service.UserService;
-import jakarta.mail.MessagingException;
+import com.group6.swp391.services.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import java.io.UnsupportedEncodingException;
+
 import java.util.List;
 
 @Component

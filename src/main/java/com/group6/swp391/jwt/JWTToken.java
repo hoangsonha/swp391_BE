@@ -1,7 +1,7 @@
 package com.group6.swp391.jwt;
 
 import com.group6.swp391.logout.ListToken;
-import com.group6.swp391.security.CustomUserDetail;
+import com.group6.swp391.config.CustomUserDetail;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import jakarta.annotation.PostConstruct;

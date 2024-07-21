@@ -1,10 +1,7 @@
 package com.group6.swp391.database;
 
-import com.group6.swp391.enums.EnumRoleName;
-import com.group6.swp391.model.Role;
-import com.group6.swp391.model.User;
-import com.group6.swp391.repository.RoleRepository;
-import com.group6.swp391.repository.UserRepository;
+import com.group6.swp391.repositories.RoleRepository;
+import com.group6.swp391.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
