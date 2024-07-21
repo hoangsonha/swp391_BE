@@ -66,6 +66,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 //    @Query("SELECT COUNT(*) AS new_users\n" +
 //            "FROM user\n" +
 //            "WHERE MONTH(create_at) = 6 AND YEAR(create_at) = 2024")
-    @Query("SELECT COUNT(*) AS new_users FROM user u WHERE u.role.roleID=4 AND  MONTH(u.createAt) = :month AND YEAR(u.createAt)=:year")
+    @Query("SELECT COUNT(*) AS new_users FROM user u WHERE MONTH(u.createAt) = :month AND YEAR(u.createAt)=:year")
     Integer newuser(@Param("month") int month, @Param("year") int year);
 }

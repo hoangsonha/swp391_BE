@@ -16,27 +16,25 @@ import java.util.*;
 @Service
 public class VNPayService {
 
-    @Value("${vnpay.vnp_PayUrl}")
-    private String vnp_PayUrl_Va;
-
-    @Value("${vnpay.vnp_ReturnUrl}")
-    private String vnp_ReturnUrl_Va;
-
-    @Value("${vnpay.vnp_TmnCode}")
-    private String vnp_TmnCode_Va;
-
-    @Value("${vnpay.secretKey}")
-    private String secretKey_Va;
-
-    @Value("${vnpay.vnp_ApiUrl}")
-    private String vnp_ApiUrl_Va;
+    @Value("${vnpay.vnp_PayUrl}") private String vnp_PayUrl_Va;
+    @Value("${vnpay.vnp_ReturnUrl}") private String vnp_ReturnUrl_Va;
+    @Value("${vnpay.vnp_TmnCode}") private String vnp_TmnCode_Va;
+    @Value("${vnpay.secretKey}") private String secretKey_Va;
+    @Value("${vnpay.vnp_ApiUrl}") private String vnp_ApiUrl_Va;
+    @Value("${vnpay.vnp_BankCode}") private String vnp_BankCode_Va;
+    @Value("${vnpay.vnp_OrderType}") private String vnp_OrderType_Va;
+    @Value("${vnpay.vnp_Command}") private String vnp_Command_Va;
+    @Value("${vnpay.vnp_Version}") private String vnp_Version_Va;
+    @Value("${vnpay.currency}") private String vnp_Currency_Va;
+    @Value("${vnpay.timeZone}") private String vnp_TimeZone_Va;
+    @Value("${vnpay.formatDate}") private String vnp_FormatDate_Va;
 
     public String getVNPay(double total, HttpServletRequest req, String orderID) throws UnsupportedEncodingException {
-        String vnp_Version = "2.1.0";
-        String vnp_Command = "pay";
-        String orderType = "other";
-        String bankCode = "NCB";
-        double amount = 20000;
+        String vnp_Version = vnp_Version_Va;
+        String vnp_Command = vnp_Command_Va;
+        String orderType = vnp_OrderType_Va;
+        String bankCode = vnp_BankCode_Va;
+        double amount = total;
 //      String vnp_TxnRef = VNPay.getRandomNumber(8);
         String vnp_IpAddr = VNPay.getIpAddress(req);
         String vnp_TmnCode = vnp_TmnCode_Va;
@@ -46,7 +44,7 @@ public class VNPayService {
         vnp_Params.put("vnp_Command", vnp_Command);
         vnp_Params.put("vnp_TmnCode", vnp_TmnCode);
         vnp_Params.put("vnp_Amount", String.valueOf(amount));
-        vnp_Params.put("vnp_CurrCode", "VND");
+        vnp_Params.put("vnp_CurrCode", vnp_Currency_Va);
         vnp_Params.put("vnp_BankCode", bankCode);
         vnp_Params.put("vnp_TxnRef", orderID);
         vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang:" + orderID);
@@ -55,8 +53,8 @@ public class VNPayService {
         vnp_Params.put("vnp_ReturnUrl", vnp_ReturnUrl_Va);
         vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
 
-        Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("SE Asia Standard Time"));
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+        Calendar cld = Calendar.getInstance(TimeZone.getTimeZone(vnp_TimeZone_Va));
+        SimpleDateFormat formatter = new SimpleDateFormat(vnp_FormatDate_Va);
         String vnp_CreateDate = formatter.format(cld.getTime());
         vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
 

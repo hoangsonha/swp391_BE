@@ -435,36 +435,36 @@ public class OrderController {
     }
 
 
-    private Map<Integer, Integer> getCountByStaffAdvised() {
-        Map<Integer, Integer> countByStaffAdvised = new HashMap<>();
-        List<Order> lists = orderService.getAllOrder();
-        for(Order order : lists) {
-            if(order.getStaffID() != null) {
-                for(Integer i : countByStaffAdvised.keySet()) {
-                    if(order.getStaffID().getUserID() == i) {
-                        countByStaffAdvised.put(order.getStaffID().getUserID(), countByStaffAdvised.get(i) + 1);
-                    } else {
-                        countByStaffAdvised.put(order.getStaffID().getUserID(), 1);
-                    }
-                }
-            }
-        }
-        return countByStaffAdvised;
-    }
+//    private Map<Integer, Integer> getCountByStaffAdvised() {
+//        Map<Integer, Integer> countByStaffAdvised = new HashMap<>();
+//        List<Order> lists = orderService.getAllOrder();
+//        for(Order order : lists) {
+//            if(order.getStaffID() != null) {
+//                for(Integer i : countByStaffAdvised.keySet()) {
+//                    if(order.getStaffID().getUserID() == i) {
+//                        countByStaffAdvised.put(order.getStaffID().getUserID(), countByStaffAdvised.get(i) + 1);
+//                    } else {
+//                        countByStaffAdvised.put(order.getStaffID().getUserID(), 1);
+//                    }
+//                }
+//            }
+//        }
+//        return countByStaffAdvised;
+//    }
 
-    private boolean checkStaffProcessingOrder(User user) {
-        boolean check = false;
-        List<Order> list_order = orderService.getAllOrder();
-        for(Order order : list_order) {
-            if(order.getStatus().toLowerCase().equals((EnumOrderStatus.Chờ_xác_nhận).name().replaceAll("_", " ").toLowerCase())) {
-                User users = userService.getUserByID(order.getStaffID().getUserID());
-                if(users.equals(user)) {
-                    check = true;
-                }
-            }
-        }
-        return check;
-    }
+//    private boolean checkStaffProcessingOrder(User user) {
+//        boolean check = false;
+//        List<Order> list_order = orderService.getAllOrder();
+//        for(Order order : list_order) {
+//            if(order.getStatus().toLowerCase().equals((EnumOrderStatus.Chờ_xác_nhận).name().replaceAll("_", " ").toLowerCase())) {
+//                User users = userService.getUserByID(order.getStaffID().getUserID());
+//                if(users.equals(user)) {
+//                    check = true;
+//                }
+//            }
+//        }
+//        return check;
+//    }
 
 
 //

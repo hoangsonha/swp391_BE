@@ -32,6 +32,18 @@ public class Order {
     @JsonIgnore
     private User user;
 
+    @ManyToOne
+    @JoinColumn(name = "staff_id")
+    @JsonIgnore
+    private User staffID;
+
+    @ManyToOne
+    @JoinColumn(name = "delivery_id")
+    @JsonIgnore
+    private User deliveryID;
+
+    private boolean isDelivery;
+
     private int quantity;
 
     @Column(name = "full_name", nullable = false, columnDefinition = "nvarchar(50)")
@@ -90,6 +102,23 @@ public class Order {
         this.quantity = quantity;
         this.status = status;
         this.user = user;
+        this.note = note;
+    }
+
+    public Order(String addressShipping, String fullName, LocalDateTime orderDate,
+                 List<Payment> payment, String phoneShipping, double price, int quantity,
+                 String status, User user, User staffID, User deliveryID, String note) {
+        this.addressShipping = addressShipping;
+        this.fullName = fullName;
+        this.orderDate = orderDate;
+        this.payments = payment;
+        this.phoneShipping = phoneShipping;
+        this.price = price;
+        this.quantity = quantity;
+        this.status = status;
+        this.user = user;
+        this.staffID = staffID;
+        this.deliveryID = deliveryID;
         this.note = note;
     }
 }

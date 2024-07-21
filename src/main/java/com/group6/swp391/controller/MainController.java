@@ -29,18 +29,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.*;
 
 @RestController
@@ -97,9 +90,9 @@ public class MainController {
     @PostMapping("/login")
     public ResponseEntity<TokenResponse> loginPage(@Valid @RequestBody UserLogin userLogin, HttpServletRequest request, HttpServletResponse response) {
         try {
-//            String gRecaptchaResponse = userLogin.getRecaptchaResponse();
-//            boolean check_captcha = userService.verifyRecaptcha(gRecaptchaResponse);
-//            if(check_captcha) {
+            String gRecaptchaResponse = userLogin.getRecaptchaResponse();
+            boolean check_captcha = userService.verifyRecaptcha(gRecaptchaResponse);
+            if(check_captcha) {
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                         new UsernamePasswordAuthenticationToken(userLogin.getEmail(), userLogin.getPassword());
                 Authentication authentication = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
@@ -113,9 +106,9 @@ public class MainController {
                 userService.setQuantityReceiveEmailOffline(0, userDetails.getEmail());
 
                 return ResponseEntity.status(HttpStatus.OK).body(new TokenResponse("Success", "Login successfully", s));
-//            } else {
-//                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new TokenResponse("Failed", "Login failed", null));
-//            }
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new TokenResponse("Failed", "Login failed", null));
+            }
         } catch(Exception e) {
             log.error("Cannot login : {}", e.toString());
             User user = userService.getUserByEmail(userLogin.getEmail());

@@ -50,37 +50,13 @@ public class WebSecurityConfig {
         httpSecurity.csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests((auth) ->
                 auth.
                         requestMatchers("/**").permitAll()
-//                        .requestMatchers("/swp391/api/delivery/**").permitAll()
-//                        .requestMatchers("/swp391/api/user/**").permitAll()
-//                        .requestMatchers("/swp391/api/staff/**").permitAll()
-//                        .requestMatchers("/payment/**").permitAll()
-//                        .requestMatchers("/swp391/api/categories/**").permitAll()
-//                        .requestMatchers("/swp391/api/diamonds/**").permitAll()
-//                        .requestMatchers("/swp391/api/products/**").permitAll()
-//                        .requestMatchers("/swp391/api/carts/**").permitAll()
-//                        .requestMatchers("/swp391/api/productcustomes/**").permitAll()
-//                        .requestMatchers("/swp391/api/warrantycards/**").permitAll()
-//                        .requestMatchers("/swp391/api/swp391/api/points/**").permitAll()
-//                        .requestMatchers("/swp391/api/orders/**").permitAll()
-//                        .requestMatchers("/swp391/api/dashboards/**").permitAll()
-//                        .requestMatchers("/swp391/api/collections/**").permitAll()
-//                        .requestMatchers("/swp391/api/feedback/**").permitAll()
-//                        .requestMatchers("/swp391/api/search/**").permitAll()
-//                        .requestMatchers("/swp391/api/report/**").permitAll()
-//                        .requestMatchers("/public/**").permitAll()
-//                        .requestMatchers("/v3/**").permitAll()
-//                        .requestMatchers("/swagger-ui/**").permitAll()
-//                        .requestMatchers("/oauth2/**").permitAll()
 //                              .requestMatchers(HttpMethod.POST, "/ues", "/*").permitAll()
                         .anyRequest().authenticated())
-
                 .sessionManagement(m -> m.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .oauth2Login(oauth2 -> {
 //                    oauth2.loginPage("/public/login").permitAll();
                     oauth2.successHandler(customOAuth2AuthenticationSuccessHandler);
                 });
-
-
 
 //                .logout(logout -> logout.logoutUrl("/logout").addLogoutHandler(logoutHandler).logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext()));
 
@@ -90,7 +66,15 @@ public class WebSecurityConfig {
         return httpSecurity.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class).build();
     }
 
-    //    @Bean
+    @Bean
+    public RestTemplate restTemplate(RestTemplateBuilder builder) {
+        return builder.build();
+    }
+
+
+
+
+//    @Bean
 //    public AuthenticationProvider authenticationProvider() {
 //        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
 //        daoAuthenticationProvider.setUserDetailsService(customUserDetailService);
@@ -98,9 +82,6 @@ public class WebSecurityConfig {
 //        return daoAuthenticationProvider;
 //    }
 
-    @Bean
-    public RestTemplate restTemplate(RestTemplateBuilder builder) {
-        return builder.build();
-    }
+
 
 }

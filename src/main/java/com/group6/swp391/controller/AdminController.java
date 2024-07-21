@@ -34,7 +34,7 @@ public class AdminController {
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/all_users")
     public ResponseEntity<ObjectResponse> getAllUser() {
-        List<User> lists = userService.findAll("admin");
+        List<User> lists = userService.findAll(EnumRoleName.ROLE_ADMIN.name());
         boolean check = false;
         if(lists !=null) if(lists.size() > 0) check = true;
 

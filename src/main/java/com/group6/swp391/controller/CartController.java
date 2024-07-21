@@ -30,7 +30,7 @@ public class CartController {
      * @param cartRequest
      * @return success or field
      */
-//    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('USER')")
     @PostMapping("/add_cart")
     public ResponseEntity<?> addCart(@RequestBody @Valid CartRequest cartRequest) {
         try {
@@ -49,7 +49,7 @@ public class CartController {
      * Method tìm kiem cart dua tren user
      * @return List cart_item in cart
      */
-//    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/cartUser/{user_id}")
     public ResponseEntity<?> getCartByUserId(@PathVariable("user_id") int userId) {
         try {
@@ -84,7 +84,7 @@ public class CartController {
      * ko can thiet, chua dc su dung
      * @return List cart
      */
-//    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/all_carts")
     public ResponseEntity<List<Cart>> getAll() {
         List<Cart>carts = cartServiceImp.getAllCarts();
@@ -113,7 +113,7 @@ public class CartController {
      * @param id userId
      * @return number integer
      */
-//    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/{user_id}")
     public ResponseEntity<Integer> getCart(@PathVariable("user_id") int id) {
         try {
