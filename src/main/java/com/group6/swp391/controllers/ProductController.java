@@ -34,7 +34,7 @@ public class ProductController {
         try {
             Product product = productRequest.getProduct();
             if(productServiceImp.getProductById(product.getProductID()) != null) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Product Already Exist", null));
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Sản phẩm đã tồn tại", null));
             } else {
                 product.setStatus(true);
                 product.setTotalPrice((product.getWagePrice() + product.getOriginalPrice())*(1+ product.getRatio()));
@@ -66,15 +66,12 @@ public class ProductController {
                 product.setProductImages(setThumnail);
                 product.setSizes(setSize);
             }
-            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Product Created", product));
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Tạo sản phẩm thành công", product));
 
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ObjectResponse("Failed", e.getMessage(), null));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
         }
     }
-
-
-
 
     /**
      * Method tim kim product by id
@@ -83,15 +80,16 @@ public class ProductController {
      */
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER') or hasRole('STAFF')")
     @GetMapping("/product/{product_id}")
-    public ResponseEntity<Product> getProductById(@PathVariable("product_id") String productID) {
+    public ResponseEntity<ObjectResponse> getProductById(@PathVariable("product_id") String productID) {
         try {
             Product product = productServiceImp.getProductById(productID);
             if (product == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Sản phẩm không tồn tại", null));
             }
-            return ResponseEntity.ok(product);
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Lấy sản phẩm thành công", product));
+
         }catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
         }
     }
 
@@ -102,15 +100,16 @@ public class ProductController {
      */
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/category/{category_name}")
-    public ResponseEntity<List<Product>> getProductByCategory(@PathVariable("category_name") String category_name) {
+    public ResponseEntity<ObjectResponse> getProductByCategory(@PathVariable("category_name") String category_name) {
         try {
             List<Product> products = productServiceImp.getProductsByCategory(category_name);
             if(products == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Danh sách sản phẩm không tồn tại", null));
             }
-            return ResponseEntity.ok(products);
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Danh sách sản phẩm", products));
+
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
         }
     }
 
@@ -121,11 +120,11 @@ public class ProductController {
      */
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/update/{product_id}")
-    public ResponseEntity<?> updateProduct(@PathVariable("product_id") String id,@RequestBody Product product) {
+    public ResponseEntity<ObjectResponse> updateProduct(@PathVariable("product_id") String id,@RequestBody Product product) {
         try {
             Product existingProduct = productServiceImp.getProductById(id);
             if(existingProduct == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("product not found");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Sản phẩm không tồn tại", null));
             }
             if(product.getProductName() != null) {
                 existingProduct.setProductName(product.getProductName());
@@ -197,9 +196,9 @@ public class ProductController {
                 updateProductThumbnails(existingProduct, product.getProductImages());
             }
             productServiceImp.updateProduct(id, existingProduct);
-            return ResponseEntity.ok().body("Product updated successfully");
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Chỉnh sửa thành công\n", existingProduct));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
         }
     }
 
@@ -210,17 +209,17 @@ public class ProductController {
      */
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/delete/{product_id}")
-    public ResponseEntity<String> deleteProductStatus(@PathVariable("product_id") String productID) {
+    public ResponseEntity<ObjectResponse> deleteProductStatus(@PathVariable("product_id") String productID) {
         try {
             Product product = productServiceImp.getProductById(productID);
             if(product == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Sản phẩm không tồn tại", null));
             } else {
                 productServiceImp.deleteProductStatus(product.getProductID());
-                return ResponseEntity.ok().body("delete product success with product ID: " + product.getProductID());
+                return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Xóa Thành Công với ID " + productID, null));
             }
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
         }
     }
 
@@ -232,24 +231,24 @@ public class ProductController {
      */
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/delete_products")
-    public ResponseEntity<String> deleteProducts(@RequestBody List<String> prodcutIds) {
+    public ResponseEntity<ObjectResponse> deleteProducts(@RequestBody List<String> prodcutIds) {
         try {
             if(prodcutIds == null || prodcutIds.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Vui lòng chọn sản phẩm muốn xóa", null));
             }
             for (int i = 0; i < prodcutIds.size(); i++) {
                 String productID = prodcutIds.get(i);
                 Product product = productServiceImp.getProductById(productID);
                 if(product == null) {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Sản phẩm không tồn tại", null));
                 } else {
                     product.setStatus(false);
                 }
             }
             productServiceImp.deleteProducts(prodcutIds);
-            return ResponseEntity.ok().body("delete products successfully");
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Xóa Thành Công", null));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
         }
     }
 

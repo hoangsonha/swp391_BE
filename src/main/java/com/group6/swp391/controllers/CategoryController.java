@@ -1,6 +1,7 @@
 package com.group6.swp391.controllers;
 
 import com.group6.swp391.pojos.Category;
+import com.group6.swp391.responses.ObjectResponse;
 import com.group6.swp391.services.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,18 +25,19 @@ public class CategoryController {
      */
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/create_category")
-    public ResponseEntity<String> createCategory(@RequestBody Category category) {
+    public ResponseEntity<ObjectResponse> createCategory(@RequestBody Category category) {
         try {
             if (categoryService.getCategoryById(category.getCategoryID()) != null) {
-                return ResponseEntity.badRequest().body("Category existed");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed","Danh mục sản phẩm đã tồn tại", null));
             } else {
                 Category newCategory = categoryService.createCategory(category);
-                return ResponseEntity.status(HttpStatus.CREATED).body("Category created successfully with ID: " + newCategory.getCategoryID());
+                return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Tạo thành công", newCategory));
             }
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while processing the request");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
         }
     }
+
 
     /**
      * Method all category in data
@@ -43,19 +45,21 @@ public class CategoryController {
      */
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/all_categories")
-    public ResponseEntity<?> getAllCategories() {
-        List<Category> categoryList;
+    public ResponseEntity<ObjectResponse> getAllCategories() {
+        List<Category> categoryList = null;
         try {
             categoryList = categoryService.getAll();
             if (categoryList == null) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No Category found");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Danh sách danh mục sản phẩm rỗng", null));
             } else {
-                return ResponseEntity.ok(categoryList);
+                return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Danh dách danh mục sản phẩm", categoryList));
+
             }
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
         }
     }
+
 
     /**
      * Method tìm kiem category by categoryId
@@ -64,14 +68,22 @@ public class CategoryController {
      */
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/categoryId/{categoryId}")
-    public ResponseEntity<?> getCategoryById(@PathVariable("categoryId") int categoryId) {
-        Category findCategory = categoryService.getCategoryById(categoryId);
-        if(findCategory == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Category not found");
-        } else {
-            return ResponseEntity.ok(findCategory);
+    public ResponseEntity<ObjectResponse> getCategoryById(@PathVariable("categoryId") int categoryId) {
+        try {
+            Category findCategory = categoryService.getCategoryById(categoryId);
+            if(findCategory == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Danh mục sản phẩm không tồn tại", null));
+
+            } else {
+                return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Danh mục sản phẩm", findCategory));
+
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
         }
     }
+
+
 
     /**
      * Method tìm kiem category by categoryName
@@ -80,20 +92,21 @@ public class CategoryController {
      */
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/categoryAllName/{categoryName}")
-    public ResponseEntity<?> getCategoryByName(@PathVariable String categoryName) {
+    public ResponseEntity<ObjectResponse> getCategoryByName(@PathVariable String categoryName) {
         List<Category> categoryList;
         try {
             if(categoryName == null) {
                 categoryList = categoryService.getAll();
+                return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Failed","Vui lòng nhập tên danh mục sản phẩm", categoryList));
             } else {
                 categoryList = categoryService.GetAllWithName(categoryName);
-                if(categoryList == null) {}
+                return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Danh sách danh mục sản phẩm", categoryList));
             }
-            return ResponseEntity.ok(categoryList);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
         }
     }
+
 
     /**
      * Method tìm kiem category by categoryName
@@ -102,23 +115,24 @@ public class CategoryController {
      */
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/categoryName/{categoryName}")
-    public ResponseEntity<Category> getByName(@PathVariable String categoryName) {
+    public ResponseEntity<ObjectResponse> getByName(@PathVariable String categoryName) {
         Category existCategory;
         try {
             if(categoryName == null) {
-                throw new RuntimeException("Category name not null");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Vui lòng nhập tên danh mục sản phẩm", null));
             } else {
                 existCategory = categoryService.getByName(categoryName);
                 if(existCategory == null) {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Danh mục sản phẩm không tồn tại tại với tên" + categoryName, null));
                 } else {
-                    return ResponseEntity.ok(existCategory);
+                    return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Danh mục sản phẩm", existCategory));
                 }
             }
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
         }
     }
+
 
     /**
      * Method update category
@@ -127,20 +141,21 @@ public class CategoryController {
      */
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("update_category/{categoryId}")
-    public ResponseEntity<?> updateCategory(@PathVariable("categoryId") int id,
-                                            @RequestBody Category category) {
+    public ResponseEntity<ObjectResponse> updateCategory(@PathVariable("categoryId") int id,
+                                                         @RequestBody Category category) {
         try {
             Category findCategory = categoryService.getCategoryById(id);
             if(findCategory == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Category not found");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Danh mục sản phẩm không tồn tại tại với id" + id, null));
             } else {
                 findCategory.setCategoryName(category.getCategoryName());
                 findCategory.setUpdateAt(category.getUpdateAt());
+                categoryService.updateCategory(id, findCategory);
+                return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Chỉnh sửa thành công", findCategory));
             }
-            categoryService.updateCategory(id, findCategory);
-            return ResponseEntity.ok("Category updated successfully with ID: " + id);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
         }
     }
+
 }

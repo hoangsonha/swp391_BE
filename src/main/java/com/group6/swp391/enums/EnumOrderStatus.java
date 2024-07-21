@@ -7,7 +7,7 @@ public enum EnumOrderStatus {
     Chờ_giao_hàng,
     Đã_hoàn_tiền,
     Chờ_xác_nhận,
-    Đến_cửa_hàng_lấy
+    Không_Thành_Công, Đến_cửa_hàng_lấy
 
 //    public static boolean checkExistOrderStatus(String s) {
 //        try {

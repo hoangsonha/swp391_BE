@@ -23,6 +23,11 @@ public class  CartServiceImp implements CartService {
     private CartItemRepository cartItemRepository;
 
     @Override
+    public Cart create(Cart cart) {
+        return cartRepository.save(cart);
+    }
+
+    @Override
     public void addCart(int userId, String productId) {
         if(isDiamondinCart(userId, productId)) {
             throw new RuntimeException("diamond already existing in your cart");

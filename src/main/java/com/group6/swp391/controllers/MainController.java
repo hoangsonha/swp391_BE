@@ -207,23 +207,30 @@ public class MainController {
      * @return list product
      */
     @GetMapping("/all_products")
-    public ResponseEntity<?> getAllProducts() {
-        List<Product> products = productService.getAllProducts();
-        return new ResponseEntity<>(products, HttpStatus.OK);
+    public ResponseEntity<ObjectResponse> getAllProducts() {
+        try {
+            List<Product> products = productService.getAllProducts();
+            if(products == null || products.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Danh sách sản phẩm trống", null));
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Danh sách sản phẩm", products));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
+        }
     }
 
     @GetMapping("/all_diamonds")
-    public ResponseEntity<?> getAllDiamonds() {
+    public ResponseEntity<ObjectResponse> getAllDiamonds() {
         List<Diamond> diamonds;
         try {
             diamonds = diamondService.getAllDiamond();
             if (diamonds == null || diamonds.isEmpty()) {
-                throw new RuntimeException("Diamond list is empty!");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Danh sách kim cương trống", null));
             } else {
-                return ResponseEntity.ok(diamonds);
+                return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Danh sách kim ương", diamonds));
             }
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Get all diamonds failed");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
         }
     }
 
