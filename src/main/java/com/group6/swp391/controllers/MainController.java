@@ -30,10 +30,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
 
@@ -78,7 +76,7 @@ public class MainController {
     }
 
     @GetMapping("/verify")
-    public void verifyAccount(@Param("code") String code, Model model, HttpServletResponse response) throws IOException {
+    public void verifyAccount(@Param("code") String code, HttpServletResponse response) {
         boolean check = false;
         try {
             check = userService.verifyAccount(code);
@@ -89,7 +87,7 @@ public class MainController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<TokenResponse> loginPage(@Valid @RequestBody UserLogin userLogin, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<TokenResponse> loginPage(@Valid @RequestBody UserLogin userLogin) {
         try {
 //            String gRecaptchaResponse = userLogin.getRecaptchaResponse();
 //            boolean check_captcha = userService.verifyRecaptcha(gRecaptchaResponse);
@@ -160,7 +158,7 @@ public class MainController {
     }
 
     @PostMapping("/forget_password")
-    public ResponseEntity<ObjectResponse> getForgetPassword(@Valid @RequestBody OTPRequest otpRequest, HttpServletRequest request, HttpServletResponse response) throws MessagingException, UnsupportedEncodingException {
+    public ResponseEntity<ObjectResponse> getForgetPassword(@Valid @RequestBody OTPRequest otpRequest, HttpServletRequest request) throws MessagingException, UnsupportedEncodingException {
         boolean checkOTPRequest = userService.checkEmailOrPhone(otpRequest.getEmailOrPhone());
         String siteUrl = request.getRequestURL().toString().replace(request.getServletPath(), "");
         boolean check = false;
@@ -191,12 +189,18 @@ public class MainController {
     }
 
     @GetMapping("/search_advanced")
-    public ResponseEntity<ObjectResponse> getDiamondBySearchAdvanced(@RequestBody SearchAdvanceRequest searchAdvanceRequest) {
+    public ResponseEntity<ObjectResponse> getDiamondBySearchAdvanced(@RequestBody @Valid SearchAdvanceRequest searchAdvanceRequest) {
         List<Diamond> lists = diamondService.searchAdvanced(searchAdvanceRequest);
         return lists.size() > 0 ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Get all diamond by search advance successfully", lists))
                 : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Get all diamond by search advance failed", null));
     }
 
+    @GetMapping("/search_advanced_specification")
+    public ResponseEntity<ObjectResponse> searchAdvancedSpecification(@RequestBody @Valid SearchAdvanceRequest searchAdvanceRequest) {
+        List<Diamond> lists = diamondService.searchAdvancedSpecification(searchAdvanceRequest);
+        return lists.size() > 0 ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Get all diamond by search advance successfully", lists))
+                : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Get all diamond by search advance failed", null));
+    }
 
     /**
      * Method get all product

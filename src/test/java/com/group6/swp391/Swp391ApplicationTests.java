@@ -1,8 +1,17 @@
 package com.group6.swp391;
 
 //import com.group6.swp391.cart.Cart;
+import com.group6.swp391.enums.EnumColorName;
+import com.group6.swp391.pojos.Diamond;
+import com.group6.swp391.repositories.DiamondRepository;
+import com.group6.swp391.specifications.DiamondSpecification;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.jpa.domain.Specification;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @SpringBootTest
 class Swp391ApplicationTests {
@@ -11,10 +20,14 @@ class Swp391ApplicationTests {
 //    @Autowired private RoleRepository roleRepository;
 //    @Autowired private UserRepository userRepository;
 //    @Autowired private UserService userService;
-//    @Autowired private DiamondRepository diamondRepository;
+    @Autowired
+    private DiamondRepository diamondRepository;
 
     @Test
     void contextLoads() {
+
+
+
 
 
 //        List<Integer> in =  userService.sendNotificationEmail();
