@@ -41,7 +41,7 @@ public class CartController {
             }
 
             cartServiceImp.addCart(cartRequest.getUserId(), cartRequest.getProductId());
-            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Thêm Giỏ Hàng Thành Công",null));
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Thêm Giỏ Hàng Thành Công",cartRequest.getProductId()));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed","Message: " +  e.getMessage(), null));
         }

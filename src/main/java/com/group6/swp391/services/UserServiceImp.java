@@ -1087,6 +1087,16 @@ public class UserServiceImp implements UserService {
         return false;
     }
 
+    @Override
+    public List<User> getStaffWithLeastOrder() {
+        return userRepository.findStaffWithLeastOrder();
+    }
+
+    @Override
+    public List<User> getDeliveryWithLeastOrder() {
+        return userRepository.findDeliveryWithLeastOrder();
+    }
+
 
     //    public boolean loginGoogle(String code) {
 //        HttpHeaders headers = new HttpHeaders();

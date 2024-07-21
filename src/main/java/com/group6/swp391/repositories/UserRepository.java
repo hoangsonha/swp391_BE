@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.List;
 
 @Repository
 @Transactional
@@ -62,9 +63,14 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     
     public User getUserByPhone(String phone);
 
-//    @Query("SELECT COUNT(*) AS new_users\n" +
-//            "FROM user\n" +
-//            "WHERE MONTH(create_at) = 6 AND YEAR(create_at) = 2024")
     @Query("SELECT COUNT(*) AS new_users FROM user u WHERE MONTH(u.createAt) = :month AND YEAR(u.createAt)=:year")
     Integer newuser(@Param("month") int month, @Param("year") int year);
+
+    @Query("SELECT u FROM user u LEFT JOIN order o ON u.userID = o.staffID.userID AND o.status ='Chờ xác nhận'" +
+            "WHERE u.role.roleID = 3 GROUP BY u ORDER BY COUNT (o) ASC")
+    List<User> findStaffWithLeastOrder();
+
+    @Query("SELECT u FROM user u LEFT JOIN order o ON u.userID = o.staffID.userID AND o.status ='Chờ giao hàng'" +
+            "WHERE u.role.roleID = 2 GROUP BY u ORDER BY COUNT (o) ASC")
+    List<User> findDeliveryWithLeastOrder();
 }

@@ -39,10 +39,10 @@ public class OrderController {
      * @return number
      */
     @PreAuthorize("hasRole('USER') or hasRole('STAFF')")
-    @GetMapping("/orderpending")
-    public ResponseEntity<ObjectResponse> countOrderPending() {
+    @GetMapping("/orderpending/{staff_id}")
+    public ResponseEntity<ObjectResponse> countOrderPending(@PathVariable("staff_id") int staffId) {
         try {
-            List<Order> orders = orderService.getNewestOrder(EnumOrderStatus.Chờ_xác_nhận.name().replaceAll("_"," "));
+            List<Order> orders = orderService.getNewestOrderStaff(staffId,EnumOrderStatus.Chờ_xác_nhận.name().replaceAll("_"," "));
             if(orders == null || orders.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Không có đơn hàng mới", null));
             }
@@ -92,6 +92,11 @@ public class OrderController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Đơn hàng không tồn tại", null));
             }
             if(confirmOrderRequest.getStatus().equalsIgnoreCase(EnumOrderStatus.Chờ_giao_hàng.name().replaceAll("_", " "))) {
+                List<User> deliverys = userService.getDeliveryWithLeastOrder();
+                if(!deliverys.isEmpty()) {
+                    User delivery = deliverys.get(0);
+                    orderExisting.setDeliveryID(delivery);
+                }
                 orderExisting.setStatus(confirmOrderRequest.getStatus());
                 orderExisting.setReason(null);
                 pointsService.createPoints(orderExisting.getUser().getUserID(), orderExisting.getOrderID());
@@ -157,6 +162,7 @@ public class OrderController {
             if(list == null || list.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Danh sách đơn hàng rỗng", null));
             }
+            list.sort(Comparator.comparing(Order::getOrderDate).reversed());
             return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Danh sách đơn hàng", list));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
@@ -205,6 +211,41 @@ public class OrderController {
             orderDetailRespone.setDeleteStatus(orderExisting.isDeleteStatus());
             orderDetailRespone.setNote(orderExisting.getNote());
             orderDetailRespone.setDiscount(orderExisting.getDiscount());
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Lấy đơn hàng thành công", orderDetailRespone));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
+        }
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/view_detail_admin/{order_id}")
+    public ResponseEntity<ObjectResponse> viewDetailAdmin(@PathVariable("order_id") int id) {
+        try {
+            Order orderExisting = orderService.getOrderByOrderID(id);
+            if(orderExisting == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Đơn hàng không tồn tại với ID " + id, null));
+            }
+            OrderDetailRespone orderDetailRespone = new OrderDetailRespone();
+            orderDetailRespone.setOrderId(orderExisting.getOrderID());
+            orderDetailRespone.setFullName(orderExisting.getFullName());
+            orderDetailRespone.setEmail(orderExisting.getEmail());
+            orderDetailRespone.setQuantity(orderExisting.getQuantity());
+            orderDetailRespone.setPrice(orderExisting.getPrice());
+            orderDetailRespone.setGender(orderExisting.getGender());
+            orderDetailRespone.setPhoneShipping(orderExisting.getPhoneShipping());
+            orderDetailRespone.setAddressShipping(orderExisting.getAddressShipping());
+            orderDetailRespone.setPayments(orderExisting.getPayments());
+            orderDetailRespone.setOrderDate(orderExisting.getOrderDate());
+            orderDetailRespone.setOrderDetails(orderExisting.getOrderDetails());
+            orderDetailRespone.setStatus(orderExisting.getStatus());
+            orderDetailRespone.setReason(orderExisting.getReason());
+            orderDetailRespone.setDeleteStatus(orderExisting.isDeleteStatus());
+            orderDetailRespone.setNote(orderExisting.getNote());
+            orderDetailRespone.setDiscount(orderExisting.getDiscount());
+            String fullNameStaff = orderExisting.getStaffID().getFirstName() + orderExisting.getStaffID().getLastName();
+            String fulNameDelivery = orderExisting.getDeliveryID().getFirstName() + orderExisting.getDeliveryID().getLastName();
+            orderDetailRespone.setStaffName(fullNameStaff);
+            orderDetailRespone.setDeliveryName(fulNameDelivery);
             return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Lấy đơn hàng thành công", orderDetailRespone));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
@@ -265,10 +306,14 @@ public class OrderController {
      * @return list new order
      */
     @PreAuthorize("hasRole('STAFF')")
-    @GetMapping("/newest_order")
-    public ResponseEntity<ObjectResponse> getNewestOrder() {
+    @GetMapping("/newest_order/{staff_id}")
+    public ResponseEntity<ObjectResponse> getNewestOrder(@PathVariable("staff_id") int id) {
         try {
-            List<Order> newestOrders = orderService.getNewestOrder(EnumOrderStatus.Chờ_xác_nhận.name().replaceAll("_"," "));
+            User userExisting = userService.getUserByID(id);
+                if(userExisting == null) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Nhân viên không tồn tại", null));
+                }
+            List<Order> newestOrders = orderService.getNewestOrderStaff(id, EnumOrderStatus.Chờ_xác_nhận.name().replaceAll("_"," "));
             if (newestOrders == null || newestOrders.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Danh sách đơn hàng mới rỗng", null));
             }
@@ -356,7 +401,12 @@ public class OrderController {
             if(existingUser == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Người dùng không tồn tại", null));
             }
+            List<User> staffs = userService.getStaffWithLeastOrder();
             Order newOrder = new Order();
+            if(!staffs.isEmpty()) {
+                User staff = staffs.get(0);
+                newOrder.setStaffID(staff);
+            }
             newOrder.setUser(existingUser);
             newOrder.setFullName(orderRequest.getFullName());
             newOrder.setPhoneShipping(orderRequest.getPhoneShipping());
@@ -430,6 +480,21 @@ public class OrderController {
             return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Tạo đơn hàng thành công", newOrder));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
+        }
+    }
+
+    @PreAuthorize("hasRole('STAFF')")
+    @GetMapping("/all_by_staff/{staff_id}")
+    public ResponseEntity<ObjectResponse> getAllStaff(@PathVariable("staff_id") int staffId) {
+        try {
+            List<Order> listOrderWithStaff = orderService.getAllWithStaff(staffId);
+            if(listOrderWithStaff == null || listOrderWithStaff.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed","Danh sách đơn hàng rỗng", null));
+            }
+            listOrderWithStaff.sort(Comparator.comparing(Order::getOrderDate).reversed());
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Danh sách đơn hàng", listOrderWithStaff));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed","Message" + e.getMessage(), null));
         }
     }
 

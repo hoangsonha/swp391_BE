@@ -32,4 +32,6 @@ public class OrderDetailRespone {
     private String email;
     private double discount;
     private EnumGenderName gender;
+    private String staffName;
+    private String deliveryName;
 }

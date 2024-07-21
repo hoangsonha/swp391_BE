@@ -65,4 +65,7 @@ public interface UserService {
 
     public boolean crawlData() throws InterruptedException;
 
+    public List<User> getStaffWithLeastOrder();
+    public List<User> getDeliveryWithLeastOrder();
+
 }

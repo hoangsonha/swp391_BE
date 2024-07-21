@@ -3,6 +3,7 @@ package com.group6.swp391.controllers;
 import com.group6.swp391.enums.EnumOrderStatus;
 import com.group6.swp391.pojos.Order;
 import com.group6.swp391.responses.NewOrderRespone;
+import com.group6.swp391.responses.ObjectResponse;
 import com.group6.swp391.responses.OrderRespone;
 import com.group6.swp391.services.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,10 +64,10 @@ public class DeliveryController {
     // Method to get the newest orders with status "Chờ giao hàng"
     // Groups orders by user and returns a list of NewOrderRespone objects
     @PreAuthorize("hasRole('DELIVERY')")
-    @GetMapping("/newest_order")
-    public ResponseEntity<?> getNewestOrder() {
+    @GetMapping("/newest_order/{delivery_id}")
+    public ResponseEntity<?> getNewestOrder(@PathVariable("delivery_id") int id) {
         try {
-            List<Order> newestOrders = orderService.getNewestOrder("Chờ giao hàng");
+            List<Order> newestOrders = orderService.getNewestOrderStaff(id,EnumOrderStatus.Chờ_giao_hàng.name().replaceAll("_"," "));
             if (newestOrders == null || newestOrders.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No order found");
             }
@@ -103,13 +104,17 @@ public class DeliveryController {
     // Method to get the count of pending delivery orders
     // Returns the count of orders with status "Chờ giao hàng"
     @PreAuthorize("hasRole('DELIVERY')")
-    @GetMapping("/pending_delivery_count")
-    public ResponseEntity<Long> getPendingDeliveryOrderCount() {
+    @GetMapping("/pending_delivery_count/{delivery_id}")
+    public ResponseEntity<ObjectResponse> getPendingDeliveryOrderCount(@PathVariable("delivery_id") int deliveryId) {
         try {
-            long count = orderService.getPendingDeliveryOrderCount();
-            return ResponseEntity.ok(count);
+            List<Order> list = orderService.getNewestOrderDelivery(deliveryId, EnumOrderStatus.Chờ_giao_hàng.name().replaceAll("_", " "));
+            if(list == null || list.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Số lượng đơn hàng cần giao rỗng", null));
+            }
+            Integer count = list.size();
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Số lượng đơn hàng cần giao", count));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(0L);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Success", "Message: " + e.getMessage(), null));
         }
     }
 

@@ -121,8 +121,13 @@ public class OrderServiceImp implements OrderService {
     }
 
     @Override
-    public List<Order> getNewestOrder(String status) {
-        return orderRepository.findTopByOrderByOrderDateDesc(status);
+    public List<Order> getNewestOrderStaff(int staffId, String status) {
+        return orderRepository.findTopByOrderByOrderDateDesc(staffId, status);
+    }
+
+    @Override
+    public List<Order> getNewestOrderDelivery(int deliveryId, String status) {
+        return orderRepository.findTopByOrderByOrderDateDescV2(deliveryId, status);
     }
 
     @Override
@@ -165,6 +170,11 @@ public class OrderServiceImp implements OrderService {
     public long getPendingDeliveryOrderCount() {
         List<Order> orders = orderRepository.findByStatus("Chờ giao hàng");
         return orders.size();
+    }
+
+    @Override
+    public List<Order> getAllWithStaff(int staffId) {
+        return orderRepository.findByStaff(staffId);
     }
 
     @Override

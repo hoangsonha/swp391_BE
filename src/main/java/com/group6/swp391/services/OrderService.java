@@ -21,7 +21,9 @@ public interface OrderService {
 
     Order saveOrder(Order order, List<OrderDetail> orderDetails);
 
-    List<Order> getNewestOrder(String status);
+    List<Order> getNewestOrderStaff(int staffId, String status);
+
+    List<Order> getNewestOrderDelivery(int deliveryId, String status);
 
     List<Order> getOrdersByStatus(String status);
 
@@ -35,6 +37,7 @@ public interface OrderService {
 
     long getPendingDeliveryOrderCount();
 
+    List<Order> getAllWithStaff(int staffId);
 
     // OrderDetailService
     List<OrderDetail> getOrderDetailsByOrderID(int orderID);
