@@ -25,7 +25,6 @@ public class OrderController {
     @Autowired DiamondService diamondService;
     @Autowired CartService cartService;
     @Autowired CartItemService cartItemService;
-    @Autowired OrderDetailService orderDetailService;
     @Autowired PointsService pointsService;
     @Autowired WarrantyCardService warrantyCardService;
     @Autowired ProductCustomizeService productCustomizeService;
@@ -211,7 +210,7 @@ public class OrderController {
     @GetMapping("/order_details_by_order/{id}")
     public ResponseEntity<?> getOrderDetailsByOrderID(@PathVariable int id) {
         try {
-            List<OrderDetail> orderDetails = orderDetailService.getOrderDetailsByOrderID(id);
+            List<OrderDetail> orderDetails = orderService.getOrderDetailsByOrderID(id);
             if (orderDetails.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NO_CONTENT)
                         .body("No order details found for order ID: " + id);

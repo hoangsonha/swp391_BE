@@ -3,6 +3,7 @@ package com.group6.swp391.controllers;
 import com.group6.swp391.jwt.JWTToken;
 import com.group6.swp391.logout.ListToken;
 import com.group6.swp391.enums.EnumRoleName;
+import com.group6.swp391.mapper.UserMapper;
 import com.group6.swp391.pojos.Diamond;
 import com.group6.swp391.pojos.Product;
 import com.group6.swp391.pojos.Role;
@@ -100,7 +101,7 @@ public class MainController {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 //SecurityContextHolder.getContext().getAuthentication().getPrincipal();
                 String s = jwtToken.generatedToken(userDetails);
-
+                User ss = UserMapper.customUserDetailToUser(userDetails);
                 userService.setQuantityLoginFailed(0, userDetails.getEmail());
                 userService.setTimeOffline(null, userDetails.getEmail());
                 userService.setQuantityReceiveEmailOffline(0, userDetails.getEmail());

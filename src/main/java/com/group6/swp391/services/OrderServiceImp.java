@@ -216,9 +216,11 @@ public class OrderServiceImp implements OrderService {
     }
 
 
-//    //Phần code phục vụ dashboard
-//    @Override
-//    public double getByMonth(int month, int year) {
-//        return 0;
-//    }
+    // orderDetailService
+
+    @Override
+    public List<OrderDetail> getOrderDetailsByOrderID(int orderID) {
+        return orderDetailRepository.findByOrderOrderID(orderID);
+    }
+
 }

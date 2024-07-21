@@ -332,4 +332,23 @@ public class DiamondServiceImp implements DiamondService {
     }
 
 
+
+
+//    @Override
+//    public Page<ResponseProductDTO> findByCriteria(List<String> fields, List<String> values, Pageable pageable) {
+//        Specification<Product> spec = Specification.where(null);
+//
+//        for (int i = 0; i < fields.size(); i++) {
+//            String field = fields.get(i);
+//            String value = values.get(i);
+//            Specification<Product> newSpec = ProductSpecification.filterByField(field, value);
+//            if (newSpec != null) {
+//                spec = spec.and(newSpec);
+//            }
+//        }
+//
+//        Page<Product> products = productRepository.findAll(spec, pageable);
+//        return products.map(productMapper::toResponseDTO);
+//    }
+
 }

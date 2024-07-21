@@ -33,6 +33,9 @@ public interface OrderService {
 
     Order updateOrderStatus(int orderID, String status);
 
-
     long getPendingDeliveryOrderCount();
+
+
+    // OrderDetailService
+    List<OrderDetail> getOrderDetailsByOrderID(int orderID);
 }
