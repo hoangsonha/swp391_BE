@@ -8,7 +8,7 @@
 ![license](https://img.shields.io/crates/l/rustc-serialize/0.3.24.svg)
 
 
-# swp391
+# SWP391
 Build a webapp to manager diamond shop with RESTfull API and Repository Pattern architecture
 
 ## How to Run
@@ -27,8 +27,10 @@ cd swp391_BE
 mvn spring-boot:run
 ```
 
-### To view Swagger 3 API docs
-Run the server and browse to 
+### To view Swagger 3 API
+
+Run the server and browse to https://diamondshopproject.azurewebsites.net/swagger-ui/index.html
+Run the development and browse to http://localhost:8080/swagger-ui/index.html
 
 ### Main function
 
@@ -42,13 +44,13 @@ Run the server and browse to
 - Recaptcha protect websites from spam and abuse by verifying that users are human
 - Send email when user register and click the link to active account
 - Payment with Paypal and VNPay by card information is issued by the parties and when user payment successfully who will receiver a email for invoice
-- Refund with paypal and vnpay
+- Refund with paypal
 - Look account when user login failed over 5 times and set over 5 minutes user can login failed 5 times again before looking account and when user login failed 6 times, account is locked
 - Send email or SMS with the OTP which has 6 numbers when user want to reset password or forget password
 - Search advanced diamonds by 7 properties which are carat, size, price (higher or lower a certain price or price range between start price and end price), color, clarify, shape and sorting price by desc or asc and user can choose any properties
 - CRUD user with admin rights
 - Get user by role, role manager only view other manager and lower role but can not view user with role admin
-- Swagger for viewing API
+- Swagger for API
 - Data is uploaded from the database (MySQL) for displaying information
 - Automation send email when user not login over 1 month and reset at 8.AM every day
 - Automation send Happy Birth Day and automation reset at 8.AM every day
