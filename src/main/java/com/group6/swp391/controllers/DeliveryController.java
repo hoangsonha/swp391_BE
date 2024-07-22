@@ -12,10 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/swp391/api/delivery")
@@ -129,6 +126,21 @@ public class DeliveryController {
             return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Số lượng đơn hàng cần giao", count));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Success", "Message: " + e.getMessage(), null));
+        }
+    }
+
+    @PreAuthorize("hasRole('DELIVERY')")
+    @GetMapping("/all_by_delivery/{delivery_id}")
+    public ResponseEntity<ObjectResponse> getAllStaff(@PathVariable("delivery_id") int deliveryId) {
+        try {
+            List<Order> listOrderWithStaff = orderService.getAllWithStaff(deliveryId);
+            if(listOrderWithStaff == null || listOrderWithStaff.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed","Danh sách đơn hàng rỗng", null));
+            }
+            listOrderWithStaff.sort(Comparator.comparing(Order::getOrderDate).reversed());
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Danh sách đơn hàng", listOrderWithStaff));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed","Message" + e.getMessage(), null));
         }
     }
 
