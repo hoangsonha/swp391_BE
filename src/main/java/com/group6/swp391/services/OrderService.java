@@ -23,6 +23,7 @@ public interface OrderService {
 
     List<Order> getNewestOrderStaff(int staffId, String status);
 
+    List<Order> getNewestOrderAdmin(String status);
     List<Order> getNewestOrderDelivery(int deliveryId, String status);
 
     List<Order> getOrdersByStatus(String status);

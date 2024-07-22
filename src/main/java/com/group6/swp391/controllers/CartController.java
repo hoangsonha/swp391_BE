@@ -167,6 +167,4 @@ public class CartController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Success", "Message: " + e.getMessage(), null));
         }
     }
-
-
 }
