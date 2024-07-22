@@ -133,9 +133,9 @@ public class DeliveryController {
     @GetMapping("/all_by_delivery/{delivery_id}")
     public ResponseEntity<ObjectResponse> getAllStaff(@PathVariable("delivery_id") int deliveryId) {
         try {
-            List<Order> listOrderWithStaff = orderService.getAllWithStaff(deliveryId);
+            List<Order> listOrderWithStaff = orderService.getAllDelivery(deliveryId);
             if(listOrderWithStaff == null || listOrderWithStaff.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed","Danh sách đơn hàng rỗng", null));
+                return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Danh sách đơn hàng rỗng", null));
             }
             listOrderWithStaff.sort(Comparator.comparing(Order::getOrderDate).reversed());
             return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Danh sách đơn hàng", listOrderWithStaff));
