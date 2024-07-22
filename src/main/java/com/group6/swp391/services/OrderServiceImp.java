@@ -173,6 +173,11 @@ public class OrderServiceImp implements OrderService {
     }
 
     @Override
+    public List<Order> getAllDelivery(int deliveryId) {
+        return orderRepository.findByDelivery(deliveryId);
+    }
+
+    @Override
     public List<Order> getAllWithStaff(int staffId) {
         return orderRepository.findByStaff(staffId);
     }

@@ -37,6 +37,8 @@ public interface OrderService {
 
     long getPendingDeliveryOrderCount();
 
+    List<Order> getAllDelivery(int deliveryId);
+
     List<Order> getAllWithStaff(int staffId);
 
     // OrderDetailService
