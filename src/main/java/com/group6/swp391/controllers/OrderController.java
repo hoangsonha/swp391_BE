@@ -243,8 +243,13 @@ public class OrderController {
             orderDetailRespone.setDeleteStatus(orderExisting.isDeleteStatus());
             orderDetailRespone.setNote(orderExisting.getNote());
             orderDetailRespone.setDiscount(orderExisting.getDiscount());
-            orderDetailRespone.setStaffID(orderExisting.getStaffID().getUserID());
-            orderDetailRespone.setDeliveryID(orderExisting.getDeliveryID().getUserID());
+            if(orderExisting.getStaffID() != null) {
+                orderDetailRespone.setStaffID(orderExisting.getStaffID().getUserID());
+            }
+            if(orderExisting.getDeliveryID() != null) {
+                orderDetailRespone.setDeliveryID(orderExisting.getDeliveryID().getUserID());
+            }
+
             return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Lấy đơn hàng thành công", orderDetailRespone));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
