@@ -126,6 +126,11 @@ public class OrderServiceImp implements OrderService {
     }
 
     @Override
+    public List<Order> getNewestOrderAdmin(String status) {
+        return orderRepository.findTopByOrderByOrderDateDescv3(status);
+    }
+
+    @Override
     public List<Order> getNewestOrderDelivery(int deliveryId, String status) {
         return orderRepository.findTopByOrderByOrderDateDescV2(deliveryId, status);
     }
