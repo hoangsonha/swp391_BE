@@ -39,6 +39,7 @@ mvn spring-boot:run
 - Deploy project and MySQL on Azure
 - Login with Google, Facebook and email - password that user registered,
 - Validation (Handle Exceptions)
+- Crawl data from browser to collect data
 - Register that admin can create user with any role but user can not choose role when user register account
 - Validation and handle exception for validation
 - Recaptcha protect websites from spam and abuse by verifying that users are human
