@@ -69,20 +69,7 @@ public class DiamondController {
      * @param diamondID
      * @return diamond
      */
-    @PreAuthorize("hasRole('ADMIN') or hasRole('USER') or hasRole('STAFF')")
-    @GetMapping("/diamond_id/{diamond_id}")
-    public ResponseEntity<ObjectResponse> getDiamondByDiamondID(@PathVariable("diamond_id") String diamondID) {
-        try {
-            Diamond existingDiamond = diamondServiceImp.getDiamondByDiamondID(diamondID);
-            if( existingDiamond == null) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Kim cương không tồn tại", null));
-            } else {
-                return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Kim Cương với Id " + diamondID, existingDiamond));
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
-        }
-    }
+
     /**
      * Method update kim cuong
      * @param diamond

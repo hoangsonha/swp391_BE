@@ -45,7 +45,7 @@ public class OrderController {
         try {
             List<Order> orders = orderService.getNewestOrderStaff(staffId,EnumOrderStatus.Chờ_xác_nhận.name().replaceAll("_"," "));
             if(orders == null || orders.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Không có đơn hàng mới", null));
+                return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Không có đơn hàng mới", null));
             }
             int count = orders.size();
             return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Số lượng đơn hàng mới", count));
@@ -161,7 +161,7 @@ public class OrderController {
         try {
             List<Order> list = orderService.getAllOrder();
             if(list == null || list.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Danh sách đơn hàng rỗng", null));
+                return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Danh sách đơn hàng rỗng", null));
             }
             list.sort(Comparator.comparing(Order::getOrderDate).reversed());
             return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Danh sách đơn hàng", list));

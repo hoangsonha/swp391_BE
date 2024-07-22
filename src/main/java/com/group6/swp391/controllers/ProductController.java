@@ -79,20 +79,7 @@ public class ProductController {
      * @param productID productId
      * @return product
      */
-    @PreAuthorize("hasRole('ADMIN') or hasRole('USER') or hasRole('STAFF')")
-    @GetMapping("/product/{product_id}")
-    public ResponseEntity<ObjectResponse> getProductById(@PathVariable("product_id") String productID) {
-        try {
-            Product product = productServiceImp.getProductById(productID);
-            if (product == null) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Sản phẩm không tồn tại", null));
-            }
-            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Lấy sản phẩm thành công", product));
 
-        }catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Lấy sản phẩm thất bại", null));
-        }
-    }
 
     /**
      * Method tim kim product dua tren category name
