@@ -84,8 +84,6 @@ public class FeedbackServiceImp implements FeedbackService {
                     if (product == null) {
                         continue;
                     }
-                    product.setRating(feedbackRequest.getRating());
-                    productRepository.save(product);
                 } else {
                     continue;
                 }
@@ -100,11 +98,25 @@ public class FeedbackServiceImp implements FeedbackService {
 
                 Feedback savedFeedback = feedbackRepository.save(feedback);
                 savedFeedbacks.add(savedFeedback);
+
+                if (product != null) {
+                    updateProductAverageRating(product);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
         return savedFeedbacks;
+    }
+
+    private void updateProductAverageRating(Product product) {
+        List<Feedback> productFeedbacks = feedbackRepository.findByProduct(product);
+        double averageRating = productFeedbacks.stream()
+                .mapToDouble(Feedback::getRating)
+                .average()
+                .orElse(0.0);
+        product.setRating(averageRating);
+        productRepository.save(product);
     }
 
     @Override
