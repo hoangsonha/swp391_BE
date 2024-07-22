@@ -76,10 +76,10 @@ public class DeliveryController {
     @GetMapping("/newest_order/{delivery_id}")
     public ResponseEntity<ObjectResponse> getNewestOrder(@PathVariable("delivery_id") int id) {
         try {
-            List<Order> newestOrders = orderService.getNewestOrderStaff(id, EnumOrderStatus.Chờ_giao_hàng.name().replaceAll("_", " "));
+            List<Order> newestOrders = orderService.getNewestOrderDelivery(id, EnumOrderStatus.Chờ_giao_hàng.name().replaceAll("_", " "));
             if (newestOrders == null || newestOrders.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NO_CONTENT)
-                        .body(new ObjectResponse("Failed", "Không tìm thấy đơn hàng", null));
+                return ResponseEntity.status(HttpStatus.OK)
+                        .body(new ObjectResponse("Success", "Không tìm thấy đơn hàng", null));
             }
 
             Map<Integer, List<OrderRespone>> userOrdersMap = new HashMap<>();
