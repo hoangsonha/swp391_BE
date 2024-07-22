@@ -7,10 +7,16 @@ import java.util.List;
 
 public interface CategoryService {
     Category createCategory(Category category);
+
     Category getCategoryById(int id);
+
     List<Category> GetAllWithName(String categoryName);
+
     List<Category> getAll();
+
     Category getByName(String categoryName);
+
     Category updateCategory(int categoryId, Category category);
+
     void deleteCategory(int id);
 }

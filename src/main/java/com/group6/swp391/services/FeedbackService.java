@@ -6,6 +6,7 @@ import com.group6.swp391.requests.FeedbackRequest;
 import java.util.List;
 
 public interface FeedbackService {
+
     List<Feedback> getAllFeedbacks();
 
     List<Feedback> getFeedbacksByDiamondID(String diamondID);

@@ -14,23 +14,28 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/swp391/api/productcustomes")
 @CrossOrigin(origins = "*")
 public class ProductCustomizeController {
 
-    @Autowired ProductCustomizeServiceImp productCustomizeServiceImp;
-    @Autowired ProductServiceImp productServiceImp;
-    @Autowired DiamondServiceImp diamondServiceImp;
-    @Autowired DiamondRepository diamondRepository;
-    @Autowired CategoryServiceImp categoryServiceImp;
-    @Autowired CartServiceImp cartServiceImp;
+    @Autowired
+    ProductCustomizeService productCustomizeService;
+    @Autowired
+    ProductService productService;
+    @Autowired
+    DiamondService diamondService;
+    @Autowired
+    DiamondRepository diamondRepository;
+    @Autowired
+    CategoryService categoryService;
+    @Autowired
+    CartService cartService;
 
     /**
      * method tao customize
      * nhan ve doi tuong custmoize va tien hang add cart
+     *
      * @return message success or fail
      */
     @PreAuthorize("hasRole('USER')")
@@ -38,15 +43,15 @@ public class ProductCustomizeController {
     public ResponseEntity<ObjectResponse> createProductCustome(@PathVariable("userId") int userId,
                                                                @RequestBody @Valid CustomizeRequest customizeRequest) {
         try {
-            if(customizeRequest == null) {
+            if (customizeRequest == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Sản phẩm chỉnh  chọn không được trống", null));
             }
-            Product product = productServiceImp.getProductById(customizeRequest.getProductId());
-            if(product == null) {
+            Product product = productService.getProductById(customizeRequest.getProductId());
+            if (product == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Sản phẩm không tồn tại", null));
             }
-            Diamond diamond = diamondServiceImp.getDiamondByDiamondID(customizeRequest.getDiamondId());
-            if(diamond == null) {
+            Diamond diamond = diamondService.getDiamondByDiamondID(customizeRequest.getDiamondId());
+            if (diamond == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Kim Cương không tồn tại", null));
             }
             ProductCustomize cus = new ProductCustomize();
@@ -55,9 +60,9 @@ public class ProductCustomizeController {
             cus.setDiamond(diamond);
             cus.setSize(customizeRequest.getSize());
             cus.setTotalPrice(product.getTotalPrice() + diamond.getTotalPrice());
-            productCustomizeServiceImp.createProductCustomize(cus);
-            cartServiceImp.addCart(userId, cus.getProdcutCustomId());
-            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Tạo thành công", cus));
+            productCustomizeService.createProductCustomize(cus);
+            cartService.addCart(userId, cus.getProdcutCustomId());
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Tạo thành công", cus));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
         }
@@ -65,6 +70,7 @@ public class ProductCustomizeController {
 
     /**
      * method tim kim mot customize
+     *
      * @param id productcustomizeId
      * @return productcustomize
      */
@@ -72,11 +78,11 @@ public class ProductCustomizeController {
     @GetMapping("/productcustomeize_id/{id}")
     public ResponseEntity<ObjectResponse> getProductCustomById(@PathVariable("id") String id) {
         try {
-            ProductCustomize exsitProductCustomize = productCustomizeServiceImp.getProductCustomizeById(id);
-            if(exsitProductCustomize == null) {
+            ProductCustomize exsitProductCustomize = productCustomizeService.getProductCustomizeById(id);
+            if (exsitProductCustomize == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Sản phẩm tùy chỉnh không tồn tại", null));
             }
-            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Sản phẩm tùy chỉnh", exsitProductCustomize));
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Sản phẩm tùy chỉnh", exsitProductCustomize));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
         }
@@ -84,31 +90,24 @@ public class ProductCustomizeController {
 
     /**
      * method delete customize
+     *
      * @return message success or fail
      */
     @PreAuthorize("hasRole('USER')")
     @DeleteMapping("/delete/{productcustomize_id}")
     public ResponseEntity<ObjectResponse> deleteProductCustomById(@PathVariable("productcustomize_id") String id) {
         try {
-            ProductCustomize productCustomize = productCustomizeServiceImp.getProductCustomizeById(id);
-            if(productCustomize == null) {
+            ProductCustomize productCustomize = productCustomizeService.getProductCustomizeById(id);
+            if (productCustomize == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Sản phẩm tùy chỉnh không tồn tại", null));
             } else {
-                productCustomizeServiceImp.deleteProductCustomize(id);
-                return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Xóa Thành Công", null));
+                productCustomizeService.deleteProductCustomize(id);
+                return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Xóa Thành Công", null));
             }
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
         }
     }
-
-
-
-
-
-
-
-
 
 
     /**

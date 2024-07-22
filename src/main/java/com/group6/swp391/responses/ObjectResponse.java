@@ -1,5 +1,7 @@
 package com.group6.swp391.responses;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import com.group6.swp391.view.Views;
 import lombok.*;
 
 @Getter
@@ -7,7 +9,12 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ObjectResponse {
-    private String code;
+    @JsonView(Views.Public.class)
+    private String status;
+
+    @JsonView(Views.Public.class)
     private String message;
+
+    @JsonView(Views.Public.class)
     private Object data;
 }
