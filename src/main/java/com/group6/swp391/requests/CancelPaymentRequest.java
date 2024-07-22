@@ -15,4 +15,6 @@ public class CancelPaymentRequest {
     @NotBlank(message = "Mã order không được để trống")
     @NotNull(message = "Vui lòng nhập mã order")
     private String orderID;
+
+    private String reason;
 }

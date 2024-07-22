@@ -216,6 +216,7 @@ public class PaymentController {
                             if(check) {
                                 String orderStatusSuccess = EnumOrderStatus.Đã_hoàn_tiền.name();
                                 order.setStatus(orderStatusSuccess.replaceAll("_", " "));
+                                order.setReason(cancelPaymentRequest.getReason());
                                 orderService.save(order);
                                 String paymentStatusSuccess = EnumPaymentStatus.Đã_hoàn_tiền.name();
                                 payment.setStatus(paymentStatusSuccess.replaceAll("_", " "));
