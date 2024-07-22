@@ -29,17 +29,19 @@ public class VNPayService {
     @Value("${vnpay.timeZone}") private String vnp_TimeZone_Va;
     @Value("${vnpay.formatDate}") private String vnp_FormatDate_Va;
 
-    public String getVNPay(double total, HttpServletRequest req, String orderID) throws UnsupportedEncodingException {
+    public String getVNPay(long total, HttpServletRequest req, String orderID) throws UnsupportedEncodingException {
         String vnp_Version = vnp_Version_Va;
         String vnp_Command = vnp_Command_Va;
         String orderType = vnp_OrderType_Va;
         String bankCode = vnp_BankCode_Va;
-        double amount = total;
+        long amount = total;
+//        String vnp_RequestId = VNPay.getRandomNumber(8);
 //      String vnp_TxnRef = VNPay.getRandomNumber(8);
         String vnp_IpAddr = VNPay.getIpAddress(req);
         String vnp_TmnCode = vnp_TmnCode_Va;
 
         Map<String, String> vnp_Params = new HashMap<>();
+//        vnp_Params.put("vnp_RequestId", vnp_RequestId);
         vnp_Params.put("vnp_Version", vnp_Version);
         vnp_Params.put("vnp_Command", vnp_Command);
         vnp_Params.put("vnp_TmnCode", vnp_TmnCode);

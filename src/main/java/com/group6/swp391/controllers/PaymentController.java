@@ -91,7 +91,7 @@ public class PaymentController {
                     if(order.getStatus().equals(orderStatus.replaceAll("_", " ")) && order != null) {
                         //Số tiền cần thanh toán nhân với 100 để triệt tiêu phần thập phân trước khi gửi sang VNPAY
                         long amount = (long) (order.getPrice() * removeDecimal);
-                        double haveToPay = amount;
+                        long haveToPay = (long) priceToUSD(amount);
                         String link = vnPayService.getVNPay(haveToPay, request, paymentRequest.getOrderID());
                         return ResponseEntity.status(HttpStatus.OK).body(new PaymentResponse("Success", "Chuyển tới trang thanh toán thành công", null, link));
                     }
