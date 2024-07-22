@@ -166,6 +166,22 @@ public class DashboardController {
         }
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/total_year_revenue")
+    public ResponseEntity<ObjectResponse> getTotalYearRevenue() {
+        try {
+            int currentYear = LocalDate.now().getYear();
+            Double totalYearCuurrent = 0.0;
+            for(int i = 1; i < 13; i++) {
+                Double moonth = dashboardService.getTotalRevenueInMonth(i,currentYear);
+                totalYearCuurrent += moonth;
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Tổng doanh thu trong một năm", totalYearCuurrent));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
+        }
+    }
+
     /**
      * Method tinh tong doanh thu tung thang cua kim cuong
      * api nay su dung cho bieu do the hien qua tung thang
