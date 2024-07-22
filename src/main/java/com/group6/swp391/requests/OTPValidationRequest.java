@@ -12,6 +12,10 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class OTPValidationRequest {
+
+    @NotNull(message = "Vui lòng nhập số điện thoại hoặc email")
+    @NotBlank(message = "Số điện thoại hoặc email không được để trống")
+    @Size(max = 255, min = 10, message = "Số điện thoại hoặc email phải từ 10 tới 255 kí tự")
     private String emailOrPhone;
 
     @NotNull(message = "Vui lòng nhập OTP")

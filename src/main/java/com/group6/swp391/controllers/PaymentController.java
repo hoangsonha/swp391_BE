@@ -19,12 +19,14 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 @RestController
@@ -41,6 +43,7 @@ public class PaymentController {
     @Autowired private DiamondService diamondService;
     @Autowired private ProductService productService;
     @Autowired private CrawledDataProperties dola;
+    @Autowired private RoleService roleService;
 
     @Value("${frontend.url}")
     private String urlRedirect;
@@ -183,16 +186,16 @@ public class PaymentController {
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(new PaymentResponse("Failed", "Thanh toán bằng VNPay thất bại", null, null));
     }
 
-    @PreAuthorize("hasRole('USER') or hasRole('DELIVERY')")
+    @PreAuthorize("hasRole('USER') or hasRole('DELIVERY') or hasRole('STAFF')")
     @PostMapping("/refund")
     public ResponseEntity<PaymentResponse> refund(@RequestBody CancelPaymentRequest cancelPaymentRequest, HttpServletRequest request) {
         try {
             Order order = orderService.getOrderByOrderID(Integer.parseInt(cancelPaymentRequest.getOrderID()));
             CustomUserDetail customUserDetail = (CustomUserDetail) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            if(customUserDetail.getUserID() == order.getUser().getUserID()) {
+            if(customUserDetail.getUserID() == order.getUser().getUserID()  || ((SimpleGrantedAuthority) ((ArrayList) customUserDetail.getGrantedAuthorities()).get(0)).getAuthority().equals(EnumRoleName.ROLE_DELIVERY.name()) || ((SimpleGrantedAuthority) ((ArrayList) customUserDetail.getGrantedAuthorities()).get(0)).getAuthority().equals(EnumRoleName.ROLE_STAFF.name())) {
                 String orderStatus = EnumOrderStatus.Chờ_giao_hàng.name();
-                String orderStatus2 = EnumOrderStatus.Đã_giao.name();
-                if (order != null && order.getStatus().equals(orderStatus.replaceAll("_", " ")) || order.getStatus().equals(orderStatus2.replaceAll("_", " "))) {
+                String orderStatus2 = EnumOrderStatus.Đến_cửa_hàng_lấy.name();
+                if (order != null && (order.getStatus().equals(orderStatus.replaceAll("_", " ")) || order.getStatus().equals(orderStatus2.replaceAll("_", " ")))) {
                     com.group6.swp391.pojos.Payment payment = paymentService.findByOrder(order);
                     double amount = 0;
                     String paymentStatus = EnumPaymentStatus.Thanh_toán_thành_công.name();

@@ -27,6 +27,9 @@ public class ReportService {
 
     @Autowired private UserRepository userRepository;
 
+    @Value("${report.path}")
+    private String reportPath;
+
     @Value("${excel.sheetName}")
     private String excelTitle;
 
@@ -39,7 +42,7 @@ public class ReportService {
     @Value("${report.createBy}")
     private String createBy;
 
-    public void exportReport(HttpServletResponse response,String reportFormat) throws IOException, JRException, SQLException, NoSuchFieldException {
+    public void exportReport(HttpServletResponse response,String reportFormat) throws IOException, JRException {
 
         List<User> listsUser = userRepository.findAll();
         if(listsUser.size() > 0) {
@@ -50,7 +53,7 @@ public class ReportService {
             }
         }
 
-        File file = ResourceUtils.getFile("classpath:user.jrxml");
+        File file = ResourceUtils.getFile(reportPath);
         JasperReport jr = JasperCompileManager.compileReport(file.getAbsolutePath());
         JRBeanCollectionDataSource ds = new JRBeanCollectionDataSource(listsUser);
 
@@ -116,6 +119,12 @@ public class ReportService {
         ops.close();
     }
 
+
+
+
+
+
+
 //    public void exportExcel(HttpServletResponse response) throws IOException {
 //
 //        List<User> userList = userRepository.findAll();
@@ -155,4 +164,6 @@ public class ReportService {
 //        workbook.close();
 //        ops.close();
 //    }
+
+
 }

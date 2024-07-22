@@ -1,5 +1,6 @@
 package com.group6.swp391.controllers;
 
+import com.group6.swp391.config.CustomUserDetail;
 import com.group6.swp391.pojos.Cart;
 import com.group6.swp391.pojos.User;
 import com.group6.swp391.repositories.CartItemRepository;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +24,7 @@ import java.util.List;
 @RequestMapping("/swp391/api/carts")
 @CrossOrigin(origins = "*")
 public class CartController {
+
     @Autowired CartServiceImp cartServiceImp;
     @Autowired CartItemRepository CartItemRepository;
     @Autowired UserService userService;
@@ -35,6 +38,10 @@ public class CartController {
     @PreAuthorize("hasRole('USER')")
     @PostMapping("/add_cart")
     public ResponseEntity<ObjectResponse> addCart(@RequestBody @Valid CartRequest cartRequest) {
+        CustomUserDetail customUserDetail = (CustomUserDetail) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if(customUserDetail.getUserID() != cartRequest.getUserId()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ObjectResponse("Failed", "Thêm sản phẩm thất bại do bạn không có quyền truy cập", null));
+        }
         try {
             if(cartRequest.getProductId() == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Kim Cương Không Tồn Tại", null));
@@ -55,6 +62,10 @@ public class CartController {
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/cartUser/{user_id}")
     public ResponseEntity<ObjectResponse> getCartByUserId(@PathVariable("user_id") int userId) {
+        CustomUserDetail customUserDetail = (CustomUserDetail) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if(customUserDetail.getUserID() != userId) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ObjectResponse("Failed", "Xem sản phẩm thất bại do bạn không có quyền truy cập", null));
+        }
         try {
             User userExisting = userService.getUserByID(userId);
             if(userExisting == null) {
@@ -133,6 +144,10 @@ public class CartController {
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/{user_id}")
     public ResponseEntity<ObjectResponse> countQuantityIncart(@PathVariable("user_id") int id) {
+        CustomUserDetail customUserDetail = (CustomUserDetail) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if(customUserDetail.getUserID() != id) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ObjectResponse("Failed", "Lấy số lượng sản phẩm trong giỏ hàng thất bại do bạn không có quyền truy cập", null));
+        }
         try {
             Cart exsitingCart = cartServiceImp.getCart(id);
             if (exsitingCart == null) {
@@ -144,4 +159,6 @@ public class CartController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Success", "Message: " + e.getMessage(), null));
         }
     }
+
+
 }
