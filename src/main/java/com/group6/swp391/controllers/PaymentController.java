@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -130,6 +131,13 @@ public class PaymentController {
                         orderStatusSuccess = EnumOrderStatus.Đến_cửa_hàng_lấy.name();
                     }
                     order.setStatus(orderStatusSuccess.replaceAll("_", " "));
+                    if(orderStatusSuccess.equals(EnumOrderStatus.Chờ_giao_hàng.name())) {
+                        List<User> deliveries = userService.getDeliveryWithLeastOrder();
+                        if(!deliveries.isEmpty()) {
+                            User delivery = deliveries.get(0);
+                            order.setDeliveryID(delivery);
+                        }
+                    }
                     orderService.save(order);
                     userService.sendInvoice(order);
                     response.sendRedirect(urlRedirect);
