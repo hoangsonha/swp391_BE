@@ -69,7 +69,7 @@ public class OrderController {
             }
             List<Order> orders = orderService.getStatusByUser(userExisting.getUserID(), EnumOrderStatus.Chờ_thanh_toán.name().replaceAll("_"," "));
             if(orders == null || orders.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Không có đơn hàng đợi thanh toán", null));
+                return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Không có đơn hàng đợi thanh toán", 0));
             }
             int count = orders.size();
             return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Số lượng đơn hàng đang đợi thanh toán", count));
@@ -242,8 +242,8 @@ public class OrderController {
             orderDetailRespone.setDeleteStatus(orderExisting.isDeleteStatus());
             orderDetailRespone.setNote(orderExisting.getNote());
             orderDetailRespone.setDiscount(orderExisting.getDiscount());
-            String fullNameStaff = orderExisting.getStaffID().getFirstName() + orderExisting.getStaffID().getLastName();
-            String fulNameDelivery = orderExisting.getDeliveryID().getFirstName() + orderExisting.getDeliveryID().getLastName();
+            String fullNameStaff = orderExisting.getStaffID().getFirstName() + " " +orderExisting.getStaffID().getLastName();
+            String fulNameDelivery = orderExisting.getDeliveryID().getFirstName() + " " + orderExisting.getDeliveryID().getLastName();
             orderDetailRespone.setStaffName(fullNameStaff);
             orderDetailRespone.setDeliveryName(fulNameDelivery);
             return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Lấy đơn hàng thành công", orderDetailRespone));
@@ -275,7 +275,7 @@ public class OrderController {
     public ResponseEntity<ObjectResponse> getOrdersByUserID(@PathVariable int id) {
         try {
             List<Order> orders = orderService.getOrderByUserID(id);
-            if(orders == null) {
+            if(orders == null || orders.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Không tim thấy đơn hàng với ID " +id, null));
             }
             List<NewOrderRespone> newOrders = new ArrayList<>();
@@ -292,8 +292,8 @@ public class OrderController {
                 orderRespone.setStatus(order.getStatus());
                 orderRespone.setOrderDetail(order.getOrderDetails().get(0));
                 orderRespones.add(orderRespone);
-                newOrderRespone.setOrders(orderRespones);
             }
+            newOrderRespone.setOrders(orderRespones);
             newOrders.add(newOrderRespone);
             return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Lấy đơn hàng thành công", newOrders));
         } catch (Exception e) {
