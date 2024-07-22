@@ -70,7 +70,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
             "WHERE u.role.roleID = 3 GROUP BY u ORDER BY COUNT (o) ASC")
     List<User> findStaffWithLeastOrder();
 
-    @Query("SELECT u FROM user u LEFT JOIN order o ON u.userID = o.staffID.userID AND o.status ='Chờ giao hàng'" +
+    @Query("SELECT u FROM user u LEFT JOIN order o ON u.userID = o.deliveryID.userID AND o.status ='Chờ giao hàng'" +
             "WHERE u.role.roleID = 2 GROUP BY u ORDER BY COUNT (o) ASC")
     List<User> findDeliveryWithLeastOrder();
 }
