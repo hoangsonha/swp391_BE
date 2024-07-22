@@ -84,7 +84,7 @@ public class OrderController {
      * dua vao trang thasi de thuc hien mot so quy trinh nhu tao diem,...
      * @return message success or fail
      */
-    @PreAuthorize("hasRole('USER') or hasRole('STAFF')")
+    @PreAuthorize("hasRole('USER') or hasRole('STAFF') or hasRole('DELIVERY')")
     @PutMapping("/update_status/{order_id}")
     public ResponseEntity<ObjectResponse> updateStatusOrder(@PathVariable("order_id") int id, @RequestBody ConfirmOrderRequest confirmOrderRequest) {
         try {
