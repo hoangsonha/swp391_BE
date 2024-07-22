@@ -17,6 +17,7 @@ import java.util.List;
 @RequestMapping("/swp391/api/products")
 @CrossOrigin(origins = "*")
 public class ProductController {
+
     @Autowired ProductServiceImp productServiceImp;
     @Autowired CategoryServiceImp categoryServiceImp;
     @Autowired DiamondServiceImp diamondServiceImp;
@@ -40,7 +41,7 @@ public class ProductController {
                 product.setTotalPrice((product.getWagePrice() + product.getOriginalPrice())*(1+ product.getRatio()));
                 Category existingCate = categoryServiceImp.getByName(product.getCategory().getCategoryName());
                 if(existingCate == null) {
-                    throw new RuntimeException("Category not found");
+                    throw new RuntimeException("Không tìm tấy loại sản phẩm");
                 } else {
                     product.setCategory(existingCate);
                 }
@@ -69,7 +70,7 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Tạo sản phẩm thành công", product));
 
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Tạo sản phẩm thất bại", null));
         }
     }
 
@@ -89,7 +90,7 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Lấy sản phẩm thành công", product));
 
         }catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Lấy sản phẩm thất bại", null));
         }
     }
 
@@ -106,10 +107,10 @@ public class ProductController {
             if(products == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Danh sách sản phẩm không tồn tại", null));
             }
-            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Danh sách sản phẩm", products));
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Lấy danh sách sản phẩm thành công", products));
 
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Lấy danh sách sản phẩm thành công", null));
         }
     }
 
@@ -196,9 +197,9 @@ public class ProductController {
                 updateProductThumbnails(existingProduct, product.getProductImages());
             }
             productServiceImp.updateProduct(id, existingProduct);
-            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Chỉnh sửa thành công\n", existingProduct));
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Chỉnh sửa thành công", existingProduct));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Chỉnh sửa thất bại", null));
         }
     }
 
@@ -219,7 +220,7 @@ public class ProductController {
                 return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Xóa Thành Công với ID " + productID, null));
             }
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Xoá sản phẩm thất bại", null));
         }
     }
 
@@ -248,7 +249,7 @@ public class ProductController {
             productServiceImp.deleteProducts(prodcutIds);
             return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Xóa Thành Công", null));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Xóa Thất bại", null));
         }
     }
 

@@ -15,6 +15,7 @@ import java.sql.SQLException;
 @RequestMapping("/swp391/api/report")
 @CrossOrigin(origins = "*")
 public class ReportController {
+
     @Autowired private ReportService reportService;
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('STAFF') ")
@@ -36,5 +37,6 @@ public class ReportController {
             reportService.exportReport(response, reportFormat);
         }
     }
+
 
 }

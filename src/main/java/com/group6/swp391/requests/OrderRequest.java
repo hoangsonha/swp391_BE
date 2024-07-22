@@ -1,9 +1,11 @@
 package com.group6.swp391.requests;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.group6.swp391.enums.EnumGenderName;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.springframework.format.annotation.DateTimeFormat;
 
 
 @Getter
@@ -26,6 +28,7 @@ public class OrderRequest {
     @NotNull(message = "Vui lòng nhập số điện thoại giao hàng")
     @NotBlank(message = "Số điện thoại giao hàng không được để trống")
     @Size(min = 10, max = 12, message = "Số điện thoại phải có độ dài từ 10 đến 12 ký tự")
+//    @Pattern(regexp = "^\\d{10}$", message = "Phone khong hop le")
     String phoneShipping;
 
     @NotNull(message = "Vui lòng nhập giá")
@@ -50,4 +53,10 @@ public class OrderRequest {
     double discount;
 
     EnumGenderName gender;
+
+
+
+//    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+//    @JsonFormat(pattern = "yyyy-MM-dd")
+//    private Date date;
 }

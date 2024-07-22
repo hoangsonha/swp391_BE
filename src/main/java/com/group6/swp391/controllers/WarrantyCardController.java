@@ -21,14 +21,8 @@ import java.util.Optional;
 @RequestMapping("/swp391/api/warrantycards")
 @CrossOrigin(origins = "*")
 public class WarrantyCardController {
-    @Autowired
-    WarrantyCardServiceImp warrantyCardServiceImp;
-    @Autowired
-    ProductCustomizeServiceImp productCustomizeServiceImp;
-    @Autowired
-    DiamondServiceImp diamondServiceImp;
-    @Autowired
-    UserServiceImp userServiceImp;
+
+    @Autowired private WarrantyCardService warrantyCardService;
 
     // Get a warranty card by its ID
     // Input: warrantyCard_id (int)
@@ -37,7 +31,7 @@ public class WarrantyCardController {
     @GetMapping("/warrantyCard_id/{warrantyCard_id}")
     public ResponseEntity<ObjectResponse> getById(@PathVariable("warrantyCard_id") int id) {
         try {
-            WarrantyCard wc = warrantyCardServiceImp.getById(id);
+            WarrantyCard wc = warrantyCardService.getById(id);
             if (wc == null) {
                 return ResponseEntity.badRequest().body(new ObjectResponse("Failed", "Không tìm thấy thẻ bảo hành với id " + id, null));
             }
@@ -70,7 +64,7 @@ public class WarrantyCardController {
     @JsonView(Views.Public.class)
     public ResponseEntity<ObjectResponse> searchWarrantyCards(@RequestParam("query") String query) {
         try {
-            Optional<WarrantyCard> optionalWarrantyCard = warrantyCardServiceImp.searchWarrantyCards(query);
+            Optional<WarrantyCard> optionalWarrantyCard = warrantyCardService.searchWarrantyCards(query);
             if (!optionalWarrantyCard.isPresent()) {
                 return ResponseEntity.ok(new ObjectResponse("Failed", "Không tìm thấy thẻ bảo hành", null));
             }
@@ -96,7 +90,7 @@ public class WarrantyCardController {
     @JsonView(Views.Internal.class)
     public ResponseEntity<ObjectResponse> getAll() {
         try {
-            List<WarrantyCard> warrantyCards = warrantyCardServiceImp.getAll();
+            List<WarrantyCard> warrantyCards = warrantyCardService.getAll();
             if (warrantyCards == null || warrantyCards.isEmpty()) {
                 return ResponseEntity.ok(new ObjectResponse("Failed", "Không có thẻ bảo hành nào", null));
             }
@@ -127,7 +121,7 @@ public class WarrantyCardController {
     public ResponseEntity<ObjectResponse> getByUserId(@PathVariable("user_id") int id) {
         try {
             List<WarrantyCardRespone> warrantyCardRespones = new ArrayList<>();
-            List<WarrantyCard> warrantyCards = warrantyCardServiceImp.getByUser(id);
+            List<WarrantyCard> warrantyCards = warrantyCardService.getByUser(id);
             if(warrantyCards == null || warrantyCards.isEmpty()) {
                 return ResponseEntity.ok(new ObjectResponse("Failed", "Không có thẻ bảo hành nào", warrantyCardRespones));
             }
@@ -154,7 +148,7 @@ public class WarrantyCardController {
     @GetMapping("/getExpiringSoon")
     public ResponseEntity<ObjectResponse> getExpiringSoon() {
         try {
-            List<WarrantyCard> warrantyCards = warrantyCardServiceImp.findWarrantyCardsExpiringSoon();
+            List<WarrantyCard> warrantyCards = warrantyCardService.findWarrantyCardsExpiringSoon();
             if(warrantyCards == null || warrantyCards.isEmpty()) {
                 return ResponseEntity.ok(new ObjectResponse("Failed", "Không có thẻ bảo hành nào sắp hết hạn", null));
             }
@@ -169,14 +163,16 @@ public class WarrantyCardController {
     @DeleteMapping("/warrantyCard_id/{warrantyCard_id}")
     public ResponseEntity<ObjectResponse> deleteWarrantyCard(@PathVariable("warrantyCard_id") int id) {
         try {
-            WarrantyCard warrantyCard = warrantyCardServiceImp.getById(id);
+            WarrantyCard warrantyCard = warrantyCardService.getById(id);
             if(warrantyCard == null) {
                 return ResponseEntity.badRequest().body(new ObjectResponse("Failed", "Không tìm thấy thẻ bảo hành", null));
             }
-            warrantyCardServiceImp.deleteWarrantyCard(id);
+            warrantyCardService.deleteWarrantyCard(id);
             return ResponseEntity.ok(new ObjectResponse("Success", "Xóa thẻ bảo hành thành công", null));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ObjectResponse("Failed", "Lỗi hệ thống", e.getMessage()));
         }
     }
+
+
 }

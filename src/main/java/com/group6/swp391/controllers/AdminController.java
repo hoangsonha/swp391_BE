@@ -39,8 +39,8 @@ public class AdminController {
         boolean check = false;
         if(lists !=null) if(lists.size() > 0) check = true;
 
-        return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Get all users successfully", lists))
-                : ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ObjectResponse("Failed", "Get_all users failed", lists));
+        return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Lấy danh sách người dùng và nhân viên thành công", lists))
+                : ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ObjectResponse("Failed", "Lấy danh sách người dùng và nhân viên thất bại", lists));
     }
 
     @GetMapping("/all_role")
@@ -49,8 +49,8 @@ public class AdminController {
         boolean check = false;
         if(lists !=null) if(lists.size() > 0) check = true;
 
-        return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Get all role successfully", lists))
-                : ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ObjectResponse("Failed", "Get_all role failed", lists));
+        return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Lấy tất cả quyền thành công", lists))
+                : ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ObjectResponse("Failed", "Lấy tất cả quyền thất bại", lists));
     }
 
     @PostMapping("/register")
@@ -84,22 +84,22 @@ public class AdminController {
                 randomString, false, true, role, 0, null, null, null, 0);
         if(userService.getUserByEmail(adminRegister.getEmail()) != null || adminRegister.getEmail() == null) {
             check = false;
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Create account failed", null));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Tạo tài khoản thất bại", null));
         }
         if(check) {
             userService.save(user);
             String siteUrl = request.getRequestURL().toString().replace(request.getServletPath(), "");
             check = userService.sendVerificationEmail(user, siteUrl);
         }
-        return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Create account successfully", user))
-                : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Create account failed", null));
+        return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Tạo tài khoản thành công", user))
+                : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Tạo tài khoản thất bại", null));
     }
 
     @PostMapping("/locked_user/{id}")
     public ResponseEntity<ObjectResponse> adminLockedAccount(@PathVariable("id") int id) {
         boolean check = userService.lockedUser(id);
-        return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Lock account successfully", null))
-                : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Lock account failed", null));
+        return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Khoá tài khoản thành công với ID: " + id, null))
+                : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Khoá tài khoản thành công với ID: " + id, null));
     }
 
     @PostMapping("/unlocked_user/{id}")
@@ -109,16 +109,18 @@ public class AdminController {
         if(user != null) {
             userService.setQuantityLoginFailed(0, user.getEmail());
         }
-        return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Lock account successfully", null))
-                : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Lock account failed", null));
+        return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Mở khoá tài khoản thành công", null))
+                : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Mở khoá tài khoản thất bại", null));
     }
 
     @PostMapping("/delete/{id}")
     public ResponseEntity<ObjectResponse> adminDeleteAccount(@PathVariable("id") int id) {
         User user = userService.getUserByID(id);
         userService.lockedUserByEmail(user.getEmail());
-        return  ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Delete account successfully", null));
+        return  ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Xoá tài khoản thành công", null));
     }
+
+
 
 
 
@@ -128,5 +130,6 @@ public class AdminController {
 //        userService.lockedUserByEmail(user.getEmail());
 //        return  ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Delete account successfully", null));
 //    }
+
 
 }

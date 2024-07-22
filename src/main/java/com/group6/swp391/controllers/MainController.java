@@ -12,10 +12,7 @@ import com.group6.swp391.requests.*;
 import com.group6.swp391.responses.ObjectResponse;
 import com.group6.swp391.responses.TokenResponse;
 import com.group6.swp391.config.CustomUserDetail;
-import com.group6.swp391.services.DiamondService;
-import com.group6.swp391.services.ProductService;
-import com.group6.swp391.services.RoleService;
-import com.group6.swp391.services.UserService;
+import com.group6.swp391.services.*;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -25,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -33,6 +31,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @RestController
@@ -48,6 +48,7 @@ public class MainController {
     @Autowired private BCryptPasswordEncoder bCryptPasswordEncoder;
     @Autowired private DiamondService diamondService;
     @Autowired private ProductService productService;
+    @Autowired private SearchService searchService;
 
     @Value("${frontend.url}")
     private String urlRedirect;
@@ -233,6 +234,30 @@ public class MainController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
         }
     }
+
+
+    @GetMapping("/search")
+    public ResponseEntity<ObjectResponse> search(@RequestParam String query) {
+        try {
+            String decodedQuery = URLDecoder.decode(query, StandardCharsets.UTF_8);
+            List<Object> results = searchService.search(decodedQuery);
+            if (results.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new ObjectResponse("Failed", "Không tìm thấy kết quả nào", null));
+            } else {
+                return ResponseEntity.ok(new ObjectResponse("Success", "Lấy kết quả tìm kiếm thành công", results));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ObjectResponse("Failed", "Lấy kết quả tìm kiếm không thành công", e.getMessage()));
+        }
+    }
+
+
+
+
+
+
 
 
 

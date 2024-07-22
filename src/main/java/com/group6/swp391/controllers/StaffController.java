@@ -24,20 +24,19 @@ import java.util.UUID;
 @RequestMapping("/swp391/api/staff")
 @CrossOrigin(origins = "*")
 public class StaffController {
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private RoleService roleService;
 
-    @GetMapping("/all_users")
+    @Autowired private UserService userService;
+    @Autowired private RoleService roleService;
+
     @PreAuthorize("hasRole('STAFF')")
+    @GetMapping("/all_users")
     public ResponseEntity<ObjectResponse> getAllUser() {
         List<User> lists = userService.findAll(EnumRoleName.ROLE_STAFF.name());
         boolean check = false;
         if (lists != null) if (lists.size() > 0) check = true;
 
-        return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Get all users successfully", lists))
-                : ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ObjectResponse("Failed", "Get all users failed", lists));
+        return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Lấy toàn bộ người dùng thành công", lists))
+                : ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ObjectResponse("Failed", "Lấy toàn bộ người dùng thất bại", lists));
     }
 
     @PreAuthorize("hasRole('STAFF')")
@@ -56,8 +55,8 @@ public class StaffController {
             check = userService.sendVerificationEmail(user, siteUrl);
         }
 
-        return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Create account successfully", user))
-                : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Create account failed", user));
+        return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Tạo ra tài khoản người dùng thành công", user))
+                : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Tạo ra tài khoản người dùng thất bại", user));
     }
 
     @PreAuthorize("hasRole('STAFF')")
@@ -65,8 +64,8 @@ public class StaffController {
     public ResponseEntity<ObjectResponse> staffDeleteAccount(@PathVariable("id") int id) {
         boolean check = userService.lockedUser(id);
 
-        return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Delete account successfully", null))
-                : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Delete account failed", null));
+        return check ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Xoá tài khoản người dùng thành công", null))
+                : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Xoá tài khoản người dùng thất bại", null));
     }
 
 }
