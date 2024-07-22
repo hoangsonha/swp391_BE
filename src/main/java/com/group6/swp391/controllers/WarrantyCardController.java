@@ -2,6 +2,7 @@ package com.group6.swp391.controllers;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.group6.swp391.pojos.*;
+import com.group6.swp391.responses.ObjectResponse;
 import com.group6.swp391.responses.WarrantyCardDetailRespone;
 import com.group6.swp391.responses.WarrantyCardRespone;
 import com.group6.swp391.services.*;
@@ -34,11 +35,11 @@ public class WarrantyCardController {
     // Output: WarrantyCardDetailRespone or error message
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping("/warrantyCard_id/{warrantyCard_id}")
-    public ResponseEntity<?> getById(@PathVariable("warrantyCard_id") int id) {
+    public ResponseEntity<ObjectResponse> getById(@PathVariable("warrantyCard_id") int id) {
         try {
             WarrantyCard wc = warrantyCardServiceImp.getById(id);
             if (wc == null) {
-                return ResponseEntity.badRequest().body("Warranty card id " + id + " not found");
+                return ResponseEntity.badRequest().body(new ObjectResponse("Failed", "Không tìm thấy thẻ bảo hành với id " + id, null));
             }
             WarrantyCardDetailRespone wcd = new WarrantyCardDetailRespone();
             wcd.setUserId(wc.getUserId());
@@ -58,20 +59,20 @@ public class WarrantyCardController {
                 wcd.setObjectType("Diamond");
                 wcd.setPrice(wc.getDiamond().getTotalPrice());
             }
-            return ResponseEntity.ok(wcd);
+            return ResponseEntity.ok(new ObjectResponse("Success", "Lấy thông tin thẻ bảo hành thành công", wcd));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ObjectResponse("Failed", "Lỗi hệ thống", e.getMessage()));
         }
     }
 
     // Searches for warranty cards based on a query
     @GetMapping("/search")
     @JsonView(Views.Public.class)
-    public ResponseEntity<?> searchWarrantyCards(@RequestParam("query") String query) {
+    public ResponseEntity<ObjectResponse> searchWarrantyCards(@RequestParam("query") String query) {
         try {
             Optional<WarrantyCard> optionalWarrantyCard = warrantyCardServiceImp.searchWarrantyCards(query);
             if (!optionalWarrantyCard.isPresent()) {
-                return ResponseEntity.ok().build();
+                return ResponseEntity.ok(new ObjectResponse("Failed", "Không tìm thấy thẻ bảo hành", null));
             }
             WarrantyCard warrantyCard = optionalWarrantyCard.get();
             WarrantyCardRespone warrantyCardRespone = new WarrantyCardRespone();
@@ -83,9 +84,9 @@ public class WarrantyCardController {
             }
             warrantyCardRespone.setPurchaseDate(warrantyCard.getPurchaseDate());
             warrantyCardRespone.setExpirationDate(warrantyCard.getExpirationDate());
-            return ResponseEntity.ok(warrantyCardRespone);
+            return ResponseEntity.ok(new ObjectResponse("Success", "Lấy thẻ bảo hành thành công", warrantyCardRespone));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ObjectResponse("Failed", "Lỗi hệ thống", e.getMessage()));
         }
     }
 
@@ -93,11 +94,11 @@ public class WarrantyCardController {
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping("/all_warranty_card")
     @JsonView(Views.Internal.class)
-    public ResponseEntity<?> getAll() {
+    public ResponseEntity<ObjectResponse> getAll() {
         try {
             List<WarrantyCard> warrantyCards = warrantyCardServiceImp.getAll();
             if (warrantyCards == null || warrantyCards.isEmpty()) {
-                return ResponseEntity.noContent().build();
+                return ResponseEntity.ok(new ObjectResponse("Failed", "Không có thẻ bảo hành nào", null));
             }
             List<WarrantyCardRespone> warrantyCardRespones = new ArrayList<>();
             for (WarrantyCard warrantyCard : warrantyCards) {
@@ -113,9 +114,9 @@ public class WarrantyCardController {
                 warrantyCardRespone.setUserId(warrantyCard.getUserId());
                 warrantyCardRespones.add(warrantyCardRespone);
             }
-            return ResponseEntity.ok(warrantyCardRespones);
+            return ResponseEntity.ok(new ObjectResponse("Success", "Lấy tất cả thẻ bảo hành thành công", warrantyCardRespones));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ObjectResponse("Failed", "Lỗi hệ thống", e.getMessage()));
         }
     }
 
@@ -123,13 +124,12 @@ public class WarrantyCardController {
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping("/user/{user_id}")
     @JsonView(Views.Public.class)
-    public ResponseEntity<?> getByUserId(@PathVariable("user_id") int id) {
+    public ResponseEntity<ObjectResponse> getByUserId(@PathVariable("user_id") int id) {
         try {
             List<WarrantyCardRespone> warrantyCardRespones = new ArrayList<>();
             List<WarrantyCard> warrantyCards = warrantyCardServiceImp.getByUser(id);
             if(warrantyCards == null || warrantyCards.isEmpty()) {
-                //return ResponseEntity.ok().body("Not warranty card");
-                return ResponseEntity.ok(warrantyCardRespones);
+                return ResponseEntity.ok(new ObjectResponse("Failed", "Không có thẻ bảo hành nào", warrantyCardRespones));
             }
             for(WarrantyCard warrantyCard : warrantyCards) {
                 WarrantyCardRespone warrantyCardRespone = new WarrantyCardRespone();
@@ -143,43 +143,40 @@ public class WarrantyCardController {
                 warrantyCardRespone.setExpirationDate(warrantyCard.getExpirationDate());
                 warrantyCardRespones.add(warrantyCardRespone);
             }
-            return ResponseEntity.ok(warrantyCardRespones);
+            return ResponseEntity.ok(new ObjectResponse("Success", "Lấy thẻ bảo hành theo ID người dùng thành công", warrantyCardRespones));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ObjectResponse("Failed", "Lỗi hệ thống", e.getMessage()));
         }
     }
 
     // Retrieves warranty cards that are expiring soon
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping("/getExpiringSoon")
-    public ResponseEntity<List<WarrantyCard>> getExpiringSoon() {
-        List<WarrantyCard> warrantyCards;
+    public ResponseEntity<ObjectResponse> getExpiringSoon() {
         try {
-            warrantyCards = warrantyCardServiceImp.findWarrantyCardsExpiringSoon();
-            if(warrantyCards == null) {
-                return ResponseEntity.badRequest().body(null);
+            List<WarrantyCard> warrantyCards = warrantyCardServiceImp.findWarrantyCardsExpiringSoon();
+            if(warrantyCards == null || warrantyCards.isEmpty()) {
+                return ResponseEntity.ok(new ObjectResponse("Failed", "Không có thẻ bảo hành nào sắp hết hạn", null));
             }
-            return ResponseEntity.ok(warrantyCards);
+            return ResponseEntity.ok(new ObjectResponse("Success", "Lấy thẻ bảo hành sắp hết hạn thành công", warrantyCards));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ObjectResponse("Failed", "Lỗi hệ thống", e.getMessage()));
         }
     }
 
     // Deletes a warranty card by its ID
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @DeleteMapping("/warrantyCard_id/{warrantyCard_id}")
-    public ResponseEntity<String> deleteWarrantyCard(@PathVariable("warrantyCard_id") int id) {
-        WarrantyCard warrantyCard;
+    public ResponseEntity<ObjectResponse> deleteWarrantyCard(@PathVariable("warrantyCard_id") int id) {
         try {
-            warrantyCard = warrantyCardServiceImp.getById(id);
+            WarrantyCard warrantyCard = warrantyCardServiceImp.getById(id);
             if(warrantyCard == null) {
-                return ResponseEntity.badRequest().body("WarrantyCard not found");
+                return ResponseEntity.badRequest().body(new ObjectResponse("Failed", "Không tìm thấy thẻ bảo hành", null));
             }
             warrantyCardServiceImp.deleteWarrantyCard(id);
-            return ResponseEntity.ok().body("Delete warrantyCard successfully!");
+            return ResponseEntity.ok(new ObjectResponse("Success", "Xóa thẻ bảo hành thành công", null));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ObjectResponse("Failed", "Lỗi hệ thống", e.getMessage()));
         }
     }
-
 }

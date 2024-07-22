@@ -32,17 +32,19 @@ public class FeedbackController {
     // Returns a list of all feedbacks or an appropriate error message
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('STAFF') ")
     @GetMapping("/all_feedbacks")
-    public ResponseEntity<?> getAllFeedbacks() {
+    public ResponseEntity<ObjectResponse> getAllFeedbacks() {
         List<Feedback> feedbacks;
         try {
             feedbacks = feedbackService.getAllFeedbacks();
             if (feedbacks.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Feedback list is empty");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new ObjectResponse("Failed", "Danh sách đánh giá rỗng", null));
             } else {
-                return ResponseEntity.ok(feedbacks);
+                return ResponseEntity.ok(new ObjectResponse("Success", "Lấy danh sách đánh giá thành công", feedbacks));
             }
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Get all feedbacks failed");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ObjectResponse("Failed", "Lấy danh sách đánh giá không thành công", null));
         }
     }
 
@@ -50,19 +52,19 @@ public class FeedbackController {
     // Accepts a diamond ID as a path variable and returns a list of feedbacks or an error message
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('STAFF') ")
     @GetMapping("/feedbacks_by_diamond/{id}")
-    public ResponseEntity<?> getFeedbacksByDiamondID(@PathVariable String id) {
+    public ResponseEntity<ObjectResponse> getFeedbacksByDiamondID(@PathVariable String id) {
         List<Feedback> feedbacks;
         try {
             feedbacks = feedbackService.getFeedbacksByDiamondID(id);
             if (feedbacks.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body("No feedback found for diamond ID: " + id);
+                        .body(new ObjectResponse("Failed", "Không tìm thấy đánh giá nào với diamondID: " + id, null));
             } else {
-                return ResponseEntity.ok(feedbacks);
+                return ResponseEntity.ok(new ObjectResponse("Success", "Lấy danh sách đánh giá thành công với diamondID: " + id, feedbacks));
             }
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error retrieving feedback for diamond ID: " + id);
+                    .body(new ObjectResponse("Failed", "Lấy danh sách đánh giá không thành công với diamondID: " + id, null));
         }
     }
 
@@ -70,19 +72,19 @@ public class FeedbackController {
     // Accepts a user ID as a path variable and returns a list of feedbacks or an error message
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('STAFF') ")
     @GetMapping("/feedbacks_by_user/{id}")
-    public ResponseEntity<?> getFeedbacksByUserID(@PathVariable int id) {
+    public ResponseEntity<ObjectResponse> getFeedbacksByUserID(@PathVariable int id) {
         List<Feedback> feedbacks;
         try {
             feedbacks = feedbackService.getFeedbacksByUserID(id);
             if (feedbacks.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body("No feedback for user ID: " + id);
+                        .body(new ObjectResponse("Failed", "Không tìm thấy đánh giá nào với user ID: " + id, null));
             } else {
-                return ResponseEntity.ok(feedbacks);
+                return ResponseEntity.ok(new ObjectResponse("Success", "Lấy danh sách đánh giá thành công với user ID: " + id, feedbacks));
             }
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error retrieving feedback for user ID: " + id);
+                    .body(new ObjectResponse("Failed", "Lấy danh sách đánh giá không thành công với user ID: " + id, null));
         }
     }
 
@@ -90,19 +92,19 @@ public class FeedbackController {
     // Accepts a product ID as a path variable and returns a list of feedbacks or an error message
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('STAFF')")
     @GetMapping("/feedbacks_by_product/{id}")
-    public ResponseEntity<?> getFeedbacksByProductID(@PathVariable String id) {
+    public ResponseEntity<ObjectResponse> getFeedbacksByProductID(@PathVariable String id) {
         List<Feedback> feedbacks;
         try {
             feedbacks = feedbackService.getFeedbacksByProductID(id);
             if (feedbacks.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body("No feedback for product ID: " + id);
+                        .body(new ObjectResponse("Failed", "Không tìm thấy đánh giá nào với product ID: " + id, null));
             } else {
-                return ResponseEntity.ok(feedbacks);
+                return ResponseEntity.ok(new ObjectResponse("Success", "Lấy danh sách đánh giá thành công với product ID: " + id, feedbacks));
             }
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error retrieving feedback for product ID: " + id);
+                    .body(new ObjectResponse("Failed", "Lấy danh sách đánh giá không thành công với product ID: " + id, null));
         }
     }
 
@@ -112,16 +114,16 @@ public class FeedbackController {
     // Accepts an optional limit as a request parameter (default is 10) and returns the latest feedbacks
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('STAFF') ")
     @GetMapping("/newest_feedbacks")
-    public ResponseEntity<?> getNewestFeedbacks(@RequestParam(defaultValue = "10") int limit) {
+    public ResponseEntity<ObjectResponse> getNewestFeedbacks(@RequestParam(defaultValue = "10") int limit) {
         try {
             List<Feedback> feedbacks = feedbackService.getNewestFeedbacks(limit);
             if (feedbacks.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No feedbacks found");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ObjectResponse("Failed", "Không tìm thấy đánh giá nào", null));
             }
-            return ResponseEntity.ok(feedbacks);
+            return ResponseEntity.ok(new ObjectResponse("Success", "Lấy danh sách đánh giá mới nhất thành công", feedbacks));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error retrieving newest feedbacks: " + e.getMessage());
+                    .body(new ObjectResponse("Failed", "Lấy danh sách đánh giá mới nhất không thành công", null));
         }
     }
 
@@ -129,18 +131,18 @@ public class FeedbackController {
     // Accepts a feedback ID as a path variable and returns a success message or an error message
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('STAFF') ")
     @DeleteMapping("/delete_feedback/{id}")
-    public ResponseEntity<?> deleteFeedback(@PathVariable int id) {
+    public ResponseEntity<ObjectResponse> deleteFeedback(@PathVariable int id) {
         try {
             boolean isDeleted = feedbackService.deleteFeedback(id);
             if (isDeleted) {
-                return ResponseEntity.ok("Feedback deleted successfully");
+                return ResponseEntity.ok(new ObjectResponse("Success", "Xóa đánh giá thành công", null));
             } else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body("Feedback not found with ID: " + id);
+                        .body(new ObjectResponse("Failed", "Không tìm thấy đánh giá với ID: " + id, null));
             }
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error deleting feedback: " + e.getMessage());
+                    .body(new ObjectResponse("Failed", "Xóa đánh giá không thành công", null));
         }
     }
 
@@ -149,18 +151,18 @@ public class FeedbackController {
     // returns the saved feedbacks or an error message
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('STAFF') ")
     @PostMapping("/submit_feedback")
-    public ResponseEntity<?> submitFeedback(@RequestBody @Valid List<FeedbackRequest> feedbackRequests) {
+    public ResponseEntity<ObjectResponse> submitFeedback(@RequestBody @Valid List<FeedbackRequest> feedbackRequests) {
         try {
             List<Feedback> feedbacks = feedbackService.saveFeedback(feedbackRequests);
             if (!feedbacks.isEmpty()) {
-                return ResponseEntity.ok(feedbacks);
+                return ResponseEntity.ok(new ObjectResponse("Success", "Lưu đánh giá thành công", feedbacks));
             } else {
                 return ResponseEntity.badRequest()
-                        .body("Error saving feedback: Invalid product, diamond, or user ID");
+                        .body(new ObjectResponse("Failed", "Lưu đánh giá không thành công: ID sản phẩm, kim cương hoặc người dùng không hợp lệ", null));
             }
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error saving feedback: " + e.getMessage());
+                    .body(new ObjectResponse("Failed", "Lưu đánh giá không thành công", null));
         }
     }
 
@@ -168,14 +170,13 @@ public class FeedbackController {
     // Accepts a product ID as a path variable and returns the average rating or an error message
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('STAFF') ")
     @GetMapping("/average_rating_product/{productID}")
-    public ResponseEntity<?> getAverageRatingForProduct(@PathVariable String productID) {
+    public ResponseEntity<ObjectResponse> getAverageRatingForProduct(@PathVariable String productID) {
         try {
             double averageRating = feedbackService.getAverageRatingForProduct(productID);
-            return ResponseEntity.ok("Average rating for product ID " + productID
-                    + " is: " + averageRating);
+            return ResponseEntity.ok(new ObjectResponse("Success", "Lấy đánh giá trung bình thành công cho sản phẩm ID: " + productID, averageRating));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error calculating average rating for product ID: " + productID);
+                    .body(new ObjectResponse("Failed", "Lấy đánh giá trung bình không thành công cho sản phẩm ID: " + productID, null));
         }
     }
 
@@ -183,14 +184,13 @@ public class FeedbackController {
     // Accepts a diamond ID as a path variable and returns the average rating or an error message
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('STAFF') ")
     @GetMapping("/average_rating_diamond/{diamondID}")
-    public ResponseEntity<?> getAverageRatingForDiamond(@PathVariable String diamondID) {
+    public ResponseEntity<ObjectResponse> getAverageRatingForDiamond(@PathVariable String diamondID) {
         try {
             double averageRating = feedbackService.getAverageRatingForDiamond(diamondID);
-            return ResponseEntity.ok("Average rating for product ID " + diamondID
-                    + " is: " + averageRating);
+            return ResponseEntity.ok(new ObjectResponse("Success", "Lấy đánh giá trung bình thành công cho kim cương ID: " + diamondID, averageRating));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error calculating average rating for product ID: " + diamondID);
+                    .body(new ObjectResponse("Failed", "Lấy đánh giá trung bình không thành công cho kim cương ID: " + diamondID, null));
         }
     }
 

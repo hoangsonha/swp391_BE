@@ -14,7 +14,6 @@ public interface FeedbackService {
 
     List<Feedback> getFeedbacksByProductID(String productID);
 
-
     boolean deleteFeedback(int feedbackID);
 
     List<Feedback> saveFeedback(List<FeedbackRequest> feedbackRequests);

@@ -28,21 +28,32 @@ public class DeliveryController {
     // Returns a list of orders with status "Chờ giao hàng"
     @PreAuthorize("hasRole('DELIVERY')")
     @GetMapping("/pending_delivery")
-    public ResponseEntity<List<Order>> getPendingDeliveryOrders() {
-        List<Order> orders = orderService.getOrdersByStatus(EnumOrderStatus.Chờ_giao_hàng.name().replaceAll("_", " "));
-        return ResponseEntity.ok(orders);
+    public ResponseEntity<ObjectResponse> getPendingDeliveryOrders() {
+        try {
+            List<Order> orders = orderService.getOrdersByStatus(EnumOrderStatus.Chờ_giao_hàng.name().replaceAll("_", " "));
+            if (orders.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new ObjectResponse("Failed", "Danh sách đơn hàng chờ giao rỗng", null));
+            } else {
+                return ResponseEntity.ok(new ObjectResponse("Success", "Lấy danh sách đơn hàng chờ giao thành công", orders));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ObjectResponse("Failed", "Lấy danh sách đơn hàng chờ giao không thành công", null));
+        }
     }
 
     // Method to start delivery of an order
     // Accepts an order ID as a request parameter and updates the order status to "Đang giao hàng"
     @PreAuthorize("hasRole('DELIVERY')")
     @PutMapping("/start_delivery")
-    public ResponseEntity<?> startDelivery(@RequestParam int orderID) {
+    public ResponseEntity<ObjectResponse> startDelivery(@RequestParam int orderID) {
         try {
             Order order = orderService.updateOrderStatus(orderID, "Đang giao hàng");
-            return ResponseEntity.ok(order);
+            return ResponseEntity.ok(new ObjectResponse("Success", "Cập nhật trạng thái đơn hàng thành công", order));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ObjectResponse("Failed", "Cập nhật trạng thái đơn hàng không thành công", e.getMessage()));
         }
     }
 
@@ -50,14 +61,15 @@ public class DeliveryController {
     // Accepts an order ID, status, and optional reason as request parameters, and updates the order status
     @PreAuthorize("hasRole('DELIVERY')")
     @PutMapping("/update_order_status")
-    public ResponseEntity<?> updateOrderStatus(@RequestParam int orderID,
-                                               @RequestParam String status,
-                                               @RequestParam(required = false) String reason) {
+    public ResponseEntity<ObjectResponse> updateOrderStatus(@RequestParam int orderID,
+                                                            @RequestParam String status,
+                                                            @RequestParam(required = false) String reason) {
         try {
             Order order = orderService.updateOrderStatus(orderID, status, reason);
-            return ResponseEntity.ok(order);
+            return ResponseEntity.ok(new ObjectResponse("Success", "Cập nhật trạng thái đơn hàng thành công", order));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ObjectResponse("Failed", "Cập nhật trạng thái đơn hàng không thành công", e.getMessage()));
         }
     }
 
@@ -65,11 +77,12 @@ public class DeliveryController {
     // Groups orders by user and returns a list of NewOrderRespone objects
     @PreAuthorize("hasRole('DELIVERY')")
     @GetMapping("/newest_order/{delivery_id}")
-    public ResponseEntity<?> getNewestOrder(@PathVariable("delivery_id") int id) {
+    public ResponseEntity<ObjectResponse> getNewestOrder(@PathVariable("delivery_id") int id) {
         try {
-            List<Order> newestOrders = orderService.getNewestOrderStaff(id,EnumOrderStatus.Chờ_giao_hàng.name().replaceAll("_"," "));
+            List<Order> newestOrders = orderService.getNewestOrderStaff(id, EnumOrderStatus.Chờ_giao_hàng.name().replaceAll("_", " "));
             if (newestOrders == null || newestOrders.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No order found");
+                return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                        .body(new ObjectResponse("Failed", "Không tìm thấy đơn hàng", null));
             }
 
             Map<Integer, List<OrderRespone>> userOrdersMap = new HashMap<>();
@@ -95,9 +108,10 @@ public class DeliveryController {
                 newOrders.add(newOrderRespone);
             }
 
-            return ResponseEntity.ok().body(newOrders);
+            return ResponseEntity.ok(new ObjectResponse("Success", "Lấy danh sách đơn hàng mới nhất thành công", newOrders));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ObjectResponse("Failed", "Lấy danh sách đơn hàng mới nhất không thành công", e.getMessage()));
         }
     }
 
