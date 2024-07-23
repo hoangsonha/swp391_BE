@@ -18,14 +18,20 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 public class ProductController {
 
-    @Autowired ProductServiceImp productServiceImp;
-    @Autowired CategoryServiceImp categoryServiceImp;
-    @Autowired DiamondServiceImp diamondServiceImp;
-    @Autowired SizeServiceImp sizeServiceImp;
-    @Autowired ThumnailServiceImp thumnailServiceImp;
+    @Autowired
+    ProductService productService;
+    @Autowired
+    CategoryService categoryService;
+    @Autowired
+    DiamondService diamondService;
+    @Autowired
+    SizeService sizeService;
+    @Autowired
+    ThumnailService thumnailService;
 
     /**
      * Method tao new product
+     *
      * @param productRequest productRequest
      * @return message success or fail
      */
@@ -34,18 +40,18 @@ public class ProductController {
     public ResponseEntity<ObjectResponse> createProduct(@RequestBody ProductRequest productRequest) {
         try {
             Product product = productRequest.getProduct();
-            if(productServiceImp.getProductById(product.getProductID()) != null) {
+            if (productService.getProductById(product.getProductID()) != null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Sản phẩm đã tồn tại", null));
             } else {
                 product.setStatus(true);
-                product.setTotalPrice((product.getWagePrice() + product.getOriginalPrice())*(1+ product.getRatio()));
-                Category existingCate = categoryServiceImp.getByName(product.getCategory().getCategoryName());
-                if(existingCate == null) {
+                product.setTotalPrice((product.getWagePrice() + product.getOriginalPrice()) * (1 + product.getRatio()));
+                Category existingCate = categoryService.getByName(product.getCategory().getCategoryName());
+                if (existingCate == null) {
                     throw new RuntimeException("Không tìm tấy loại sản phẩm");
                 } else {
                     product.setCategory(existingCate);
                 }
-                productServiceImp.createProduct(product);
+                productService.createProduct(product);
                 List<Size> setSize = new ArrayList<>();
                 for (Size size : productRequest.getSizes()) {
                     Size newSize = new Size();
@@ -53,7 +59,7 @@ public class ProductController {
                     newSize.setQuantity(size.getQuantity());
                     newSize.setProduct(product);
                     setSize.add(newSize);
-                    sizeServiceImp.createSize(newSize);
+                    sizeService.createSize(newSize);
                 }
                 List<Thumnail> setThumnail = new ArrayList<>();
                 for (Thumnail th : productRequest.getProductImages()) {
@@ -61,7 +67,7 @@ public class ProductController {
                     newThumnail.setImageUrl(th.getImageUrl());
                     newThumnail.setProduct(product);
                     setThumnail.add(newThumnail);
-                    thumnailServiceImp.createThumnail(newThumnail);
+                    thumnailService.createThumnail(newThumnail);
                 }
 
                 product.setProductImages(setThumnail);
@@ -79,35 +85,23 @@ public class ProductController {
      * @param productID productId
      * @return product
      */
-    @PreAuthorize("hasRole('ADMIN') or hasRole('USER') or hasRole('STAFF')")
-    @GetMapping("/product/{product_id}")
-    public ResponseEntity<ObjectResponse> getProductById(@PathVariable("product_id") String productID) {
-        try {
-            Product product = productServiceImp.getProductById(productID);
-            if (product == null) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Sản phẩm không tồn tại", null));
-            }
-            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Lấy sản phẩm thành công", product));
 
-        }catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Lấy sản phẩm thất bại", null));
-        }
-    }
 
     /**
      * Method tim kim product dua tren category name
-     * @param  category_name
+     *
+     * @param category_name
      * @return list product
      */
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/category/{category_name}")
     public ResponseEntity<ObjectResponse> getProductByCategory(@PathVariable("category_name") String category_name) {
         try {
-            List<Product> products = productServiceImp.getProductsByCategory(category_name);
-            if(products == null) {
+            List<Product> products = productService.getProductsByCategory(category_name);
+            if (products == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Danh sách sản phẩm không tồn tại", null));
             }
-            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Lấy danh sách sản phẩm thành công", products));
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Lấy danh sách sản phẩm thành công", products));
 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Lấy danh sách sản phẩm thành công", null));
@@ -116,88 +110,89 @@ public class ProductController {
 
     /**
      * Method update product
+     *
      * @param id productId
      * @return message success or fail
      */
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/update/{product_id}")
-    public ResponseEntity<ObjectResponse> updateProduct(@PathVariable("product_id") String id,@RequestBody Product product) {
+    public ResponseEntity<ObjectResponse> updateProduct(@PathVariable("product_id") String id, @RequestBody Product product) {
         try {
-            Product existingProduct = productServiceImp.getProductById(id);
-            if(existingProduct == null) {
+            Product existingProduct = productService.getProductById(id);
+            if (existingProduct == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Sản phẩm không tồn tại", null));
             }
-            if(product.getProductName() != null) {
+            if (product.getProductName() != null) {
                 existingProduct.setProductName(product.getProductName());
             }
-            if(product.getBathStone() != null) {
+            if (product.getBathStone() != null) {
                 existingProduct.setBathStone(product.getBathStone());
             }
-            if(product.getBrand() != null) {
+            if (product.getBrand() != null) {
                 existingProduct.setBrand(product.getBrand());
             }
-            if(product.getGoldType() != null) {
+            if (product.getGoldType() != null) {
                 existingProduct.setGoldType(product.getGoldType());
             }
-            if(product.getGoldWeight() > 0.0) {
+            if (product.getGoldWeight() > 0.0) {
                 existingProduct.setGoldWeight(product.getGoldWeight());
             }
-            if(product.getShapeDiamond() != null) {
+            if (product.getShapeDiamond() != null) {
                 existingProduct.setShapeDiamond(product.getShapeDiamond());
             }
-            if(product.getDimensionsDiamond() > 0.0) {
+            if (product.getDimensionsDiamond() > 0.0) {
                 existingProduct.setDimensionsDiamond(product.getDimensionsDiamond());
             }
-            if(product.getMessage() != null) {
+            if (product.getMessage() != null) {
                 existingProduct.setMessage(product.getMessage());
             }
-            if(product.getOldGold() != null) {
+            if (product.getOldGold() != null) {
                 existingProduct.setOldGold(product.getOldGold());
             }
-            if(product.getProductType() != null) {
+            if (product.getProductType() != null) {
                 existingProduct.setProductType(product.getProductType());
             }
-            if(product.getQuantity() > 0) {
+            if (product.getQuantity() > 0) {
                 existingProduct.setQuantity(product.getQuantity());
             }
-            if(product.getQuantityStonesOfDiamond() > 0 ) {
+            if (product.getQuantityStonesOfDiamond() > 0) {
                 existingProduct.setQuantityStonesOfDiamond(product.getQuantityStonesOfDiamond());
             }
-            if(product.getOriginalPrice() > 0 && product.getWagePrice() > 0 && product.getRatio() > 0) {
+            if (product.getOriginalPrice() > 0 && product.getWagePrice() > 0 && product.getRatio() > 0) {
                 existingProduct.setOriginalPrice(product.getOriginalPrice());
                 existingProduct.setWagePrice(product.getWagePrice());
                 existingProduct.setRatio(product.getRatio());
                 existingProduct.setTotalPrice((product.getWagePrice() + product.getOriginalPrice()) * (1 + product.getRatio()));
-            } else if(product.getOriginalPrice() > 0 && product.getWagePrice() > 0 && product.getRatio() <= 0) {
+            } else if (product.getOriginalPrice() > 0 && product.getWagePrice() > 0 && product.getRatio() <= 0) {
                 existingProduct.setOriginalPrice(product.getOriginalPrice());
                 existingProduct.setWagePrice(product.getWagePrice());
                 existingProduct.setTotalPrice((product.getOriginalPrice() + product.getWagePrice()) * (1 + existingProduct.getRatio()));
-            } else if(product.getOriginalPrice() > 0 && product.getWagePrice() <= 0 && product.getRatio() <= 0) {
+            } else if (product.getOriginalPrice() > 0 && product.getWagePrice() <= 0 && product.getRatio() <= 0) {
                 existingProduct.setOriginalPrice(product.getOriginalPrice());
                 existingProduct.setTotalPrice((product.getOriginalPrice() + existingProduct.getWagePrice()) * (1 + existingProduct.getRatio()));
-            } else if (product.getOriginalPrice() > 0 && product.getWagePrice() <= 0 && product.getRatio() > 0){
+            } else if (product.getOriginalPrice() > 0 && product.getWagePrice() <= 0 && product.getRatio() > 0) {
                 existingProduct.setOriginalPrice(product.getOriginalPrice());
                 existingProduct.setRatio(product.getRatio());
                 existingProduct.setTotalPrice((product.getOriginalPrice() + existingProduct.getWagePrice()) * (1 + product.getRatio()));
-            } else if(product.getOriginalPrice() <= 0 && product.getWagePrice() > 0 && product.getRatio() > 0) {
+            } else if (product.getOriginalPrice() <= 0 && product.getWagePrice() > 0 && product.getRatio() > 0) {
                 existingProduct.setWagePrice(product.getWagePrice());
                 existingProduct.setRatio(product.getRatio());
                 existingProduct.setTotalPrice((existingProduct.getOriginalPrice() + product.getWagePrice()) * (1 + product.getRatio()));
-            } else if(product.getOriginalPrice() <= 0 && product.getWagePrice() <= 0 && product.getRatio() > 0) {
+            } else if (product.getOriginalPrice() <= 0 && product.getWagePrice() <= 0 && product.getRatio() > 0) {
                 existingProduct.setRatio(product.getRatio());
                 existingProduct.setTotalPrice((existingProduct.getOriginalPrice() + existingProduct.getWagePrice()) * (1 + product.getRatio()));
-            } else if(product.getOriginalPrice() <= 0 && product.getWagePrice() > 0 && product.getRatio() <= 0) {
+            } else if (product.getOriginalPrice() <= 0 && product.getWagePrice() > 0 && product.getRatio() <= 0) {
                 existingProduct.setWagePrice(product.getWagePrice());
                 existingProduct.setTotalPrice((existingProduct.getOriginalPrice() + product.getWagePrice()) * (1 + existingProduct.getRatio()));
             }
-            if(product.getSizes() != null) {
+            if (product.getSizes() != null) {
                 updateProductSizes(existingProduct, product.getSizes());
             }
             if (product.getProductImages() != null) {
                 updateProductThumbnails(existingProduct, product.getProductImages());
             }
-            productServiceImp.updateProduct(id, existingProduct);
-            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Chỉnh sửa thành công", existingProduct));
+            productService.updateProduct(id, existingProduct);
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Chỉnh sửa thành công", existingProduct));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Chỉnh sửa thất bại", null));
         }
@@ -206,18 +201,19 @@ public class ProductController {
     /**
      * Method xoa product bang cach thay doi trang thai
      * true => false
+     *
      * @return message success or fail
      */
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/delete/{product_id}")
     public ResponseEntity<ObjectResponse> deleteProductStatus(@PathVariable("product_id") String productID) {
         try {
-            Product product = productServiceImp.getProductById(productID);
-            if(product == null) {
+            Product product = productService.getProductById(productID);
+            if (product == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Sản phẩm không tồn tại", null));
             } else {
-                productServiceImp.deleteProductStatus(product.getProductID());
-                return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Xóa Thành Công với ID " + productID, null));
+                productService.deleteProductStatus(product.getProductID());
+                return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Xóa Thành Công với ID " + productID, null));
             }
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Xoá sản phẩm thất bại", null));
@@ -228,26 +224,27 @@ public class ProductController {
      * Method xoa product bang cach thay doi trang thai
      * true => false
      * thuc hien tren nhiu doi tuong
+     *
      * @return message success or fail
      */
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/delete_products")
     public ResponseEntity<ObjectResponse> deleteProducts(@RequestBody List<String> prodcutIds) {
         try {
-            if(prodcutIds == null || prodcutIds.isEmpty()) {
+            if (prodcutIds == null || prodcutIds.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Vui lòng chọn sản phẩm muốn xóa", null));
             }
             for (int i = 0; i < prodcutIds.size(); i++) {
                 String productID = prodcutIds.get(i);
-                Product product = productServiceImp.getProductById(productID);
-                if(product == null) {
+                Product product = productService.getProductById(productID);
+                if (product == null) {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Sản phẩm không tồn tại", null));
                 } else {
                     product.setStatus(false);
                 }
             }
-            productServiceImp.deleteProducts(prodcutIds);
-            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Xóa Thành Công", null));
+            productService.deleteProducts(prodcutIds);
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Xóa Thành Công", null));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Xóa Thất bại", null));
         }
@@ -255,6 +252,7 @@ public class ProductController {
 
     /**
      * method update size cuar product
+     *
      * @param newSizes product, list size
      * @return message success or fail
      */
@@ -284,12 +282,13 @@ public class ProductController {
         // Xóa các sizes không còn liên kết
         currentSizes.removeAll(sizesToRemove);
         for (Size sizeToRemove : sizesToRemove) {
-            sizeServiceImp.deleteSize(sizeToRemove.getSizeID());
+            sizeService.deleteSize(sizeToRemove.getSizeID());
         }
     }
 
     /**
      * method update image cuar product
+     *
      * @return message success or fail
      */
     private void updateProductThumbnails(Product existingProduct, List<Thumnail> newThumbnails) {
@@ -317,7 +316,7 @@ public class ProductController {
         // Xóa các thumbnails không còn liên kết
         currentThumbnails.removeAll(thumbnailsToRemove);
         for (Thumnail thumnailToRemove : thumbnailsToRemove) {
-            thumnailServiceImp.deleteThumnail(thumnailToRemove.getImageId());
+            thumnailService.deleteThumnail(thumnailToRemove.getImageId());
         }
     }
 

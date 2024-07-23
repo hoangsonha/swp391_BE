@@ -123,7 +123,7 @@ public class WarrantyCardController {
             List<WarrantyCardRespone> warrantyCardRespones = new ArrayList<>();
             List<WarrantyCard> warrantyCards = warrantyCardService.getByUser(id);
             if(warrantyCards == null || warrantyCards.isEmpty()) {
-                return ResponseEntity.ok(new ObjectResponse("Failed", "Không có thẻ bảo hành nào", warrantyCardRespones));
+                return ResponseEntity.ok(new ObjectResponse("Success", "Không có thẻ bảo hành nào", null));
             }
             for(WarrantyCard warrantyCard : warrantyCards) {
                 WarrantyCardRespone warrantyCardRespone = new WarrantyCardRespone();

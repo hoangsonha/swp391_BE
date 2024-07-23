@@ -98,6 +98,10 @@ public class FeedbackServiceImp implements FeedbackService {
 
                 Feedback savedFeedback = feedbackRepository.save(feedback);
                 savedFeedbacks.add(savedFeedback);
+
+                if (product != null) {
+                    updateProductAverageRating(product);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -105,53 +109,15 @@ public class FeedbackServiceImp implements FeedbackService {
         return savedFeedbacks;
     }
 
-//    @Override
-//    public Feedback saveFeedback(FeedbackRequest feedbackRequest) {
-//        try {
-//            Diamond diamond = null;
-//            Product product = null;
-//            Collection collection = null;
-//
-//            User user = userRepository.findById(feedbackRequest.getUserID()).orElse(null);
-//            if (user == null) {
-//                return null;
-//            }
-//
-//            if (feedbackRequest.getDiamondID() != null) {
-//                diamond = diamondRepository.findById(feedbackRequest.getDiamondID()).orElse(null);
-//                if (diamond == null) {
-//                    return null;
-//                }
-//            } else if (feedbackRequest.getProductID() != null) {
-//                product = productRepository.findById(feedbackRequest.getProductID()).orElse(null);
-//                if (product == null) {
-//                    return null;
-//                }
-//            } else if (feedbackRequest.getCollectionID() != null) {
-//                collection = collectionRepository.findById(feedbackRequest
-//                        .getCollectionID()).orElse(null);
-//                if (collection == null) {
-//                    return null;
-//                }
-//            } else {
-//                return null;
-//            }
-//
-//            Feedback feedback = Feedback.builder()
-//                    .comment(feedbackRequest.getComment())
-//                    .rating(feedbackRequest.getRating())
-//                    .diamond(diamond)
-//                    .product(product)
-//                    .collection(collection)
-//                    .user(user)
-//                    .build();
-//
-//            return feedbackRepository.save(feedback);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return null;
-//        }
-//    }
+    private void updateProductAverageRating(Product product) {
+        List<Feedback> productFeedbacks = feedbackRepository.findByProduct(product);
+        double averageRating = productFeedbacks.stream()
+                .mapToDouble(Feedback::getRating)
+                .average()
+                .orElse(0.0);
+        product.setRating(averageRating);
+        productRepository.save(product);
+    }
 
     @Override
     public List<Feedback> getNewestFeedbacks(int limit) {

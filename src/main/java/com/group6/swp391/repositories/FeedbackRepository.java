@@ -1,6 +1,7 @@
 package com.group6.swp391.repositories;
 
 import com.group6.swp391.pojos.Feedback;
+import com.group6.swp391.pojos.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,4 +19,6 @@ public interface FeedbackRepository extends JpaRepository<Feedback, Integer> {
 
     @Query(value = "SELECT f FROM Feedback f ORDER BY f.createAt DESC")
     List<Feedback> findTopByOrderByCreateAtDesc(@Param("limit") int limit);
+
+    List<Feedback> findByProduct(Product product);
 }

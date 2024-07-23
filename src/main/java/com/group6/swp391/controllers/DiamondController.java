@@ -3,7 +3,6 @@ package com.group6.swp391.controllers;
 import com.group6.swp391.pojos.Diamond;
 import com.group6.swp391.responses.ObjectResponse;
 import com.group6.swp391.services.DiamondService;
-import com.group6.swp391.services.DiamondServiceImp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,11 +18,10 @@ public class DiamondController {
 
     @Autowired
     DiamondService diamondService;
-    @Autowired
-    private DiamondServiceImp diamondServiceImp;
 
     /**
      * Method tao moi kim cuong
+     *
      * @param diamond diamond
      * @return success or fail
      */
@@ -32,14 +30,14 @@ public class DiamondController {
     public ResponseEntity<ObjectResponse> createDiamond(@RequestBody Diamond diamond) {
         Diamond newDiamond = null;
         try {
-                if (diamondService.getDiamondByDiamondID(diamond.getDiamondID()) != null) {
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Kim cương đã tồn tại", null));
-                } else {
-                    diamond.setStatus(true);
-                    diamond.setTotalPrice(diamond.getOriginPrice() * (1 + diamond.getRatio()));
-                    newDiamond = diamondService.creatDiamond(diamond);
-                }
-            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Tạo thành công", newDiamond));
+            if (diamondService.getDiamondByDiamondID(diamond.getDiamondID()) != null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Kim cương đã tồn tại", null));
+            } else {
+                diamond.setStatus(true);
+                diamond.setTotalPrice(diamond.getOriginPrice() * (1 + diamond.getRatio()));
+                newDiamond = diamondService.creatDiamond(diamond);
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Tạo thành công", newDiamond));
 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
@@ -69,22 +67,10 @@ public class DiamondController {
      * @param diamondID
      * @return diamond
      */
-    @PreAuthorize("hasRole('ADMIN') or hasRole('USER') or hasRole('STAFF')")
-    @GetMapping("/diamond_id/{diamond_id}")
-    public ResponseEntity<ObjectResponse> getDiamondByDiamondID(@PathVariable("diamond_id") String diamondID) {
-        try {
-            Diamond existingDiamond = diamondServiceImp.getDiamondByDiamondID(diamondID);
-            if( existingDiamond == null) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Kim cương không tồn tại", null));
-            } else {
-                return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Kim Cương với Id " + diamondID, existingDiamond));
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
-        }
-    }
+
     /**
      * Method update kim cuong
+     *
      * @param diamond
      * @return success or fail
      */
@@ -99,23 +85,23 @@ public class DiamondController {
             if (diamond.getDiamondName() != null) {
                 existingDiamond.setDiamondName(diamond.getDiamondName());
             }
-            if(diamond.getImage() != null) {
+            if (diamond.getImage() != null) {
                 existingDiamond.setImage(diamond.getImage());
             }
 
-            if(diamond.getOriginPrice() > 0.0 && diamond.getRatio() > 0.0) {
+            if (diamond.getOriginPrice() > 0.0 && diamond.getRatio() > 0.0) {
                 existingDiamond.setOriginPrice(diamond.getOriginPrice());
                 existingDiamond.setRatio(diamond.getRatio());
-                existingDiamond.setTotalPrice(diamond.getOriginPrice()*(1+ diamond.getRatio()));
-            } else if(diamond.getOriginPrice() <= 0.0 && diamond.getRatio() > 0.0) {
+                existingDiamond.setTotalPrice(diamond.getOriginPrice() * (1 + diamond.getRatio()));
+            } else if (diamond.getOriginPrice() <= 0.0 && diamond.getRatio() > 0.0) {
                 existingDiamond.setRatio(diamond.getRatio());
                 existingDiamond.setTotalPrice(existingDiamond.getOriginPrice() * (1 + diamond.getRatio()));
-            } else if(diamond.getOriginPrice() > 0.0 && diamond.getRatio() <= 0.0) {
+            } else if (diamond.getOriginPrice() > 0.0 && diamond.getRatio() <= 0.0) {
                 existingDiamond.setOriginPrice(diamond.getOriginPrice());
                 existingDiamond.setTotalPrice(diamond.getOriginPrice() * (1 + existingDiamond.getRatio()));
             }
             diamondService.updateDiamond(existingDiamond);
-            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Chỉnh sửa thành công", existingDiamond));
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Chỉnh sửa thành công", existingDiamond));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
         }
@@ -124,6 +110,7 @@ public class DiamondController {
     /**
      * Method delete diamond
      * change status true = fale
+     *
      * @param id diamondId
      * @return message success or fail
      */
@@ -132,7 +119,7 @@ public class DiamondController {
     public ResponseEntity<?> deleteDiamond(@PathVariable("id") String id) {
         try {
             diamondService.markDiamondAsDeleted(id);
-            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Xóa Thành Công", null));
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Xóa Thành Công", null));
 
         } catch (Exception e) {
 
@@ -162,6 +149,7 @@ public class DiamondController {
 
     /**
      * Method xoa nhiu doi tuong cung luc
+     *
      * @param diamondIds diamondIds
      * @return message success or fail
      */
@@ -174,15 +162,15 @@ public class DiamondController {
 
             }
             for (String diamondId : diamondIds) {
-                Diamond diamond = diamondServiceImp.getDiamondByDiamondID(diamondId);
+                Diamond diamond = diamondService.getDiamondByDiamondID(diamondId);
                 if (diamond == null) {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Kim Cương không tồn tại với id: " + diamondId, null));
                 } else {
                     diamond.setStatus(false);
                 }
             }
-            diamondServiceImp.deleteDiamonds(diamondIds);
-            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Xóa Thành Công", null));
+            diamondService.deleteDiamonds(diamondIds);
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Xóa Thành Công", null));
 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));

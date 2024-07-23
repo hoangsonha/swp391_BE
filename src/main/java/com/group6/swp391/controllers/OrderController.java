@@ -35,18 +35,35 @@ public class OrderController {
 
     /**
      * Method tinh tong so don hang moi voi trang thai dang doi xac nhan
+     *
      * @return number
      */
     @PreAuthorize("hasRole('USER') or hasRole('STAFF')")
     @GetMapping("/orderpending/{staff_id}")
     public ResponseEntity<ObjectResponse> countOrderPending(@PathVariable("staff_id") int staffId) {
         try {
-            List<Order> orders = orderService.getNewestOrderStaff(staffId,EnumOrderStatus.Chờ_xác_nhận.name().replaceAll("_"," "));
-            if(orders == null || orders.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Không có đơn hàng mới", null));
+            List<Order> orders = orderService.getNewestOrderStaff(staffId, EnumOrderStatus.Chờ_xác_nhận.name().replaceAll("_", " "));
+            if (orders == null || orders.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Không có đơn hàng mới", null));
             }
             int count = orders.size();
-            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Số lượng đơn hàng mới", count));
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Số lượng đơn hàng mới", count));
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
+        }
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/orderpending")
+    public ResponseEntity<ObjectResponse> countOrderPendingAdmin() {
+        try {
+            List<Order> orders = orderService.getNewestOrderAdmin(EnumOrderStatus.Chờ_xác_nhận.name().replaceAll("_", " "));
+            if (orders == null || orders.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Không có đơn hàng mới", null));
+            }
+            int count = orders.size();
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Số lượng đơn hàng mới", count));
 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
@@ -56,6 +73,7 @@ public class OrderController {
 
     /**
      * Method tinh tong so don hang voi trang thai dang doi thanh toan
+     *
      * @return number
      */
     @PreAuthorize("hasRole('USER')")
@@ -63,15 +81,15 @@ public class OrderController {
     public ResponseEntity<ObjectResponse> countOrderWaitPay(@PathVariable("user_id") int id) {
         try {
             User userExisting = userService.getUserByID(id);
-            if(userExisting == null) {
+            if (userExisting == null) {
                 return ResponseEntity.badRequest().body(null);
             }
-            List<Order> orders = orderService.getStatusByUser(userExisting.getUserID(), EnumOrderStatus.Chờ_thanh_toán.name().replaceAll("_"," "));
-            if(orders == null || orders.isEmpty()) {
+            List<Order> orders = orderService.getStatusByUser(userExisting.getUserID(), EnumOrderStatus.Chờ_thanh_toán.name().replaceAll("_", " "));
+            if (orders == null || orders.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Không có đơn hàng đợi thanh toán", 0));
             }
             int count = orders.size();
-            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Số lượng đơn hàng đang đợi thanh toán", count));
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Số lượng đơn hàng đang đợi thanh toán", count));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
         }
@@ -80,6 +98,7 @@ public class OrderController {
     /**
      * Method update cac trang thai order
      * dua vao trang thasi de thuc hien mot so quy trinh nhu tao diem,...
+     *
      * @return message success or fail
      */
     @PreAuthorize("hasRole('USER') or hasRole('STAFF') or hasRole('DELIVERY')")
@@ -90,58 +109,60 @@ public class OrderController {
             if (orderExisting == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Đơn hàng không tồn tại", null));
             }
-            if(confirmOrderRequest.getStatus().equalsIgnoreCase(EnumOrderStatus.Chờ_giao_hàng.name().replaceAll("_", " "))) {
+            if (confirmOrderRequest.getStatus().equalsIgnoreCase(EnumOrderStatus.Chờ_giao_hàng.name().replaceAll("_", " "))) {
                 List<User> deliverys = userService.getDeliveryWithLeastOrder();
-                if(!deliverys.isEmpty()) {
+                if (!deliverys.isEmpty()) {
                     User delivery = deliverys.get(0);
                     orderExisting.setDeliveryID(delivery);
                 }
                 orderExisting.setStatus(confirmOrderRequest.getStatus());
                 orderExisting.setReason(null);
                 pointsService.createPoints(orderExisting.getUser().getUserID(), orderExisting.getOrderID());
-            } else if(confirmOrderRequest.getStatus().equalsIgnoreCase(EnumOrderStatus.Đã_giao.name().replaceAll("_"," "))) {
+            } else if (confirmOrderRequest.getStatus().equalsIgnoreCase(EnumOrderStatus.Đã_giao.name().replaceAll("_", " "))) {
                 orderExisting.setStatus(confirmOrderRequest.getStatus());
                 orderExisting.setReason(null);
                 pointsService.createPoints(orderExisting.getUser().getUserID(), orderExisting.getOrderID());
                 List<OrderDetail> orderDetails = orderExisting.getOrderDetails();
-                for(OrderDetail orderDetail : orderDetails) {
+                for (OrderDetail orderDetail : orderDetails) {
                     WarrantyCard newWarrantyCard = new WarrantyCard();
                     User existingUser = userService.getUserByID(orderExisting.getUser().getUserID());
-                    if(existingUser == null) {
+                    if (existingUser == null) {
                         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Người dùng không tồn tại", null));
                     }
                     newWarrantyCard.setUser(existingUser);
                     newWarrantyCard.setOrder(orderExisting);
                     Calendar calendar = Calendar.getInstance();
-                    calendar.add(Calendar.YEAR,2);
+                    calendar.add(Calendar.YEAR, 2);
                     newWarrantyCard.setExpirationDate(calendar.getTime());
                     ProductCustomize productCustomize = orderDetail.getProductCustomize();
                     Diamond diamond = orderDetail.getDiamond();
-                    if(orderDetail.getProductCustomize() != null) {
+                    if (orderDetail.getProductCustomize() != null) {
                         newWarrantyCard.setProductCustomize(productCustomize);
                         warrantyCardService.createNew(newWarrantyCard);
-                    } else if(orderDetail.getDiamond() != null) {
+                    } else if (orderDetail.getDiamond() != null) {
                         newWarrantyCard.setDiamond(diamond);
                         warrantyCardService.createNew(newWarrantyCard);
                     }
                 }
-            } else if (confirmOrderRequest.getStatus().equalsIgnoreCase(EnumOrderStatus.Đã_hủy.name().replaceAll("_"," "))
-                    || confirmOrderRequest.getStatus().equalsIgnoreCase(EnumOrderStatus.Không_Thành_Công.name().replaceAll("_"," "))) {
+            } else if (confirmOrderRequest.getStatus().equalsIgnoreCase(EnumOrderStatus.Đã_hủy.name().replaceAll("_", " "))) {
                 orderExisting.setStatus(confirmOrderRequest.getStatus());
                 orderExisting.setReason(confirmOrderRequest.getReason());
-                for(OrderDetail orderDetail: orderExisting.getOrderDetails()) {
-                    if(orderDetail.getProductCustomize() != null) {
+                for (OrderDetail orderDetail : orderExisting.getOrderDetails()) {
+                    if (orderDetail.getProductCustomize() != null) {
                         orderService.incrementSizeQuantity(orderDetail.getProductCustomize(), orderDetail.getQuantity());
-                    } else if(orderDetail.getDiamond() != null) {
+                    } else if (orderDetail.getDiamond() != null) {
                         diamondService.updateStatus(orderDetail.getDiamond().getDiamondID());
                     }
                 }
-            } else {
+            } else if (confirmOrderRequest.getStatus().equalsIgnoreCase(EnumOrderStatus.Không_Thành_Công.name().replaceAll("_", " "))) {
                 orderExisting.setStatus(confirmOrderRequest.getStatus());
-                orderExisting.setReason(null);
-            }
+                orderExisting.setReason(confirmOrderRequest.getReason());
+            } else {
+                    orderExisting.setStatus(confirmOrderRequest.getStatus());
+                    orderExisting.setReason(null);
+                }
             orderService.updateStatus(orderExisting.getOrderID(), orderExisting.getStatus(), orderExisting.getReason());
-            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Chỉnh sửa thành công", orderExisting));
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Chỉnh sửa thành công", orderExisting));
 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
@@ -151,6 +172,7 @@ public class OrderController {
 
     /**
      * Method get all order
+     *
      * @return list order
      */
     @PreAuthorize("hasRole('USER') or hasRole('STAFF') or hasRole('ADMIN') or hasRole('DELIVERY')")
@@ -158,11 +180,11 @@ public class OrderController {
     public ResponseEntity<ObjectResponse> getAllOrders() {
         try {
             List<Order> list = orderService.getAllOrder();
-            if(list == null || list.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Danh sách đơn hàng rỗng", null));
+            if (list == null || list.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Danh sách đơn hàng rỗng", null));
             }
             list.sort(Comparator.comparing(Order::getOrderDate).reversed());
-            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Danh sách đơn hàng", list));
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Danh sách đơn hàng", list));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
         }
@@ -173,8 +195,7 @@ public class OrderController {
     public ResponseEntity<ObjectResponse> getOrdersByDiamondID(@PathVariable String id) {
         try {
             List<Order> orders = orderService.getOrderByDiamondID(id);
-            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Đơn hàng", orders));
-
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Đơn hàng", orders));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
         }
@@ -182,6 +203,7 @@ public class OrderController {
 
     /**
      * Method get orderDetail
+     *
      * @param id orderid
      * @return order
      */
@@ -190,7 +212,7 @@ public class OrderController {
     public ResponseEntity<ObjectResponse> getOrdersById(@PathVariable("order_id") int id) {
         try {
             Order orderExisting = orderService.getOrderByOrderID(id);
-            if(orderExisting == null) {
+            if (orderExisting == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Đơn hàng không tồn tại với ID " + id, null));
             }
             OrderDetailRespone orderDetailRespone = new OrderDetailRespone();
@@ -210,7 +232,7 @@ public class OrderController {
             orderDetailRespone.setDeleteStatus(orderExisting.isDeleteStatus());
             orderDetailRespone.setNote(orderExisting.getNote());
             orderDetailRespone.setDiscount(orderExisting.getDiscount());
-            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Lấy đơn hàng thành công", orderDetailRespone));
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Lấy đơn hàng thành công", orderDetailRespone));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
         }
@@ -221,7 +243,7 @@ public class OrderController {
     public ResponseEntity<ObjectResponse> viewDetailAdmin(@PathVariable("order_id") int id) {
         try {
             Order orderExisting = orderService.getOrderByOrderID(id);
-            if(orderExisting == null) {
+            if (orderExisting == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Đơn hàng không tồn tại với ID " + id, null));
             }
             OrderDetailRespone orderDetailRespone = new OrderDetailRespone();
@@ -241,15 +263,19 @@ public class OrderController {
             orderDetailRespone.setDeleteStatus(orderExisting.isDeleteStatus());
             orderDetailRespone.setNote(orderExisting.getNote());
             orderDetailRespone.setDiscount(orderExisting.getDiscount());
-            String fullNameStaff = orderExisting.getStaffID().getFirstName() + " " +orderExisting.getStaffID().getLastName();
-            String fulNameDelivery = orderExisting.getDeliveryID().getFirstName() + " " + orderExisting.getDeliveryID().getLastName();
-            orderDetailRespone.setStaffName(fullNameStaff);
-            orderDetailRespone.setDeliveryName(fulNameDelivery);
-            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Lấy đơn hàng thành công", orderDetailRespone));
+            if (orderExisting.getStaffID() != null) {
+                orderDetailRespone.setStaffID(orderExisting.getStaffID().getUserID());
+            }
+            if (orderExisting.getDeliveryID() != null) {
+                orderDetailRespone.setDeliveryID(orderExisting.getDeliveryID().getUserID());
+            }
+
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Lấy đơn hàng thành công", orderDetailRespone));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
         }
     }
+
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/order_details_by_order/{id}")
     public ResponseEntity<ObjectResponse> getOrderDetailsByOrderID(@PathVariable int id) {
@@ -258,7 +284,7 @@ public class OrderController {
             if (orderDetails.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Không có đơn hàng chi tiết với ID " + id, null));
             }
-            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Lấy đơn hàng chi tiết thành công", orderDetails));
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Lấy đơn hàng chi tiết thành công", orderDetails));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
         }
@@ -266,6 +292,7 @@ public class OrderController {
 
     /**
      * Method get order by  user
+     *
      * @param id userId
      * @return List order
      */
@@ -274,8 +301,8 @@ public class OrderController {
     public ResponseEntity<ObjectResponse> getOrdersByUserID(@PathVariable int id) {
         try {
             List<Order> orders = orderService.getOrderByUserID(id);
-            if(orders == null || orders.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Không tim thấy đơn hàng với ID " +id, null));
+            if (orders == null || orders.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Không tim thấy đơn hàng với ID " + id, null));
             }
             List<NewOrderRespone> newOrders = new ArrayList<>();
             List<OrderRespone> orderRespones = new ArrayList<>();
@@ -294,7 +321,7 @@ public class OrderController {
             }
             newOrderRespone.setOrders(orderRespones);
             newOrders.add(newOrderRespone);
-            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Lấy đơn hàng thành công", newOrders));
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Lấy đơn hàng thành công", newOrders));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
         }
@@ -302,6 +329,7 @@ public class OrderController {
 
     /**
      * Method get order with status cho xac nhan
+     *
      * @return list new order
      */
     @PreAuthorize("hasRole('STAFF')")
@@ -309,10 +337,10 @@ public class OrderController {
     public ResponseEntity<ObjectResponse> getNewestOrder(@PathVariable("staff_id") int id) {
         try {
             User userExisting = userService.getUserByID(id);
-                if(userExisting == null) {
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Nhân viên không tồn tại", null));
-                }
-            List<Order> newestOrders = orderService.getNewestOrderStaff(id, EnumOrderStatus.Chờ_xác_nhận.name().replaceAll("_"," "));
+            if (userExisting == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Nhân viên không tồn tại", null));
+            }
+            List<Order> newestOrders = orderService.getNewestOrderStaff(id, EnumOrderStatus.Chờ_xác_nhận.name().replaceAll("_", " "));
             if (newestOrders == null || newestOrders.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Danh sách đơn hàng mới rỗng", null));
             }
@@ -339,7 +367,7 @@ public class OrderController {
                 newOrderRespone.setOrders(entry.getValue());
                 newOrders.add(newOrderRespone);
             }
-            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Lấy Danh sách đơn hàng mới thành công", newOrders));
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Lấy Danh sách đơn hàng mới thành công", newOrders));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
         }
@@ -347,6 +375,7 @@ public class OrderController {
 
     /**
      * Method get order by status
+     *
      * @return list order by status
      */
     @PreAuthorize("hasRole('USER')")
@@ -355,7 +384,7 @@ public class OrderController {
         try {
             List<Order> newestOrders = orderService.getOrdersByStatus(status);
             if (newestOrders == null || newestOrders.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Danh sách đơn hàng "+ status +" rỗng", null));
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Danh sách đơn hàng " + status + " rỗng", null));
             }
 
             Map<Integer, List<OrderRespone>> userOrdersMap = new HashMap<>();
@@ -381,7 +410,7 @@ public class OrderController {
                 newOrders.add(newOrderRespone);
             }
 
-            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Danh sách đơn hàng "+ status +" rỗng", newOrders));
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Danh sách đơn hàng " + status + " rỗng", newOrders));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
         }
@@ -389,6 +418,7 @@ public class OrderController {
 
     /**
      * Method tao order moi
+     *
      * @param orderRequest orderRequest
      * @return message success or fail
      */
@@ -397,12 +427,12 @@ public class OrderController {
     public ResponseEntity<ObjectResponse> submitOrder(@RequestBody @Valid OrderRequest orderRequest) {
         try {
             User existingUser = userService.getUserByID(orderRequest.getUserID());
-            if(existingUser == null) {
+            if (existingUser == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Người dùng không tồn tại", null));
             }
             List<User> staffs = userService.getStaffWithLeastOrder();
             Order newOrder = new Order();
-            if(!staffs.isEmpty()) {
+            if (!staffs.isEmpty()) {
                 User staff = staffs.get(0);
                 newOrder.setStaffID(staff);
             }
@@ -418,26 +448,8 @@ public class OrderController {
             newOrder.setDiscount(orderRequest.getDiscount());
 
 
-//            Map<Integer, Integer> countByStaffAdvised = getCountByStaffAdvised();
-//
-//
-//            for(Integer staffID : countByStaffAdvised.keySet()) {
-//
-//            }
-
-
-//            List<Order> list_order = orderService.getAllOrder();
-//            List<User> lists = new ArrayList<>();
-//            for(Order liOrders : list_order) {
-//                if(liOrders.getStatus().toLowerCase().equals((EnumOrderStatus.Chờ_xác_nhận).name().replaceAll("_", " ").toLowerCase())) {
-//                    User user = userService.getUserByID(liOrders.getStaffID().getUserID());
-//                    lists.add(user);
-//                }
-//            }
-
-
             Cart existingCart = cartService.getCart(existingUser.getUserID());
-            if(existingCart == null) {
+            if (existingCart == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Giỏ hàng ko tồn tại", null));
             }
             List<OrderDetail> orderDetails = new ArrayList<>();
@@ -446,9 +458,9 @@ public class OrderController {
                 orderDetail.setOrder(newOrder);
                 orderDetail.setQuantity(cartItem.getQuantity());
                 orderDetail.setPrice(cartItem.getTotalPrice());
-                if(cartItem.getDiamondAdd() != null) {
+                if (cartItem.getDiamondAdd() != null) {
                     Diamond diamond = cartItem.getDiamondAdd();
-                    if(!diamond.isStatus()) {
+                    if (!diamond.isStatus()) {
                         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Kim cương đã hết hàng", null));
                     }
                     diamond.setStatus(false);
@@ -458,7 +470,7 @@ public class OrderController {
                 if (cartItem.getProductCustomize() != null) {
                     ProductCustomize productCustomize = cartItem.getProductCustomize();
                     Diamond diamondInProductCustomize = productCustomize.getDiamond();
-                    if(!diamondInProductCustomize.isStatus()) {
+                    if (!diamondInProductCustomize.isStatus()) {
                         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Kim cương đã hết hàng", null));
                     }
                     diamondInProductCustomize.setStatus(false);
@@ -473,10 +485,10 @@ public class OrderController {
             }
             orderService.saveOrder(newOrder, orderDetails);
             cartService.clearCart(newOrder.getUser().getUserID());
-            if(orderRequest.getUsedPoint() > 0.0) {
+            if (orderRequest.getUsedPoint() > 0.0) {
                 pointsService.getUserPoints(orderRequest.getUserID(), newOrder.getOrderID(), orderRequest.getUsedPoint());
             }
-            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Tạo đơn hàng thành công", newOrder));
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Tạo đơn hàng thành công", newOrder));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
         }
@@ -487,13 +499,13 @@ public class OrderController {
     public ResponseEntity<ObjectResponse> getAllStaff(@PathVariable("staff_id") int staffId) {
         try {
             List<Order> listOrderWithStaff = orderService.getAllWithStaff(staffId);
-            if(listOrderWithStaff == null || listOrderWithStaff.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed","Danh sách đơn hàng rỗng", null));
+            if (listOrderWithStaff == null || listOrderWithStaff.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Danh sách đơn hàng rỗng", null));
             }
             listOrderWithStaff.sort(Comparator.comparing(Order::getOrderDate).reversed());
-            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success","Danh sách đơn hàng", listOrderWithStaff));
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Danh sách đơn hàng", listOrderWithStaff));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed","Message" + e.getMessage(), null));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message" + e.getMessage(), null));
         }
     }
 
