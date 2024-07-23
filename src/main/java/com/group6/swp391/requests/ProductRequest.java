@@ -1,5 +1,6 @@
 package com.group6.swp391.requests;
 
+import com.group6.swp391.pojos.Product;
 import com.group6.swp391.pojos.Size;
 import com.group6.swp391.pojos.Thumnail;
 import lombok.*;
