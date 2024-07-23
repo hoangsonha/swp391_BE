@@ -34,8 +34,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
             "/swagger-resources/**",
             "/public/**",
             "/swp391/api/collections/**",
-            "/oauth2/**",
-            "/swp391/api/report/**"
+            "/oauth2/**"
     );
 
     public String getToken(HttpServletRequest request) {

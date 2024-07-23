@@ -2,6 +2,7 @@ package com.group6.swp391.services;
 
 import com.group6.swp391.pojos.Order;
 import com.group6.swp391.pojos.OrderDetail;
+import com.group6.swp391.pojos.ProductCustomize;
 
 import java.util.List;
 
@@ -43,4 +44,6 @@ public interface OrderService {
 
     // OrderDetailService
     List<OrderDetail> getOrderDetailsByOrderID(int orderID);
+
+    public void incrementSizeQuantity(ProductCustomize productCustomize, int quantity);
 }

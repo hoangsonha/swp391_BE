@@ -23,8 +23,6 @@ public class OrderServiceImp implements OrderService {
     @Autowired
     private SizeRepository sizeRepository;
 
-    @Autowired
-    private DiamondServiceImp diamondServiceImp;
     @Autowired PointsService pointsService;
     @Autowired
     private DiamondRepository diamondRepository;

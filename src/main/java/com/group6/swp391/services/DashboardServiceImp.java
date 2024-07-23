@@ -53,8 +53,8 @@ public class DashboardServiceImp implements DashboardService {
     }
 
     @Override
-    public Double totalRevenueDate(LocalDateTime startdate,LocalDateTime endtdate) {
-        return orderRepository.totalRevenueInDate(startdate, endtdate);
+    public Double totalRevenueDate(LocalDateTime startDate,LocalDateTime endDate) {
+        return orderRepository.totalRevenueInDate(startDate, endDate);
     }
 
     @Override

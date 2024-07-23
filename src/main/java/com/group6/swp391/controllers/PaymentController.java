@@ -44,7 +44,6 @@ public class PaymentController {
     @Autowired private DiamondService diamondService;
     @Autowired private ProductService productService;
     @Autowired private CrawledDataProperties dola;
-    @Autowired private RoleService roleService;
 
     @Value("${frontend.url}")
     private String urlRedirect;

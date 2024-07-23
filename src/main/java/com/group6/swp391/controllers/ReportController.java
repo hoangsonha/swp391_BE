@@ -5,6 +5,7 @@ import com.group6.swp391.services.ReportService;
 import jakarta.servlet.http.HttpServletResponse;
 import net.sf.jasperreports.engine.JRException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,14 +19,13 @@ public class ReportController {
 
     @Autowired private ReportService reportService;
 
-    @PreAuthorize("hasRole('ADMIN') or hasRole('STAFF') ")
     @GetMapping("/user/{reportFormat}")
     public void getReportUser(@PathVariable String reportFormat, HttpServletResponse response) throws JRException, IOException, SQLException, NoSuchFieldException {
         boolean check = EnumExportFile.checkExistExportFile(reportFormat);
         if(check) {
             response.setContentType("application/octet-stream");
             String headerKey = "Content-Disposition";
-            String headerValue = "attachment; filename=UserExport.html";
+            String headerValue = "";
             if(reportFormat.equals("pdf")) {
                 headerValue = "attachment; filename=UserExport.pdf";
             } else if(reportFormat.equals("html")) {

@@ -31,8 +31,6 @@ public class OrderController {
     @Autowired PointsService pointsService;
     @Autowired WarrantyCardService warrantyCardService;
     @Autowired ProductCustomizeService productCustomizeService;
-    @Autowired ProductCustomizeServiceImp productCustomizeServiceImp;
-    @Autowired OrderServiceImp orderServiceImp;
 
 
     /**
@@ -133,7 +131,7 @@ public class OrderController {
                 orderExisting.setReason(confirmOrderRequest.getReason());
                 for(OrderDetail orderDetail: orderExisting.getOrderDetails()) {
                     if(orderDetail.getProductCustomize() != null) {
-                        orderServiceImp.incrementSizeQuantity(orderDetail.getProductCustomize(), orderDetail.getQuantity());
+                        orderService.incrementSizeQuantity(orderDetail.getProductCustomize(), orderDetail.getQuantity());
                     } else if(orderDetail.getDiamond() != null) {
                         diamondService.updateStatus(orderDetail.getDiamond().getDiamondID());
                     }
@@ -498,6 +496,11 @@ public class OrderController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed","Message" + e.getMessage(), null));
         }
     }
+
+
+
+
+
 
 //    @PreAuthorize("hasRole('USER')")
 //    @DeleteMapping("/delete_order/{id}")

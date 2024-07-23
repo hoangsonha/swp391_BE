@@ -42,7 +42,6 @@ public class WebSecurityConfig {
         return new JWTAuthenticationFilter();
     }
 
-
     private final String[] REQUEST_PUBLIC = {"/login/**", "/verify/**"};
 
     @Bean
@@ -70,6 +69,8 @@ public class WebSecurityConfig {
     public RestTemplate restTemplate(RestTemplateBuilder builder) {
         return builder.build();
     }
+
+
 
 
 
