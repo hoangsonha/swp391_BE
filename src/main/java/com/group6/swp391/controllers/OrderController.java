@@ -62,9 +62,8 @@ public class OrderController {
             if (orders == null || orders.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Không có đơn hàng mới", null));
             }
-            int count = orders.size();
+            Integer count = orders.size();
             return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Số lượng đơn hàng mới", count));
-
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Message: " + e.getMessage(), null));
         }

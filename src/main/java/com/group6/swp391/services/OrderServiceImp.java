@@ -81,7 +81,6 @@ public class OrderServiceImp implements OrderService {
         try {
             Product product = productCustomize.getProduct();
             int sizeValue = productCustomize.getSize();
-
             Size size = sizeRepository.findByProductAndSizeValue(product, sizeValue);
             if (size == null) {
                 throw new RuntimeException("Size not found for product: "
@@ -91,8 +90,8 @@ public class OrderServiceImp implements OrderService {
                 throw  new RuntimeException("Not enough quantity for product: "
                         + product.getProductID() + ", size: " + sizeValue);
             }
-
             size.setQuantity(size.getQuantity() - quantity);
+            product.setQuantity(product.getQuantity() - quantity);
             sizeRepository.save(size);
         } catch (RuntimeException e) {
             e.printStackTrace();
@@ -232,8 +231,6 @@ public class OrderServiceImp implements OrderService {
             e.printStackTrace();
         }
     }
-
-
     // orderDetailService
 
     @Override
