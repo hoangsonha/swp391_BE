@@ -22,4 +22,5 @@ public interface ProductRepository extends JpaRepository<Product, String>, JpaSp
 
     @Query("SELECT p FROM Product p WHERE MONTH (p.createAt)=:month AND YEAR (p.createAt)=:year")
     List<Product> findByCreateInMOnth(@Param("month") int month, @Param("year") int year);
+
 }

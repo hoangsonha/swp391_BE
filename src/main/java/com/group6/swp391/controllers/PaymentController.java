@@ -44,6 +44,7 @@ public class PaymentController {
     @Autowired private DiamondService diamondService;
     @Autowired private ProductService productService;
     @Autowired private CrawledDataProperties dola;
+    @Autowired private SizeService sizeService;
 
     @Value("${frontend.url}")
     private String urlRedirect;
@@ -231,6 +232,14 @@ public class PaymentController {
                                         diamond.setStatus(true);
 
                                         Product product = productService.getProductById(orderDetail.getProductCustomize().getProduct().getProductID());
+
+                                        Size size = sizeService.getSizeByProduct(product);
+
+                                        if(size != null) {
+                                            size.setQuantity(size.getQuantity() + 1);
+                                            sizeService.createSize(size);
+                                        }
+
                                         product.setQuantity(product.getQuantity() + 1);
                                         productService.createProduct(product);
                                         diamondService.saveDiamond(diamond);

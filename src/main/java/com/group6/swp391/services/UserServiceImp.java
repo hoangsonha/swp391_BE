@@ -666,7 +666,7 @@ public class UserServiceImp implements UserService {
                     "            style=\"font-size: 24px;\n" +
                     "                margin: 0;\n" +
                     "                padding: 0;\"\n" +
-                    "            >Bạn đã không đăng nhập \" + monthOff + \" tháng!</h1>\n" +
+                    "            >Bạn đã không đăng nhập \""+ monthOff + "\" tháng!</h1>\n" +
                     "            <p\n" +
                     "            style=\"font-size: 16px;\n" +
                     "                    line-height: 1.5;\">Welcome to Group 6 Diamond.</p>\n" +

@@ -14,4 +14,6 @@ public interface SizeRepository extends JpaRepository<Size, Integer> {
     Size findByValue(@Param("value") int value);
 
     Size findByProductAndSizeValue(Product product, int sizeValue);
+
+    Size findSizeByProduct(Product product);
 }

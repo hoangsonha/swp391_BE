@@ -1,5 +1,6 @@
 package com.group6.swp391.services;
 
+import com.group6.swp391.pojos.Product;
 import com.group6.swp391.pojos.Size;
 import com.group6.swp391.repositories.SizeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,5 +48,10 @@ public class SizeServiceImp implements SizeService{
         } else {
             sizeRepository.deleteById(id);
         }
+    }
+
+    @Override
+    public Size getSizeByProduct(Product product) {
+        return sizeRepository.findSizeByProduct(product);
     }
 }

@@ -1,5 +1,6 @@
 package com.group6.swp391.services;
 
+import com.group6.swp391.pojos.Product;
 import com.group6.swp391.pojos.Size;
 
 public interface SizeService {
@@ -12,4 +13,6 @@ public interface SizeService {
     void updateSize(int id, Size size);
 
     void deleteSize(int id);
+
+    Size getSizeByProduct(Product product);
 }
