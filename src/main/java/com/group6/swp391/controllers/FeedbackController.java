@@ -158,7 +158,7 @@ public class FeedbackController {
                 return ResponseEntity.ok(new ObjectResponse("Success", "Lưu đánh giá thành công", feedbacks));
             } else {
                 return ResponseEntity.badRequest()
-                        .body(new ObjectResponse("Failed", "Lưu đánh giá không thành công: ID sản phẩm, kim cương hoặc người dùng không hợp lệ", null));
+                        .body(new ObjectResponse("Failed", "Lưu đánh giá không thành công: ID sản phẩm hoặc người dùng không hợp lệ", null));
             }
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
