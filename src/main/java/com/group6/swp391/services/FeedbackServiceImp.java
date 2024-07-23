@@ -16,9 +16,6 @@ public class FeedbackServiceImp implements FeedbackService {
     private FeedbackRepository feedbackRepository;
 
     @Autowired
-    private DiamondRepository diamondRepository;
-
-    @Autowired
     private ProductRepository productRepository;
 
     @Autowired
@@ -66,7 +63,6 @@ public class FeedbackServiceImp implements FeedbackService {
 
         for (FeedbackRequest feedbackRequest : feedbackRequests) {
             try {
-                Diamond diamond = null;
                 Product product = null;
 
                 User user = userRepository.findById(feedbackRequest.getUserID()).orElse(null);
@@ -74,12 +70,7 @@ public class FeedbackServiceImp implements FeedbackService {
                     continue;
                 }
 
-                if (feedbackRequest.getDiamondID() !=  null) {
-                    diamond = diamondRepository.findById(feedbackRequest.getDiamondID()).orElse(null);
-                    if (diamond == null) {
-                        continue;
-                    }
-                } else if (feedbackRequest.getProductID() != null) {
+                if (feedbackRequest.getProductID() != null) {
                     product = productRepository.findById(feedbackRequest.getProductID()).orElse(null);
                     if (product == null) {
                         continue;
@@ -91,7 +82,6 @@ public class FeedbackServiceImp implements FeedbackService {
                 Feedback feedback = Feedback.builder()
                         .comment(feedbackRequest.getComment())
                         .rating(feedbackRequest.getRating())
-                        .diamond(diamond)
                         .product(product)
                         .user(user)
                         .build();

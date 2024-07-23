@@ -15,8 +15,6 @@ public class FeedbackRequest {
 
     double rating;
 
-    String diamondID;
-
     String productID;
 
     @NotNull(message = "Mã người dùng không được để trống")
