@@ -16,6 +16,9 @@ public class FeedbackServiceImp implements FeedbackService {
     private FeedbackRepository feedbackRepository;
 
     @Autowired
+    private DiamondRepository diamondRepository;
+
+    @Autowired
     private ProductRepository productRepository;
 
     @Autowired
@@ -27,10 +30,6 @@ public class FeedbackServiceImp implements FeedbackService {
         return feedbackRepository.findAll();
     }
 
-    @Override
-    public List<Feedback> getFeedbacksByDiamondID(String diamondID) {
-        return feedbackRepository.findByDiamondDiamondID(diamondID);
-    }
 
     @Override
     public List<Feedback> getFeedbacksByUserID(int userID) {
@@ -63,13 +62,13 @@ public class FeedbackServiceImp implements FeedbackService {
 
         for (FeedbackRequest feedbackRequest : feedbackRequests) {
             try {
+                Diamond diamond = null;
                 Product product = null;
 
                 User user = userRepository.findById(feedbackRequest.getUserID()).orElse(null);
                 if (user == null) {
                     continue;
                 }
-
                 if (feedbackRequest.getProductID() != null) {
                     product = productRepository.findById(feedbackRequest.getProductID()).orElse(null);
                     if (product == null) {
@@ -118,21 +117,6 @@ public class FeedbackServiceImp implements FeedbackService {
     public double getAverageRatingForProduct(String productID) {
         try {
             List<Feedback> feedbacks = feedbackRepository.findByProductProductID(productID);
-            if (feedbacks.isEmpty()) {
-                return 0.0;
-            }
-            double totalRating = feedbacks.stream().mapToDouble(Feedback::getRating).sum();
-            return totalRating / feedbacks.size();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return 0;
-        }
-    }
-
-    @Override
-    public double getAverageRatingForDiamond(String diamondID) {
-        try {
-            List<Feedback> feedbacks = feedbackRepository.findByDiamondDiamondID(diamondID);
             if (feedbacks.isEmpty()) {
                 return 0.0;
             }

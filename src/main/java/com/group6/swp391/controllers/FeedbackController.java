@@ -48,25 +48,25 @@ public class FeedbackController {
         }
     }
 
-    // Method to get feedbacks by diamond ID
-    // Accepts a diamond ID as a path variable and returns a list of feedbacks or an error message
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('STAFF') ")
-    @GetMapping("/feedbacks_by_diamond/{id}")
-    public ResponseEntity<ObjectResponse> getFeedbacksByDiamondID(@PathVariable String id) {
-        List<Feedback> feedbacks;
-        try {
-            feedbacks = feedbackService.getFeedbacksByDiamondID(id);
-            if (feedbacks.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(new ObjectResponse("Failed", "Không tìm thấy đánh giá nào với diamondID: " + id, null));
-            } else {
-                return ResponseEntity.ok(new ObjectResponse("Success", "Lấy danh sách đánh giá thành công với diamondID: " + id, feedbacks));
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ObjectResponse("Failed", "Lấy danh sách đánh giá không thành công với diamondID: " + id, null));
-        }
-    }
+//    // Method to get feedbacks by diamond ID
+//    // Accepts a diamond ID as a path variable and returns a list of feedbacks or an error message
+//    @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('STAFF') ")
+//    @GetMapping("/feedbacks_by_diamond/{id}")
+//    public ResponseEntity<ObjectResponse> getFeedbacksByDiamondID(@PathVariable String id) {
+//        List<Feedback> feedbacks;
+//        try {
+//            feedbacks = feedbackService.getFeedbacksByDiamondID(id);
+//            if (feedbacks.isEmpty()) {
+//                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+//                        .body(new ObjectResponse("Failed", "Không tìm thấy đánh giá nào với diamondID: " + id, null));
+//            } else {
+//                return ResponseEntity.ok(new ObjectResponse("Success", "Lấy danh sách đánh giá thành công với diamondID: " + id, feedbacks));
+//            }
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                    .body(new ObjectResponse("Failed", "Lấy danh sách đánh giá không thành công với diamondID: " + id, null));
+//        }
+//    }
 
     // Method to get feedbacks by user ID
     // Accepts a user ID as a path variable and returns a list of feedbacks or an error message
@@ -180,19 +180,19 @@ public class FeedbackController {
         }
     }
 
-    // Method to get the average rating for a diamond by diamond ID
-    // Accepts a diamond ID as a path variable and returns the average rating or an error message
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('STAFF') ")
-    @GetMapping("/average_rating_diamond/{diamondID}")
-    public ResponseEntity<ObjectResponse> getAverageRatingForDiamond(@PathVariable String diamondID) {
-        try {
-            double averageRating = feedbackService.getAverageRatingForDiamond(diamondID);
-            return ResponseEntity.ok(new ObjectResponse("Success", "Lấy đánh giá trung bình thành công cho kim cương ID: " + diamondID, averageRating));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ObjectResponse("Failed", "Lấy đánh giá trung bình không thành công cho kim cương ID: " + diamondID, null));
-        }
-    }
+//    // Method to get the average rating for a diamond by diamond ID
+//    // Accepts a diamond ID as a path variable and returns the average rating or an error message
+//    @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('STAFF') ")
+//    @GetMapping("/average_rating_diamond/{diamondID}")
+//    public ResponseEntity<ObjectResponse> getAverageRatingForDiamond(@PathVariable String diamondID) {
+//        try {
+//            double averageRating = feedbackService.getAverageRatingForDiamond(diamondID);
+//            return ResponseEntity.ok(new ObjectResponse("Success", "Lấy đánh giá trung bình thành công cho kim cương ID: " + diamondID, averageRating));
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                    .body(new ObjectResponse("Failed", "Lấy đánh giá trung bình không thành công cho kim cương ID: " + diamondID, null));
+//        }
+//    }
 
 
     /**

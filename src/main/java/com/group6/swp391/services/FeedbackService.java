@@ -9,8 +9,6 @@ public interface FeedbackService {
 
     List<Feedback> getAllFeedbacks();
 
-    List<Feedback> getFeedbacksByDiamondID(String diamondID);
-
     List<Feedback> getFeedbacksByUserID(int userID);
 
     List<Feedback> getFeedbacksByProductID(String productID);
@@ -23,5 +21,4 @@ public interface FeedbackService {
 
     double getAverageRatingForProduct(String productID);
 
-    double getAverageRatingForDiamond(String diamondID);
 }

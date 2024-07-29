@@ -30,6 +30,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -49,6 +51,7 @@ public class MainController {
     @Autowired private DiamondService diamondService;
     @Autowired private ProductService productService;
     @Autowired private SearchService searchService;
+    @Autowired private UploadImageService uploadImageService;
 
     @Value("${frontend.url}")
     private String urlRedirect;
@@ -59,7 +62,7 @@ public class MainController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<ObjectResponse> userRegister(@Valid @RequestBody UserRegister userRegister, HttpServletRequest request) throws MessagingException, UnsupportedEncodingException {
+    public ResponseEntity<ObjectResponse> userRegister(@Valid @RequestBody UserRegister userRegister, HttpServletRequest request) throws MessagingException, IOException {
         Role role = roleService.getRoleByRoleName(EnumRoleName.ROLE_USER);
         String randomString = UUID.randomUUID().toString();
         boolean check = true;
@@ -67,6 +70,11 @@ public class MainController {
         if(userRegister == null || userService.getUserByEmail(userRegister.getEmail()) != null) {
             check = false;
         }
+
+        String dataUrl = uploadImageService.generateImageWithInitial(userRegister.getEmail());
+        String url = uploadImageService.uploadFileBase64(dataUrl);
+        user.setAvata(url);
+
         if(check) {
             userService.save(user);
             String siteUrl = request.getRequestURL().toString().replace(request.getServletPath(), "");
@@ -90,9 +98,9 @@ public class MainController {
     @PostMapping("/login")
     public ResponseEntity<TokenResponse> loginPage(@Valid @RequestBody UserLogin userLogin) {
         try {
-//            String gRecaptchaResponse = userLogin.getRecaptchaResponse();
-//            boolean check_captcha = userService.verifyRecaptcha(gRecaptchaResponse);
-//            if(check_captcha) {
+            String gRecaptchaResponse = userLogin.getRecaptchaResponse();
+            boolean check_captcha = userService.verifyRecaptcha(gRecaptchaResponse);
+            if(check_captcha) {
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                         new UsernamePasswordAuthenticationToken(userLogin.getEmail(), userLogin.getPassword());
                 Authentication authentication = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
@@ -106,9 +114,9 @@ public class MainController {
                 userService.setQuantityReceiveEmailOffline(0, userDetails.getEmail());
 
                 return ResponseEntity.status(HttpStatus.OK).body(new TokenResponse("Success", "Login successfully", s));
-//            } else {
-//                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new TokenResponse("Failed", "Login failed", null));
-//            }
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new TokenResponse("Failed", "Login failed", null));
+            }
         } catch(Exception e) {
             log.error("Cannot login : {}", e.toString());
             User user = userService.getUserByEmail(userLogin.getEmail());

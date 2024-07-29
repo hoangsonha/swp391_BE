@@ -1030,7 +1030,7 @@ public class UserServiceImp implements UserService {
                     "                            font-size: 14px;    \n" +
                     "                            color: #777777;    \n" +
                     "                            margin-top: 20px;>    \n" +
-                    "                           <p>Copyright &copy; 2019, YOUWORK.TODAY INC</p>    \n" +
+                    "                           <p>Copyright &copy; 2024, HCM</p>    \n" +
                     "                          <h2>Thank you, have a good day .</h2>Group6 Team   \n" +
                     "                       </div> \n" +
                     "                          </div>\n" +

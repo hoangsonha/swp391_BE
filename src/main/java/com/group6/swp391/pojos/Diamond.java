@@ -66,8 +66,4 @@ public class Diamond {
     @Column(name = "ratio")
     private double ratio;
 
-    @OneToMany(mappedBy = "diamond")
-    @JsonIgnoreProperties("diamond")
-    private List<Feedback> feedbacks;
-
 }

@@ -6,6 +6,7 @@ import com.group6.swp391.pojos.User;
 import com.group6.swp391.requests.UserRegister;
 import com.group6.swp391.responses.ObjectResponse;
 import com.group6.swp391.services.RoleService;
+import com.group6.swp391.services.UploadImageService;
 import com.group6.swp391.services.UserService;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.UUID;
@@ -27,6 +29,7 @@ public class StaffController {
 
     @Autowired private UserService userService;
     @Autowired private RoleService roleService;
+    @Autowired private UploadImageService uploadImageService;
 
     @PreAuthorize("hasRole('STAFF')")
     @GetMapping("/all_users")
@@ -41,7 +44,7 @@ public class StaffController {
 
     @PreAuthorize("hasRole('STAFF')")
     @PostMapping("/register")
-    public ResponseEntity<ObjectResponse> adminRegister(@Valid @RequestBody UserRegister userRegister, HttpServletRequest request) throws MessagingException, UnsupportedEncodingException {
+    public ResponseEntity<ObjectResponse> adminRegister(@Valid @RequestBody UserRegister userRegister, HttpServletRequest request) throws MessagingException, IOException {
         String randomString = UUID.randomUUID().toString();
         Role role = roleService.getRoleByRoleName(EnumRoleName.ROLE_USER);
 
@@ -49,6 +52,11 @@ public class StaffController {
         User user = new User(null, null, userRegister.getEmail(), userRegister.getPassword(),null, null, null, randomString, false, true, role, 0, null, null, null, 0);
 
         if (userRegister == null || userService.getUserByEmail(userRegister.getEmail()) != null) check = false;
+
+        String dataUrl = uploadImageService.generateImageWithInitial(userRegister.getEmail());
+        String url = uploadImageService.uploadFileBase64(dataUrl);
+        user.setAvata(url);
+
         if (check) {
             userService.save(user);
             String siteUrl = request.getRequestURL().toString().replace(request.getServletPath(), "");

@@ -5,6 +5,7 @@ import com.group6.swp391.pojos.User;
 import com.group6.swp391.requests.PasswordRequest;
 import com.group6.swp391.requests.UserInformation;
 import com.group6.swp391.responses.ObjectResponse;
+import com.group6.swp391.services.UploadImageService;
 import com.group6.swp391.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/swp391/api/user")
@@ -22,6 +24,7 @@ public class UserController {
 
     @Autowired private UserService userService;
     @Autowired private BCryptPasswordEncoder bCryptPasswordEncoder;
+    @Autowired private UploadImageService uploadImageService;
 
     @PreAuthorize("hasRole('USER')")
     @PostMapping("/update/{id}")
@@ -90,6 +93,22 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Lấy thông tin tài khoản thành công", user));
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Lấy thông tin tài khoản thất bại", null));
+    }
+
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('STAFF') or hasRole('DELIVERY')")
+    @PostMapping("/changeAvatar")
+    public ResponseEntity<ObjectResponse> changeAvatar(@RequestParam("email") String email, @RequestParam("avatar") MultipartFile avatar) {
+        try {
+            String oldAvatar = userService.getUserByEmail(email).getAvata();
+            String url = uploadImageService.upload(avatar); // Upload the image and get the URL
+            User user = userService.getUserByEmail(email);
+            user.setAvata(url);
+            userService.save(user);
+            uploadImageService.deleteImageOnFireBase(oldAvatar);
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Đổi avatar tài khoản thành công", user));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Failed", "Đổi avatar tài khoản thất bại", null));
+        }
     }
 
 }

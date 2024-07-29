@@ -39,6 +39,13 @@
         </dependency>
 
 
+        <!-- https://mvnrepository.com/artifact/com.google.firebase/firebase-admin -->
+        <dependency>
+            <groupId>com.google.firebase</groupId>
+            <artifactId>firebase-admin</artifactId>
+            <version>9.3.0</version>
+        </dependency>
+
         <!-- ghi log -->
         <dependency>
             <groupId>com.microsoft.azure</groupId>

@@ -6,6 +6,7 @@ import com.group6.swp391.pojos.User;
 import com.group6.swp391.requests.AdminRegister;
 import com.group6.swp391.responses.ObjectResponse;
 import com.group6.swp391.services.RoleService;
+import com.group6.swp391.services.UploadImageService;
 import com.group6.swp391.services.UserService;
 import io.jsonwebtoken.lang.Strings;
 import jakarta.mail.MessagingException;
@@ -18,6 +19,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.UUID;
@@ -32,6 +34,7 @@ public class AdminController {
     @Autowired private UserService userService;
     @Autowired private RoleService roleService;
     @Autowired private BCryptPasswordEncoder bCryptPasswordEncoder;
+    @Autowired private UploadImageService uploadImageService;
 
     @GetMapping("/all_users")
     public ResponseEntity<ObjectResponse> getAllUser() {
@@ -54,7 +57,7 @@ public class AdminController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<ObjectResponse> adminRegister(@Valid @RequestBody AdminRegister adminRegister, HttpServletRequest request) throws MessagingException, UnsupportedEncodingException {
+    public ResponseEntity<ObjectResponse> adminRegister(@Valid @RequestBody AdminRegister adminRegister, HttpServletRequest request) throws MessagingException, IOException {
         String randomString = UUID.randomUUID().toString();
         Role role = null;
         String role_register = adminRegister.getRole();
@@ -79,6 +82,7 @@ public class AdminController {
             }
         }
         boolean check = true;
+
         User user = new User(adminRegister.getFirstName(), adminRegister.getLastName(), adminRegister.getEmail(),
                 bCryptPasswordEncoder.encode(adminRegister.getPassword()), adminRegister.getPhone(), adminRegister.getAddress(), adminRegister.getAvata(),
                 randomString, false, true, role, 0, null, null, null, 0);
@@ -86,6 +90,11 @@ public class AdminController {
             check = false;
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Failed", "Tạo tài khoản thất bại", null));
         }
+
+        String dataUrl = uploadImageService.generateImageWithInitial(adminRegister.getEmail());
+        String url = uploadImageService.uploadFileBase64(dataUrl);
+        user.setAvata(url);
+
         if(check) {
             userService.save(user);
             String siteUrl = request.getRequestURL().toString().replace(request.getServletPath(), "");

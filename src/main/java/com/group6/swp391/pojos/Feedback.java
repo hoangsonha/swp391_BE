@@ -22,11 +22,6 @@ public class Feedback extends BaseEntity {
     private double rating;
 
     @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "diamond_id")
-    @JsonIgnore
-    private Diamond diamond;
-
-    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "product_id")
     @JsonIgnore
     private Product product;
@@ -50,11 +45,9 @@ public class Feedback extends BaseEntity {
         return user != null ? ( user.getFirstName() + " " + user.getLastName()) : null;
     }
 
-    public Feedback(String comment, double rating, Diamond diamond,
-                    Product product) {
+    public Feedback(String comment, double rating, Product product) {
         this.comment = comment;
         this.rating = rating;
-        this.diamond = diamond;
         this.product = product;
     }
 }
