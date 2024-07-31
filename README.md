@@ -9,7 +9,7 @@
 
 
 # SWP391
-Build a webapp to manager diamond shop with RESTfull API and Repository Pattern architecture
+Build a webapp to manager diamond shop with RESTfull API and 3-Layer with Repository Pattern architecture
 
 ## How to Run
 - Clone the repository:
