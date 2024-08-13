@@ -42,6 +42,10 @@ import java.util.*;
 @RequestMapping("/public")
 @Slf4j
 public class MainController {
+
+    @Value("${time.reset}")
+    private int timeReset;
+
     @Autowired private UserService userService;
     @Autowired private RoleService roleService;
     @Autowired private JWTToken jwtToken;
@@ -85,7 +89,7 @@ public class MainController {
     }
 
     @GetMapping("/verify")
-    public void verifyAccount(@Param("code") String code, HttpServletResponse response) {
+    public void verifyAccount(@RequestParam(name = "code", required = true) String code, HttpServletResponse response) { // @Param sử dụng trong JPA để set value cho biến trong query
         boolean check = false;
         try {
             check = userService.verifyAccount(code);
@@ -98,9 +102,9 @@ public class MainController {
     @PostMapping("/login")
     public ResponseEntity<TokenResponse> loginPage(@Valid @RequestBody UserLogin userLogin) {
         try {
-            String gRecaptchaResponse = userLogin.getRecaptchaResponse();
-            boolean check_captcha = userService.verifyRecaptcha(gRecaptchaResponse);
-            if(check_captcha) {
+//            String gRecaptchaResponse = userLogin.getRecaptchaResponse();
+//            boolean check_captcha = userService.verifyRecaptcha(gRecaptchaResponse);
+//            if(check_captcha) {
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                         new UsernamePasswordAuthenticationToken(userLogin.getEmail(), userLogin.getPassword());
                 Authentication authentication = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
@@ -114,9 +118,9 @@ public class MainController {
                 userService.setQuantityReceiveEmailOffline(0, userDetails.getEmail());
 
                 return ResponseEntity.status(HttpStatus.OK).body(new TokenResponse("Success", "Login successfully", s));
-            } else {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new TokenResponse("Failed", "Login failed", null));
-            }
+//            } else {
+//                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new TokenResponse("Failed", "Login failed", null));
+//            }
         } catch(Exception e) {
             log.error("Cannot login : {}", e.toString());
             User user = userService.getUserByEmail(userLogin.getEmail());
@@ -128,7 +132,7 @@ public class MainController {
                             userService.setTimeLoginFailed(new Date(), user.getEmail());
                         } else {
                             long minus = userService.calculateSecondInMinute(user);
-                            if(minus >= 300) {
+                            if(minus >= timeReset) {
                                 userService.setQuantityLoginFailed(1, user.getEmail());
                                 quantityLoginFailed = 0;
                                 userService.setTimeLoginFailed(new Date(), user.getEmail());
@@ -158,7 +162,7 @@ public class MainController {
         return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Logout successfully", null));
     }
 
-    public String getToken(HttpServletRequest request) {
+    private String getToken(HttpServletRequest request) {
         String s = request.getHeader("Authorization");
         if(s.startsWith("Bearer ") && StringUtils.hasText(s)) {
             return s.substring(7);

@@ -133,6 +133,8 @@ public class PaymentController {
                     if(!order.isDelivery()) {
                         orderStatusSuccess = EnumOrderStatus.Đến_cửa_hàng_lấy.name();
                     }
+
+                    // get delivery with least order to assign order
                     order.setStatus(orderStatusSuccess.replaceAll("_", " "));
                     if(orderStatusSuccess.equals(EnumOrderStatus.Chờ_giao_hàng.name())) {
                         List<User> deliveries = userService.getDeliveryWithLeastOrder();
@@ -287,7 +289,7 @@ public class PaymentController {
     }
 
     private double priceToUSD(double price) {
-        String dola_price = dola.getDola().replace(".", "");
+        String dola_price = dola.getDola().replace(".", ""); // 22350.04 -> 22350
         double value = (price / Double.parseDouble(dola_price));
         String s = String.format("%.2f",value);
         return Math.floor(Double.parseDouble(s));

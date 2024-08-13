@@ -135,7 +135,7 @@ public class UploadImageServiceImp implements UploadImageService {
     @Override
     public String upload(MultipartFile multipartFile) {
         try {
-            String fileName = multipartFile.getOriginalFilename();                        // to get file name .jpg, .png, ...
+            String fileName = multipartFile.getOriginalFilename();                        // to get file name.jpg, .png, ...
             fileName = UUID.randomUUID().toString().concat(this.getExtension(fileName));  // to generated random string values for file name and plus + "extension".
             File file1 = this.convertToFile(multipartFile, fileName);                      // to convert multipartFile to File
             String URL = this.uploadFile(file1, fileName);                                   // to get uploaded file link

@@ -343,7 +343,7 @@ public class UserServiceImp implements UserService {
         return check;
     }
 
-    public String generatedNumber() {
+    private String generatedNumber() {
         Random random = new Random();
         int otpRD = random.nextInt(999999);
         String otp = String.valueOf(otpRD);
@@ -465,7 +465,7 @@ public class UserServiceImp implements UserService {
         return countSecond;
     }
 
-    public int calculateDay(User user) {
+    private int calculateDay(User user) {
         int countDay = 0;
         if (user.getOfflineAt() != null) {
             int yearInDB = getPartDate(user.getOfflineAt(), Calendar.YEAR);
@@ -491,7 +491,7 @@ public class UserServiceImp implements UserService {
         return countDay;
     }
 
-    public int countDayInMonth(int year, int month) {
+    private int countDayInMonth(int year, int month) {
         if (month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12) {
             return 31;
         } else if (month == 4 || month == 6 || month == 9 || month == 11) {
@@ -505,7 +505,7 @@ public class UserServiceImp implements UserService {
         return 28;
     }
 
-    public int countDayInYear(int year, int month, int day) {
+    private int countDayInYear(int year, int month, int day) {
         int count = 0;
         for (int i = 1; i < month; i++) {
             count += countDayInMonth(year, i);
@@ -514,7 +514,7 @@ public class UserServiceImp implements UserService {
         return count - 1;
     }
 
-    public int countDayIn1Year(int year) {
+    private int countDayIn1Year(int year) {
         if (year % 4 == 0 && year % 100 != 0) {
             return 366;
         }
@@ -633,7 +633,7 @@ public class UserServiceImp implements UserService {
         userRepository.setTimeOfflineAt(date, email);
     }
 
-    public boolean mailOffline(User user, int monthOff) {
+    private boolean mailOffline(User user, int monthOff) {
         if (user.getEmail() == null) {
             return false;
         }
@@ -711,7 +711,7 @@ public class UserServiceImp implements UserService {
         }
     }
 
-    public boolean emailHappyBirth(User user) {
+    private boolean emailHappyBirth(User user) {
         if (user.getEmail() == null) {
             return false;
         }
@@ -779,7 +779,7 @@ public class UserServiceImp implements UserService {
         }
     }
 
-    public boolean checkBirthDay(User user) {
+    private boolean checkBirthDay(User user) {
         boolean check = false;
         int yearInDB = getPartDate(user.getYearOfBirth(), Calendar.YEAR);
         int monthInDB = getPartDate(user.getYearOfBirth(), Calendar.MONTH);
@@ -1098,7 +1098,18 @@ public class UserServiceImp implements UserService {
     }
 
 
-    //    public boolean loginGoogle(String code) {
+
+
+
+
+
+
+
+
+
+
+
+//    public boolean loginGoogle(String code) {
 //        HttpHeaders headers = new HttpHeaders();
 //        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 //

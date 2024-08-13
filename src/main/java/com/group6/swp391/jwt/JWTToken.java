@@ -21,13 +21,13 @@ public class JWTToken {
     @Autowired private ListToken listToken;
 
     @Value("${jwt.expiration}")
-    private int JWT_EXPIRATION;
+    private int JWT_EXPIRATION;  // 10 ngay
 
     @Value("${jwt.secret}")
     private String sceretString;
 
     @Value("${jwt.algorithms}")
-    private String algorithm;  // 10 ngay
+    private String algorithm;
 
     private SecretKey SCRET_KEY;
 
