@@ -9,7 +9,7 @@
 
 
 # SWP391
-Build a webapp to manager diamond shop with RESTfull API and Repository Pattern architecture
+Build a webapp to manager diamond shop with RESTfull API and 3-Layer with Repository Pattern architecture
 
 ## How to Run
 - Clone the repository:
@@ -49,8 +49,7 @@ mvn spring-boot:run
 - Refund with paypal
 - Look account when user login failed over 5 times and set over 5 minutes user can login failed 5 times again before looking account and when user login failed 6 times, account is locked
 - Send email or SMS with the OTP which has 6 numbers when user want to reset password or forget password
-- Search advanced diamonds by 7 properties which are carat, size, price (higher or lower a certain price or price range between start price and end price), color, clarify, shape and sorting price by desc or asc and user can choose any properties
-- Search advanced with Specification and Criteria API
+- Search advanced diamonds by 7 properties which are carat, size, price (higher or lower a certain price or price range between start price and end price), color, clarify, shape and sorting price by desc or asc and user can choose any properties with Specification and Criteria API
 - CRUD user with admin rights
 - Get user by role, role manager only view other manager and lower role but can not view user with role admin
 - Swagger for API
