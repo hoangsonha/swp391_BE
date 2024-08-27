@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @Transactional
@@ -73,4 +74,5 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query("SELECT u FROM user u LEFT JOIN order o ON u.userID = o.deliveryID.userID AND o.status ='Chờ giao hàng'" +
             "WHERE u.role.roleID = 2 GROUP BY u ORDER BY COUNT (o) ASC")
     List<User> findDeliveryWithLeastOrder();
+    
 }

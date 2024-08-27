@@ -14,6 +14,8 @@ import com.group6.swp391.responses.ObjectResponse;
 import com.group6.swp391.responses.TokenResponse;
 import com.group6.swp391.config.CustomUserDetail;
 import com.group6.swp391.services.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -42,10 +44,8 @@ import java.util.*;
 @CrossOrigin(origins = "*")
 @RequestMapping("/public")
 @Slf4j
+@Tag(name = "Main Controller", description = "APIs for Main Controller")
 public class MainController {
-
-    @Value("${time.reset}")
-    private int timeReset;
 
     @Autowired private UserService userService;
     @Autowired private RoleService roleService;
@@ -61,11 +61,13 @@ public class MainController {
     @Value("${frontend.url}")
     private String urlRedirect;
 
-    @GetMapping("/all_users")
-    public List<User> getAll() {
-        return userService.findAll("admin");
-    }
+    @Value("${time.reset}")
+    private int timeReset;
 
+    @Value("${quantity.login.failed")
+    private int quantitySetLockAccount;
+
+    @Operation(summary = "Register user", description = "API for registering account with role USER to login into the app")
     @PostMapping("/register")
     public ResponseEntity<ObjectResponse> userRegister(@Valid @RequestBody UserRegister userRegister, HttpServletRequest request) throws MessagingException, IOException {
         Role role = roleService.getRoleByRoleName(EnumRoleName.ROLE_USER);
@@ -116,6 +118,7 @@ public class MainController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new TokenResponse("Failed", "Refresh token failed", null, null));
     }
 
+    @Operation(summary = "Login", description = "API for logging account into the app")
     @PostMapping("/login")
     public ResponseEntity<TokenResponse> loginPage(@Valid @RequestBody UserLogin userLogin) {
         try {
@@ -144,7 +147,7 @@ public class MainController {
             User user = userService.getUserByEmail(userLogin.getEmail());
             if (user != null) {
                 if(user.isEnabled()) {
-                    if(user.isNonLocked() == true) {
+                    if(user.isNonLocked()) {
                         int quantityLoginFailed = user.getQuantityLoginFailed();
                         if(quantityLoginFailed == 0) {
                             userService.setTimeLoginFailed(new Date(), user.getEmail());
@@ -156,10 +159,10 @@ public class MainController {
                                 userService.setTimeLoginFailed(new Date(), user.getEmail());
                             }
                         }
-                        if(quantityLoginFailed == 5) {
+                        if(quantityLoginFailed == quantitySetLockAccount) {
                             userService.lockedUserByEmail(userLogin.getEmail());
                         } else userService.setQuantityLoginFailed((quantityLoginFailed + 1), userLogin.getEmail());
-                        int remainingAttempt = (5-quantityLoginFailed);
+                        int remainingAttempt = (quantitySetLockAccount - quantityLoginFailed);
                         if(remainingAttempt == 0) {
                             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new TokenResponse("Failed", "your account is locked. Please contact to our admin to unlock", null, null));
                         }
