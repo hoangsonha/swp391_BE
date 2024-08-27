@@ -2,6 +2,7 @@ package com.group6.swp391.jwt;
 
 import com.group6.swp391.config.CustomUserDetail;
 import com.group6.swp391.config.CustomUserDetailService;
+import com.group6.swp391.enums.EnumTokenType;
 import io.jsonwebtoken.lang.Strings;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -53,8 +54,8 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
                 return;
             }
             String bearerToken = getToken(request);
-            if(Strings.hasText(bearerToken) && jwtToken.validate(bearerToken)) {
-                String email = jwtToken.getEmailFromJwt(bearerToken);
+            if(Strings.hasText(bearerToken) && jwtToken.validate(bearerToken, EnumTokenType.TOKEN)) {
+                String email = jwtToken.getEmailFromJwt(bearerToken, EnumTokenType.TOKEN);
                 CustomUserDetail customUserDetail = (CustomUserDetail) customUserDetailService.loadUserByUsername(email);
                 if(customUserDetail != null) {
 

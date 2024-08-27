@@ -1,5 +1,6 @@
 package com.group6.swp391.jwt;
 
+import com.group6.swp391.enums.EnumTokenType;
 import com.group6.swp391.logout.ListToken;
 import com.group6.swp391.config.CustomUserDetail;
 import io.jsonwebtoken.Claims;
@@ -21,20 +22,32 @@ public class JWTToken {
     @Autowired private ListToken listToken;
 
     @Value("${jwt.expiration}")
-    private int JWT_EXPIRATION;  // 10 ngay
+    private int JWT_EXPIRATION;  // 5 ngay
+
+    @Value("${jwt.refresh.expiration}")
+    private int JWT_REFRESH_EXPIRATION;  // 10 ngay
 
     @Value("${jwt.secret}")
     private String sceretString;
 
+    @Value("${jwt.refresh.secret}")
+    private String refreshSecretString;
+
     @Value("${jwt.algorithms}")
     private String algorithm;
 
-    private SecretKey SCRET_KEY;
-
-    @PostConstruct
-    public void init() {
-        byte[] keyBytes = Base64.getDecoder().decode(sceretString.getBytes(StandardCharsets.UTF_8));
-        this.SCRET_KEY = new SecretKeySpec(keyBytes, algorithm);
+    private SecretKey getSecretKey(EnumTokenType type) {
+        byte[] keyBytes = null;
+        SecretKey SCRET_KEY = null;
+        if(type == EnumTokenType.TOKEN) {
+            keyBytes = Base64.getDecoder().decode(sceretString.getBytes(StandardCharsets.UTF_8));
+            SCRET_KEY = new SecretKeySpec(keyBytes, algorithm);
+            return SCRET_KEY;
+        } else {
+            keyBytes = Base64.getDecoder().decode(refreshSecretString.getBytes(StandardCharsets.UTF_8));
+            SCRET_KEY = new SecretKeySpec(keyBytes, algorithm);
+            return SCRET_KEY;
+        }
     }
 
     public String generatedToken(CustomUserDetail customUserDetail) {
@@ -50,27 +63,50 @@ public class JWTToken {
                 .claim("firstName", customUserDetail.getFirstName())
                 .claim("lastName", customUserDetail.getLastName())
                 .claim("role", customUserDetail.getGrantedAuthorities())
-                .signWith(SCRET_KEY)
+                .signWith(getSecretKey(EnumTokenType.TOKEN))
                 .compact();
     }
 
-    public String getEmailFromJwt(String token) {
-        return getClaims(token, Claims::getSubject);
+    public String generatedRefreshToken(CustomUserDetail customUserDetail) {
+        Date date = new Date(System.currentTimeMillis());
+
+        Date exp = new Date(System.currentTimeMillis() + JWT_REFRESH_EXPIRATION);
+
+        return Jwts.builder()
+                .subject(customUserDetail.getUsername())
+                .issuedAt(date)
+                .expiration(exp)
+                .claim("userID", customUserDetail.getUserID())
+                .claim("firstName", customUserDetail.getFirstName())
+                .claim("lastName", customUserDetail.getLastName())
+                .claim("role", customUserDetail.getGrantedAuthorities())
+                .signWith(getSecretKey(EnumTokenType.REFRESH_TOKEN))
+                .compact();
     }
 
-    private <T> T getClaims(String token, Function<Claims, T> claimsTFunction) {
-        return claimsTFunction.apply(
-                Jwts.parser().verifyWith(SCRET_KEY).build().parseSignedClaims(token).getPayload());
+    public String getEmailFromJwt(String token, EnumTokenType type) {
+        return getClaims(token, Claims::getSubject, type);
     }
-    public boolean validate(String token) {
-        if(getEmailFromJwt(token) != null && !isExpired(token) && !listToken.isListToken(token)) {
+
+    private <T> T getClaims(String token, Function<Claims, T> claimsTFunction, EnumTokenType type) {
+        return claimsTFunction.apply(
+                Jwts.parser().verifyWith(getSecretKey(type)).build().parseSignedClaims(token).getPayload());
+    }
+
+//    private <T> T getClaims(String token, Function<Claims, T> claimsTFunction) {
+//        return claimsTFunction.apply(
+//                Jwts.parser().verifyWith(getSecretKey()).build().parseSignedClaims(token).getPayload());
+//    }
+
+    public boolean validate(String token, EnumTokenType type) {
+        if(getEmailFromJwt(token, type) != null && !isExpired(token, type) && !listToken.isListToken(token)) {
             return true;
         }
         return false;
     }
 
-    public boolean isExpired(String token) {
-        return getClaims(token, Claims::getExpiration).before(new Date(System.currentTimeMillis()));
+    public boolean isExpired(String token, EnumTokenType type) {
+        return getClaims(token, Claims::getExpiration, type).before(new Date(System.currentTimeMillis()));
     }
 
 }

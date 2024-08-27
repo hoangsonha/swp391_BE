@@ -6,12 +6,10 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-@Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CartRequest {
     @NotNull(message = "Vui lòng nhập mã người dùng")

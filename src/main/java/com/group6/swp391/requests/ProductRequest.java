@@ -8,12 +8,10 @@ import lombok.*;
 
 import java.util.List;
 
-@Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Data
 public class ProductRequest {
     private Product product;
     private List<Size> sizes;

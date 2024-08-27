@@ -9,12 +9,10 @@ import lombok.experimental.FieldDefaults;
 import java.util.Date;
 import java.util.List;
 
-@Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class WarrantyCardRequest {
     @NotNull(message = "ID người dùng không được để trống")

@@ -5,11 +5,9 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-@Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PasswordRequest {

@@ -10,9 +10,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.util.List;
 
-@Setter
 @Getter
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder

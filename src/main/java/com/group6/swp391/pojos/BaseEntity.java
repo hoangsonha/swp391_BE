@@ -1,10 +1,9 @@
 package com.group6.swp391.pojos;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
+import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -35,4 +34,20 @@ public class BaseEntity {
         ZoneId zoneId = ZoneId.of("Asia/Ho_Chi_Minh");
         updateAt = ZonedDateTime.now(zoneId);
     }
+
+
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @Column(name = "id")
+//    private int id;
+//    private T ...
+//
+//    @Column(name = "create_at")
+//    @CreationTimestamp    // create at the first time
+//    private Date createAt;
+//
+//    @Column(name = "update_at")
+//    @UpdateTimestamp              // auto update when change
+//    private Date updateAt;
+
 }

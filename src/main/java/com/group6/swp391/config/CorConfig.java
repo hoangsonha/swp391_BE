@@ -17,6 +17,8 @@ public class CorConfig implements WebMvcConfigurer {
                 .maxAge(1440000);
     }
 
+    // .allowedOrigins("*") is wrong, should change * to domain name of app or List.of("http://localhost:3000", "http://localhost:8080")
+
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/static/**")

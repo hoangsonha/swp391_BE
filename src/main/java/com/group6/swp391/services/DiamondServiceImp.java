@@ -75,7 +75,7 @@ public class DiamondServiceImp implements DiamondService {
 
         // Specìication hỗ trợ build câu query,
         // spe đã lấy ra đc Diamond -> diamond đc tiìm kiếm là where trên
-        // đối tượng nào là root, câu query, build query
+        // đối tượng nào là root (root là diamond), câu query, build query
 
         List<String> keys = new ArrayList<>();
         List<String> values = new ArrayList<>();

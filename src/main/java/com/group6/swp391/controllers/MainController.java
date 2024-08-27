@@ -1,5 +1,6 @@
 package com.group6.swp391.controllers;
 
+import com.group6.swp391.enums.EnumTokenType;
 import com.group6.swp391.jwt.JWTToken;
 import com.group6.swp391.logout.ListToken;
 import com.group6.swp391.enums.EnumRoleName;
@@ -99,6 +100,22 @@ public class MainController {
         }
     }
 
+    @PostMapping("/refresh_token")
+    public ResponseEntity<TokenResponse> refreshToken(HttpServletRequest request) {
+        String refreshToken = request.getHeader("RefreshToken");
+        if(StringUtils.hasText(refreshToken) && !listToken.isListToken(refreshToken)) {
+            if(jwtToken.validate(refreshToken, EnumTokenType.REFRESH_TOKEN)) {
+                String email = jwtToken.getEmailFromJwt(refreshToken, EnumTokenType.REFRESH_TOKEN);
+                CustomUserDetail customUserDetail = CustomUserDetail.mapUserToUserDetail(userService.getUserByEmail(email));
+                if(customUserDetail != null) {
+                    String newToken = jwtToken.generatedToken(customUserDetail);
+                    return ResponseEntity.status(HttpStatus.OK).body(new TokenResponse("Success", "Refresh token successfully", newToken, refreshToken));
+                }
+            }
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new TokenResponse("Failed", "Refresh token failed", null, null));
+    }
+
     @PostMapping("/login")
     public ResponseEntity<TokenResponse> loginPage(@Valid @RequestBody UserLogin userLogin) {
         try {
@@ -111,13 +128,14 @@ public class MainController {
                 CustomUserDetail userDetails = (CustomUserDetail) authentication.getPrincipal();
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 //SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-                String s = jwtToken.generatedToken(userDetails);
-                User ss = UserMapper.customUserDetailToUser(userDetails);
+                String token = jwtToken.generatedToken(userDetails);
+                String refreshToken = jwtToken.generatedRefreshToken(userDetails);
+//                User ss = UserMapper.customUserDetailToUser(userDetails);
                 userService.setQuantityLoginFailed(0, userDetails.getEmail());
                 userService.setTimeOffline(null, userDetails.getEmail());
                 userService.setQuantityReceiveEmailOffline(0, userDetails.getEmail());
 
-                return ResponseEntity.status(HttpStatus.OK).body(new TokenResponse("Success", "Login successfully", s));
+                return ResponseEntity.status(HttpStatus.OK).body(new TokenResponse("Success", "Login successfully", token, refreshToken));
 //            } else {
 //                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new TokenResponse("Failed", "Login failed", null));
 //            }
@@ -143,24 +161,36 @@ public class MainController {
                         } else userService.setQuantityLoginFailed((quantityLoginFailed + 1), userLogin.getEmail());
                         int remainingAttempt = (5-quantityLoginFailed);
                         if(remainingAttempt == 0) {
-                            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new TokenResponse("Failed", "your account is locked. Please contact to our admin to unlock", null));
+                            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new TokenResponse("Failed", "your account is locked. Please contact to our admin to unlock", null, null));
                         }
-                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new TokenResponse("Failed", "You have " + remainingAttempt + " password attempts left before your account is locked", null));
-                    } else return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new TokenResponse("Failed", "your account is locked. Please contact to our admin to unlock", null));
-                } else return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new TokenResponse("Failed", "your account is not active. Please check your email for verify account", null));
+                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new TokenResponse("Failed", "You have " + remainingAttempt + " password attempts left before your account is locked", null, null));
+                    } else return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new TokenResponse("Failed", "your account is locked. Please contact to our admin to unlock", null, null));
+                } else return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new TokenResponse("Failed", "your account is not active. Please check your email for verify account", null, null));
             } else
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new TokenResponse("Failed", "Your Email isn't exist. Please register it", null));
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new TokenResponse("Failed", "Your Email isn't exist. Please register it", null, null));
         }
     }
+
 
     @PostMapping("/logout")
     public ResponseEntity<ObjectResponse> getLogout(HttpServletRequest request) {
         String token = getToken(request);
-        String email = jwtToken.getEmailFromJwt(token);
+        String refreshToken = request.getHeader("RefreshToken");
+        String email = jwtToken.getEmailFromJwt(token, EnumTokenType.TOKEN);
         listToken.addToken(token);
+        listToken.addToken(refreshToken);
         userService.setTimeOffline(new Date(), email);
         return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Logout successfully", null));
     }
+
+//    @PostMapping("/logout")
+//    public ResponseEntity<ObjectResponse> getLogout(HttpServletRequest request) {
+//        String token = getToken(request);
+//        String email = jwtToken.getEmailFromJwt(token, EnumTokenType.TOKEN);
+//        listToken.addToken(token);
+//        userService.setTimeOffline(new Date(), email);
+//        return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Logout successfully", null));
+//    }
 
     private String getToken(HttpServletRequest request) {
         String s = request.getHeader("Authorization");

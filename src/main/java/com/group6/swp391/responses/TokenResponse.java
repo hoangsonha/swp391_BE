@@ -13,4 +13,5 @@ public class TokenResponse {
     private String code;
     private String message;
     private String token;
+    private String refreshToken;
 }

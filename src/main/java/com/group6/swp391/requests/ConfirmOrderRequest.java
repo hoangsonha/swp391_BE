@@ -6,9 +6,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-@Setter
 @Getter
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder

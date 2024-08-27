@@ -5,12 +5,10 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-@Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CollectionProductRequest {
     @NotNull(message = "Vui lòng nhập mã sản phẩm bộ sưu tập")

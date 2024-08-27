@@ -3,9 +3,7 @@ package com.group6.swp391.requests;
 import lombok.*;
 
 
-@Setter
 @Getter
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
