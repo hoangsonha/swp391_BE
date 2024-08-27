@@ -64,7 +64,7 @@ public class MainController {
     @Value("${time.reset}")
     private int timeReset;
 
-    @Value("${quantity.login.failed")
+    @Value("${quantity.login.failed}")
     private int quantitySetLockAccount;
 
     @Operation(summary = "Register user", description = "API for registering account with role USER to login into the app")
@@ -122,9 +122,9 @@ public class MainController {
     @PostMapping("/login")
     public ResponseEntity<TokenResponse> loginPage(@Valid @RequestBody UserLogin userLogin) {
         try {
-//            String gRecaptchaResponse = userLogin.getRecaptchaResponse();
-//            boolean check_captcha = userService.verifyRecaptcha(gRecaptchaResponse);
-//            if(check_captcha) {
+            String gRecaptchaResponse = userLogin.getRecaptchaResponse();
+            boolean check_captcha = userService.verifyRecaptcha(gRecaptchaResponse);
+            if(check_captcha) {
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                         new UsernamePasswordAuthenticationToken(userLogin.getEmail(), userLogin.getPassword());
                 Authentication authentication = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
@@ -139,9 +139,9 @@ public class MainController {
                 userService.setQuantityReceiveEmailOffline(0, userDetails.getEmail());
 
                 return ResponseEntity.status(HttpStatus.OK).body(new TokenResponse("Success", "Login successfully", token, refreshToken));
-//            } else {
-//                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new TokenResponse("Failed", "Login failed", null));
-//            }
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new TokenResponse("Failed", "Login failed", null, null));
+            }
         } catch(Exception e) {
             log.error("Cannot login : {}", e.toString());
             User user = userService.getUserByEmail(userLogin.getEmail());
